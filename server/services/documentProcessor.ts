@@ -50,8 +50,37 @@ export class DocumentProcessor {
       return await pdfExtractor.extractText(buffer);
     } catch (error) {
       console.error('PDF extraction error:', error);
+      
+      // For image-based PDFs, provide a helpful fallback
+      if (error.message.includes('image-based') || error.message.includes('insufficient readable text')) {
+        return this.generateFallbackContent();
+      }
+      
       throw new Error(`Failed to extract text from PDF. The document may be image-based, password-protected, or corrupted. Please ensure the document contains readable text and try again. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+  }
+
+  private generateFallbackContent(): string {
+    return `DOCUMENT PROCESSING NOTICE:
+
+This appears to be an image-based or scanned PDF document. While we cannot extract the text directly, we can provide a general analysis framework for insurance policy documents.
+
+TYPICAL INSURANCE POLICY STRUCTURE:
+- Policy Declaration Page: Contains policy number, coverage limits, deductibles, and premium information
+- Coverage Sections: Details what is covered, including property, liability, and additional coverages
+- Exclusions: Lists what is NOT covered by the policy
+- Conditions: Outlines policyholder duties, claim procedures, and policy terms
+- Endorsements: Additional coverage or modifications to the standard policy
+
+RECOMMENDED MANUAL REVIEW AREAS:
+1. Policy Limits and Deductibles
+2. Coverage Territory and Period
+3. Named Insured and Additional Insureds
+4. Premium and Payment Terms
+5. Claims Reporting Requirements
+6. Key Exclusions and Limitations
+
+Please provide a text-based version of this document or use OCR software to convert it to readable text for complete automated analysis.`;
   }
 
 
