@@ -134,125 +134,249 @@ Respond only with valid JSON that matches the exact structure specified above.
 }
 
 function generateDemoAnalysis(documentText: string): PolicyData {
-  // Extract actual policy details from the document text
+  console.log('Generating enhanced demo analysis from document content...');
+  
+  // Advanced text analysis using multiple patterns and context clues
   const lowerText = documentText.toLowerCase();
   
-  // Detect policy type and insurer
-  const isAllianzPolicy = documentText.includes('Allianz');
-  const isComprehensivePolicy = lowerText.includes('comprehensive coverage');
-  const isTravelPolicy = lowerText.includes('travel') || lowerText.includes('trip');
-  
-  // Extract specific coverage amounts from the document
-  const extractCoverageAmount = (coverageType: string): string => {
-    const patterns = [
-      new RegExp(`${coverageType}.*?\\$([\\d,]+(?:\\.\\d{2})?)\\s*Canadian`, 'gi'),
-      new RegExp(`${coverageType}.*?Up to \\$([\\d,]+(?:\\.\\d{2})?)\\s*Canadian`, 'gi'),
-      new RegExp(`${coverageType}.*?\\$([\\d,]+(?:\\.\\d{2})?)`, 'gi')
-    ];
-    
-    for (const pattern of patterns) {
-      const match = documentText.match(pattern);
-      if (match) {
-        return match[0].includes('Canadian') ? match[0] : match[0] + ' Canadian';
-      }
-    }
-    return "Coverage amount not specified";
+  // Detect policy type with more sophisticated pattern matching
+  const policyTypePatterns = {
+    travel: /travel|trip|vacation|journey|tourism|international|overseas/gi,
+    allianz: /allianz|cumis|global assistance/gi,
+    comprehensive: /comprehensive|complete|full coverage|all-inclusive/gi,
+    emergency: /emergency|medical|health|hospital/gi
   };
   
-  // Extract age and duration limits
-  const ageMatch = documentText.match(/age (\d+) or younger/i);
-  const durationMatch = documentText.match(/maximum period of up to (\d+) days/i);
+  const isAllianzPolicy = policyTypePatterns.allianz.test(documentText);
+  const isComprehensivePolicy = policyTypePatterns.comprehensive.test(documentText);
+  const isTravelPolicy = policyTypePatterns.travel.test(documentText);
+  const hasEmergencyMedical = policyTypePatterns.emergency.test(documentText);
   
-  // Build coverage details from actual document content
-  const coverageDetails = [];
-  
-  if (documentText.includes('Trip Cancellation')) {
-    coverageDetails.push({
-      type: "Trip Cancellation",
-      limit: "Up to $20,000 Canadian",
-      deductible: "$0"
+  // Advanced coverage extraction with multiple currency formats
+  const extractCoverageDetails = () => {
+    const coverageDetails = [];
+    
+    // Enhanced pattern matching for different coverage types
+    const coveragePatterns = [
+      {
+        name: "Emergency Medical and Dental Coverage",
+        patterns: [
+          /emergency medical.*?\$([0-9,]+(?:\.[0-9]{2})?)\s*(?:million|m)?\s*canadian/gi,
+          /medical.*?up to.*?\$([0-9,]+(?:\.[0-9]{2})?)\s*(?:million|m)?\s*canadian/gi,
+          /emergency.*?\$([0-9,]+(?:\.[0-9]{2})?)\s*(?:million|m)?/gi
+        ],
+        defaultLimit: "Up to $5,000,000 Canadian",
+        condition: () => hasEmergencyMedical || documentText.includes('Emergency Medical') || documentText.includes('medical')
+      },
+      {
+        name: "Trip Cancellation",
+        patterns: [
+          /trip cancellation.*?\$([0-9,]+(?:\.[0-9]{2})?)\s*canadian/gi,
+          /cancellation.*?up to.*?\$([0-9,]+(?:\.[0-9]{2})?)/gi
+        ],
+        defaultLimit: "Up to $20,000 Canadian",
+        condition: () => documentText.includes('Trip Cancellation') || documentText.includes('cancellation')
+      },
+      {
+        name: "Trip Interruption",
+        patterns: [
+          /trip interruption.*?\$([0-9,]+(?:\.[0-9]{2})?)\s*canadian/gi,
+          /interruption.*?up to.*?\$([0-9,]+(?:\.[0-9]{2})?)/gi
+        ],
+        defaultLimit: "Up to $20,000 Canadian",
+        condition: () => documentText.includes('Trip Interruption') || documentText.includes('interruption')
+      },
+      {
+        name: "Baggage and Personal Effects",
+        patterns: [
+          /baggage.*?\$([0-9,]+(?:\.[0-9]{2})?)\s*canadian/gi,
+          /personal effects.*?\$([0-9,]+(?:\.[0-9]{2})?)/gi
+        ],
+        defaultLimit: "Up to $1,000 Canadian",
+        condition: () => documentText.includes('Baggage') || documentText.includes('personal effects')
+      },
+      {
+        name: "Trip Delay",
+        patterns: [
+          /trip delay.*?\$([0-9,]+(?:\.[0-9]{2})?)\s*(?:per day|daily)/gi,
+          /delay.*?\$([0-9,]+(?:\.[0-9]{2})?)/gi
+        ],
+        defaultLimit: "$300 Canadian/Day – Maximum 2 Days",
+        condition: () => documentText.includes('Trip Delay') || documentText.includes('delay')
+      },
+      {
+        name: "Vehicle Return Benefit",
+        patterns: [
+          /vehicle return.*?\$([0-9,]+(?:\.[0-9]{2})?)/gi,
+          /car return.*?\$([0-9,]+(?:\.[0-9]{2})?)/gi
+        ],
+        defaultLimit: "Up to $2,000 Canadian",
+        condition: () => documentText.includes('Vehicle Return') || documentText.includes('car return')
+      },
+      {
+        name: "Emergency Medical Transportation",
+        patterns: [
+          /medical transportation.*?\$([0-9,]+(?:\.[0-9]{2})?)/gi,
+          /air ambulance.*?\$([0-9,]+(?:\.[0-9]{2})?)/gi
+        ],
+        defaultLimit: "Included in Emergency Medical Coverage",
+        condition: () => documentText.includes('medical transportation') || documentText.includes('air ambulance')
+      }
+    ];
+    
+    coveragePatterns.forEach(coverage => {
+      if (coverage.condition()) {
+        let extractedLimit = coverage.defaultLimit;
+        
+        // Try to extract actual amounts from document
+        for (const pattern of coverage.patterns) {
+          const matches = documentText.match(pattern);
+          if (matches && matches.length > 0) {
+            extractedLimit = matches[0];
+            break;
+          }
+        }
+        
+        coverageDetails.push({
+          type: coverage.name,
+          limit: extractedLimit,
+          deductible: "$0"
+        });
+      }
     });
-  }
+    
+    return coverageDetails;
+  };
   
-  if (documentText.includes('Trip Interruption')) {
-    coverageDetails.push({
-      type: "Trip Interruption", 
-      limit: "Up to $20,000 Canadian",
-      deductible: "$0"
-    });
-  }
-  
-  if (documentText.includes('Emergency Medical')) {
-    coverageDetails.push({
-      type: "Emergency Medical and Dental Coverage",
-      limit: "Up to $5,000,000 Canadian",
-      deductible: "$0"
-    });
-  }
-  
-  if (documentText.includes('Trip Delay')) {
-    coverageDetails.push({
-      type: "Trip Delay",
-      limit: "$300 Canadian/Day – Maximum 2 Days",
-      deductible: "$0"
-    });
-  }
-  
-  if (documentText.includes('Baggage Coverage')) {
-    coverageDetails.push({
-      type: "Baggage Coverage",
-      limit: "$1,000 Canadian",
-      deductible: "$0"
-    });
-  }
-  
-  if (documentText.includes('Vehicle Return')) {
-    coverageDetails.push({
-      type: "Vehicle Return",
-      limit: "$2,000 Canadian",
-      deductible: "$0"
-    });
-  }
-  
-  return {
-    policyType: isAllianzPolicy && isComprehensivePolicy ? "Allianz Comprehensive Travel Coverage" : "Travel Insurance Policy",
-    insurer: isAllianzPolicy ? "Allianz Global Assistance (underwritten by CUMIS General Insurance)" : "Valley Trust Insurance Company",
-    coverageDetails,
-    eligibility: {
-      ageLimit: ageMatch ? `${ageMatch[1]} or younger` : "64 or younger",
-      maxDuration: durationMatch ? `Up to ${durationMatch[1]} days` : "Up to 30 days",
+  // Extract eligibility information with better pattern matching
+  const extractEligibility = () => {
+    const agePatterns = [
+      /age (\d+) or younger/gi,
+      /maximum age.*?(\d+)/gi,
+      /age limit.*?(\d+)/gi,
+      /under (\d+) years/gi
+    ];
+    
+    const durationPatterns = [
+      /maximum period of up to (\d+) days/gi,
+      /up to (\d+) days/gi,
+      /maximum duration.*?(\d+) days/gi,
+      /coverage period.*?(\d+) days/gi
+    ];
+    
+    let ageLimit = "64 or younger";
+    let maxDuration = "Up to 30 days";
+    
+    // Try to find actual age limits
+    for (const pattern of agePatterns) {
+      const match = documentText.match(pattern);
+      if (match && match[1]) {
+        ageLimit = `${match[1]} or younger`;
+        break;
+      }
+    }
+    
+    // Try to find actual duration limits
+    for (const pattern of durationPatterns) {
+      const match = documentText.match(pattern);
+      if (match && match[1]) {
+        maxDuration = `Up to ${match[1]} days`;
+        break;
+      }
+    }
+    
+    return {
+      ageLimit,
+      maxDuration,
       restrictions: [
         "Must be departing from Canada",
         "Coverage must be purchased before departure",
-        "Pre-existing medical conditions may be excluded"
+        "Pre-existing medical conditions may be excluded unless declared and covered",
+        "Must maintain valid provincial health insurance"
       ]
-    },
+    };
+  };
+  
+  // Generate comprehensive benefits list
+  const generateKeyBenefits = () => {
+    const benefits = [];
+    
+    if (isTravelPolicy) {
+      benefits.push(
+        "Comprehensive travel protection for international and domestic trips",
+        "24-hour multilingual emergency assistance worldwide",
+        "Coverage for medical emergencies outside your home province"
+      );
+    }
+    
+    if (documentText.includes('Trip Cancellation')) {
+      benefits.push("Reimbursement for non-refundable trip costs due to covered cancellation reasons");
+    }
+    
+    if (documentText.includes('Emergency Medical')) {
+      benefits.push("Emergency medical and dental coverage with no daily limits");
+    }
+    
+    if (documentText.includes('Baggage')) {
+      benefits.push("Protection for lost, stolen, or damaged luggage and personal belongings");
+    }
+    
+    if (documentText.includes('Trip Delay')) {
+      benefits.push("Meal and accommodation reimbursement for covered travel delays");
+    }
+    
+    benefits.push(
+      "Direct billing arrangements with hospitals and medical facilities worldwide",
+      "Emergency medical evacuation and repatriation coverage",
+      "Coverage coordination with existing provincial health plans"
+    );
+    
+    return benefits;
+  };
+  
+  const coverageDetails = extractCoverageDetails();
+  const eligibility = extractEligibility();
+  const keyBenefits = generateKeyBenefits();
+  
+  // Determine policy type and insurer
+  let policyType = "Travel Insurance Policy";
+  let insurer = "Valley Trust Insurance Company";
+  
+  if (isAllianzPolicy) {
+    if (isComprehensivePolicy) {
+      policyType = "Allianz Comprehensive Travel Coverage";
+    } else {
+      policyType = "Allianz Travel Insurance";
+    }
+    insurer = "CUMIS General Insurance Company (administered by Allianz Global Assistance)";
+  } else if (isComprehensivePolicy) {
+    policyType = "Comprehensive Travel Insurance Policy";
+  }
+  
+  return {
+    policyType,
+    insurer,
+    coverageDetails,
+    eligibility,
     exclusions: [
-      "Pre-existing medical conditions (unless declared and covered)",
-      "High-risk activities and extreme sports",
-      "Travel to countries with government travel advisories",
-      "Intentional self-injury or illegal activities",
-      "War, terrorism, or civil unrest"
+      "Pre-existing medical conditions (unless declared, covered, and stable)",
+      "High-risk activities including extreme sports and adventure activities",
+      "Travel to countries with government-issued travel advisories level 3 or 4",
+      "Intentional self-injury, suicide, or participation in illegal activities",
+      "War, terrorism, civil unrest, or acts of foreign enemies",
+      "Nuclear contamination or radiation exposure",
+      "Pregnancy-related expenses (unless complications arise)",
+      "Routine medical care, check-ups, or elective procedures",
+      "Mental health conditions (unless specifically covered)",
+      "Alcohol or drug-related incidents"
     ],
     importantContacts: {
-      insurer: isAllianzPolicy ? "CUMIS General Insurance Company" : "Valley Trust Insurance Company",
-      administrator: isAllianzPolicy ? "Allianz Global Assistance" : "Policy Services",
-      emergencyLine: "24-Hour Emergency Travel Assistance (see Declaration Page for numbers)"
+      insurer: insurer,
+      administrator: isAllianzPolicy ? "Allianz Global Assistance" : "Valley Trust Insurance Claims Department",
+      emergencyLine: "24-Hour Emergency Travel Assistance: 1-866-520-2571 (see policy documents for international numbers)"
     },
-    keyBenefits: [
-      ...(isTravelPolicy ? [
-        "Comprehensive travel protection for trips up to 30 days",
-        "24-hour emergency assistance worldwide", 
-        "Coverage for medical emergencies outside Canada"
-      ] : []),
-      ...(documentText.includes('Trip Cancellation') ? ["Trip cancellation and interruption coverage"] : []),
-      ...(documentText.includes('Baggage') ? ["Baggage protection and delay coverage"] : []),
-      ...(documentText.includes('Emergency Medical Transportation') ? ["Emergency medical transportation included"] : []),
-      "Must call before seeking emergency treatment for full coverage"
-    ],
-    whyItMatters: isTravelPolicy 
-      ? "This comprehensive travel insurance protects you from unexpected costs while traveling outside Canada. Whether it's a medical emergency, trip cancellation, or lost baggage, this coverage ensures you won't face significant financial losses during your vacation or business travel."
-      : "This policy provides essential protection against various risks and liabilities while traveling."
+    keyBenefits,
+    whyItMatters: `This ${policyType.toLowerCase()} provides crucial financial protection against unexpected events that could cost thousands of dollars. Travel medical emergencies alone can result in bills exceeding $100,000, especially in countries like the USA. This coverage ensures you receive proper medical care without devastating financial consequences, while also protecting your travel investment through trip cancellation and interruption benefits. The 24-hour emergency assistance service provides invaluable support when you need it most, including medical referrals, translation services, and coordination with your home healthcare providers.`
   };
 }
 

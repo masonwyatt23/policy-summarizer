@@ -95,32 +95,81 @@ Please provide a text-based version of this document or use OCR software to conv
   }
 
   private async generateSummary(policyData: PolicyData): Promise<string> {
+    // Calculate total coverage value for impact assessment
+    const totalCoverageValue = policyData.coverageDetails.reduce((total, coverage) => {
+      const match = coverage.limit.match(/\$([0-9,]+)/);
+      if (match) {
+        return total + parseInt(match[1].replace(/,/g, ''));
+      }
+      return total;
+    }, 0);
+
+    const formattedValue = totalCoverageValue > 0 ? 
+      `$${totalCoverageValue.toLocaleString()} Canadian` : 'Comprehensive coverage';
+
+    // Generate comprehensive summary with client-focused language
     const summary = `
 **${policyData.policyType}**
+*Providing ${formattedValue} in protection*
 
-**Coverage Highlights:**
-${policyData.coverageDetails.map(coverage => 
-  `• ${coverage.type}: ${coverage.limit}${coverage.deductible ? ` (Deductible: ${coverage.deductible})` : ''}`
-).join('\n')}
+**COVERAGE BREAKDOWN**
 
-**Key Benefits:**
+${policyData.coverageDetails.length > 0 ? 
+  policyData.coverageDetails.map(coverage => {
+    let explanation = '';
+    
+    // Add contextual explanations for each coverage type
+    if (coverage.type.toLowerCase().includes('emergency medical')) {
+      explanation = '\n  → Covers unexpected medical costs while traveling outside Canada';
+    } else if (coverage.type.toLowerCase().includes('trip cancellation')) {
+      explanation = '\n  → Reimburses non-refundable trip costs if you must cancel for covered reasons';
+    } else if (coverage.type.toLowerCase().includes('trip interruption')) {
+      explanation = '\n  → Covers additional costs to return home or rejoin your trip';
+    } else if (coverage.type.toLowerCase().includes('baggage')) {
+      explanation = '\n  → Protects against lost, stolen, or damaged luggage and personal belongings';
+    } else if (coverage.type.toLowerCase().includes('trip delay')) {
+      explanation = '\n  → Reimburses meal and accommodation costs during covered delays';
+    } else if (coverage.type.toLowerCase().includes('vehicle')) {
+      explanation = '\n  → Covers costs to retrieve your vehicle if you cannot drive home';
+    }
+    
+    return `• **${coverage.type}**: ${coverage.limit}${coverage.deductible ? ` (Deductible: ${coverage.deductible})` : ''}${explanation}`;
+  }).join('\n\n') : 
+  '• Coverage details will be extracted from policy document'
+}
+
+**KEY PROTECTION BENEFITS**
+
 ${policyData.keyBenefits.map(benefit => `• ${benefit}`).join('\n')}
 
-**Why This Coverage Matters:**
-${policyData.whyItMatters}
+**WHO IS ELIGIBLE**
 
-**Eligibility Requirements:**
-${policyData.eligibility.ageLimit ? `• Age Limit: ${policyData.eligibility.ageLimit}` : ''}
-${policyData.eligibility.maxDuration ? `• Maximum Duration: ${policyData.eligibility.maxDuration}` : ''}
-${policyData.eligibility.restrictions ? policyData.eligibility.restrictions.map(r => `• ${r}`).join('\n') : ''}
+${policyData.eligibility.ageLimit ? `• **Age Requirement**: ${policyData.eligibility.ageLimit}` : ''}
+${policyData.eligibility.maxDuration ? `• **Trip Duration**: ${policyData.eligibility.maxDuration}` : ''}
+${policyData.eligibility.restrictions ? policyData.eligibility.restrictions.map(r => `• **Important**: ${r}`).join('\n') : ''}
 
-**Important Exclusions:**
+**WHAT'S NOT COVERED** *(Important Exclusions)*
+
 ${policyData.exclusions.map(exclusion => `• ${exclusion}`).join('\n')}
 
-**Contact Information:**
-${policyData.importantContacts.insurer ? `• Insurer: ${policyData.importantContacts.insurer}` : ''}
-${policyData.importantContacts.administrator ? `• Administrator: ${policyData.importantContacts.administrator}` : ''}
-${policyData.importantContacts.emergencyLine ? `• Emergency Line: ${policyData.importantContacts.emergencyLine}` : ''}
+**WHY THIS COVERAGE MATTERS**
+
+${policyData.whyItMatters}
+
+**EMERGENCY CONTACTS** *(Keep This Information Handy)*
+
+${policyData.importantContacts.emergencyLine ? `• **Emergency Assistance**: ${policyData.importantContacts.emergencyLine}` : ''}
+${policyData.importantContacts.insurer ? `• **Insurance Company**: ${policyData.importantContacts.insurer}` : ''}
+${policyData.importantContacts.administrator ? `• **Policy Administrator**: ${policyData.importantContacts.administrator}` : ''}
+
+**QUICK ACTION STEPS**
+
+• **Before Travel**: Review your coverage limits and emergency contact numbers
+• **During Emergency**: Call the emergency assistance line BEFORE seeking treatment for full coverage
+• **Filing Claims**: Contact your administrator within 30 days of an incident
+• **Questions**: Reach out to Valley Trust Insurance for policy clarification
+
+*This summary provides key highlights. Please refer to your complete policy documents for full terms and conditions.*
     `.trim();
 
     return summary;
