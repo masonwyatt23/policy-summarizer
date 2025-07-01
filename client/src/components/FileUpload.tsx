@@ -62,13 +62,13 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
       } catch (error) {
         setUploadingFiles(prev => prev.map(f => 
           f.file === fileData.file 
-            ? { ...f, status: 'error', error: error.message }
+            ? { ...f, status: 'error', error: error instanceof Error ? error.message : 'Processing failed' }
             : f
         ));
         
         toast({
           title: "Upload failed",
-          description: error.message,
+          description: error instanceof Error ? error.message : 'Upload failed',
           variant: "destructive",
         });
       }
@@ -95,7 +95,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
     } catch (error) {
       setUploadingFiles(prev => prev.map(f => 
         f.file === file 
-          ? { ...f, status: 'error', error: error.message }
+          ? { ...f, status: 'error', error: error instanceof Error ? error.message : 'Upload failed' }
           : f
       ));
     }
@@ -259,10 +259,31 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
                     <Progress value={fileData.progress} className="mt-2 h-2" />
                   )}
                   {fileData.status === 'processing' && (
-                    <p className="text-xs text-valley-primary mt-1">Processing document...</p>
+                    <p className="text-xs text-blue-600 mt-1 flex items-center">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {fileData.processingStage || 'Processing document...'}
+                    </p>
+                  )}
+                  {fileData.status === 'retrying' && (
+                    <p className="text-xs text-blue-600 mt-1">
+                      Retrying... (Attempt {fileData.retryCount || 1})
+                    </p>
                   )}
                   {fileData.status === 'error' && fileData.error && (
-                    <p className="text-xs text-red-600 mt-1">{fileData.error}</p>
+                    <div className="mt-1">
+                      <p className="text-xs text-red-600">{fileData.error}</p>
+                      {(fileData.retryCount || 0) < 3 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => retryUpload(fileData.file)}
+                          className="mt-1 h-6 px-2 text-xs"
+                        >
+                          <RefreshCw className="w-3 h-3 mr-1" />
+                          Retry
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
                 <div className="flex-shrink-0">

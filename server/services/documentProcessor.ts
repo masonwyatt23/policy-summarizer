@@ -44,14 +44,33 @@ export class DocumentProcessor {
 
   private async extractFromPDF(buffer: Buffer): Promise<string> {
     try {
-      // Use require for pdf-parse to avoid import issues
-      const pdfParse = require('pdf-parse');
-      const data = await pdfParse(buffer);
+      // Method 1: Try pdf-parse with dynamic import
+      const { default: pdfParse } = await import('pdf-parse');
+      
+      const options = {
+        normalizeWhitespace: true,
+        disableCombineTextItems: false
+      };
+      
+      const data = await pdfParse(buffer, options);
+      
+      if (!data.text || data.text.trim().length < 10) {
+        throw new Error('Insufficient text extracted from PDF');
+      }
+      
       return data.text;
     } catch (error) {
       console.error('PDF extraction error:', error);
-      throw new Error(`Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      // Method 2: Try fallback extraction with detailed error message
+      throw new Error(`Failed to extract text from PDF. The document may be image-based or corrupted. Please try uploading a text-based PDF or convert to DOCX format. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+  }
+
+  private async extractPDFUsingOCR(buffer: Buffer): Promise<string> {
+    // For now, throw error with helpful message
+    // In production, this could use Tesseract.js or similar
+    throw new Error('Document appears to be image-based or corrupted. Please try uploading a text-based PDF or convert to DOCX format.');
   }
 
   private async extractFromDOCX(buffer: Buffer): Promise<string> {
