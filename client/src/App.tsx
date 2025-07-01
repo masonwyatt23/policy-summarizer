@@ -37,8 +37,8 @@ function Navigation() {
     isActive: boolean;
   }) => (
     <Link href={path}>
-      <a
-        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+      <div
+        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors cursor-pointer ${
           isActive 
             ? "bg-blue-100 text-blue-700 font-medium" 
             : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
@@ -47,7 +47,7 @@ function Navigation() {
       >
         <Icon className="w-4 h-4" />
         <span>{label}</span>
-      </a>
+      </div>
     </Link>
   );
 
