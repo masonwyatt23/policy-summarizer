@@ -67,8 +67,44 @@ export function SummaryPreview({ document, isLoading }: SummaryPreviewProps) {
               <span className="mr-2">📄</span>AI-Generated Summary
             </h4>
             <div className="prose prose-sm max-w-none">
-              <div className="whitespace-pre-wrap text-sm text-slate-900 font-sans leading-relaxed bg-slate-50 p-4 rounded border">
-                {document.summary}
+              <div className="text-sm text-slate-900 font-sans leading-relaxed bg-slate-50 p-4 rounded border">
+                {document.summary.split('\n').map((line, index) => {
+                  // Handle bold text (**text**)
+                  if (line.includes('**')) {
+                    const parts = line.split('**');
+                    return (
+                      <p key={index} className="mb-2">
+                        {parts.map((part, partIndex) => 
+                          partIndex % 2 === 1 ? (
+                            <strong key={partIndex} className="font-semibold text-slate-900">{part}</strong>
+                          ) : (
+                            part
+                          )
+                        )}
+                      </p>
+                    );
+                  }
+                  // Handle bullet points
+                  else if (line.trim().startsWith('•')) {
+                    return (
+                      <div key={index} className="ml-4 mb-1 text-slate-700">
+                        {line.trim()}
+                      </div>
+                    );
+                  }
+                  // Handle empty lines
+                  else if (line.trim() === '') {
+                    return <div key={index} className="h-2"></div>;
+                  }
+                  // Regular text
+                  else {
+                    return (
+                      <p key={index} className="mb-2 text-slate-700">
+                        {line}
+                      </p>
+                    );
+                  }
+                })}
               </div>
             </div>
           </div>

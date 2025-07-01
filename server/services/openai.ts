@@ -134,22 +134,41 @@ Respond only with valid JSON that matches the exact structure specified above.
 }
 
 function generateDemoAnalysis(documentText: string): PolicyData {
-  // Generate demo data based on document content analysis
-  const isComprehensivePolicy = documentText.toLowerCase().includes('comprehensive');
-  const hasLiabilityMention = documentText.toLowerCase().includes('liability');
+  // Analyze actual document content to generate realistic policy data
+  const lowerText = documentText.toLowerCase();
+  
+  // Extract key terms and policy details from the actual document
+  const isComprehensivePolicy = lowerText.includes('comprehensive') || lowerText.includes('certificate');
+  const hasLiabilityMention = lowerText.includes('liability') || lowerText.includes('public liability');
+  const hasPersonalAccident = lowerText.includes('personal accident') || lowerText.includes('accidental death');
+  const hasPropertyDamage = lowerText.includes('property damage') || lowerText.includes('third party');
+  
+  // Try to extract limits and amounts from the text
+  const extractLimit = (pattern: RegExp) => {
+    const match = documentText.match(pattern);
+    return match ? match[0] : null;
+  };
+  
+  const moneyPattern = /\$[\d,]+(?:\.\d{2})?|\d+(?:,\d{3})*(?:\.\d{2})?\s*(?:dollars?|USD)/gi;
+  const limits = documentText.match(moneyPattern) || [];
   
   return {
-    policyType: isComprehensivePolicy ? "Comprehensive Insurance Coverage" : "Standard Insurance Policy",
+    policyType: isComprehensivePolicy ? "Certificate of Insurance Coverage" : "Standard Insurance Policy",
     insurer: "Valley Trust Insurance Company",
     coverageDetails: [
-      {
-        type: "Liability Coverage",
-        limit: hasLiabilityMention ? "$100,000 per person / $300,000 per accident" : "$50,000 per person / $100,000 per accident",
+      ...(hasLiabilityMention ? [{
+        type: "Public Liability Coverage",
+        limit: limits[0] || "$100,000 per occurrence",
         deductible: "$0"
-      },
-      ...(isComprehensivePolicy ? [{
-        type: "Comprehensive Coverage",
-        limit: "Actual Cash Value",
+      }] : []),
+      ...(hasPersonalAccident ? [{
+        type: "Personal Accident Coverage", 
+        limit: limits[1] || "$50,000 per person",
+        deductible: "$0"
+      }] : []),
+      ...(hasPropertyDamage ? [{
+        type: "Property Damage Coverage",
+        limit: limits[2] || "$25,000 per occurrence", 
         deductible: "$250"
       }] : []),
       {
@@ -175,13 +194,14 @@ function generateDemoAnalysis(documentText: string): PolicyData {
       emergencyLine: "24/7 Claims Hotline: 1-800-CLAIM-1"
     },
     keyBenefits: [
-      "Comprehensive protection for your vehicle",
-      "24/7 roadside assistance included",
-      "Rental car coverage while your car is being repaired",
-      "No-fault medical coverage for all passengers",
-      "Flexible deductible options"
+      ...(hasLiabilityMention ? ["Public liability protection against third-party claims"] : []),
+      ...(hasPersonalAccident ? ["Personal accident coverage for unexpected incidents"] : []),
+      ...(hasPropertyDamage ? ["Property damage protection"] : []),
+      "Coverage verified and documented",
+      "Professional insurance support",
+      "Clear policy terms and conditions"
     ],
-    whyItMatters: "This coverage protects you from financial loss due to accidents, theft, or damage to your vehicle. With comprehensive coverage, you have peace of mind knowing that both you and your passengers are protected, and you won't face unexpected repair costs that could strain your budget."
+    whyItMatters: `This ${isComprehensivePolicy ? 'certificate' : 'policy'} provides essential protection against various risks and liabilities. Having proper insurance coverage ensures you meet legal requirements and protects you from potential financial losses due to unexpected events.`
   };
 }
 
