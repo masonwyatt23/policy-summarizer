@@ -9,7 +9,7 @@ import { SummaryPreview } from '@/components/SummaryPreview';
 import { ExtractedData } from '@/components/ExtractedData';
 import { ExportOptions } from '@/components/ExportOptions';
 import { Clock, FileText, CheckCircle, Settings, User } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api, ProcessedDocument, DocumentListItem } from '@/lib/api';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
 
 export default function PolicySummaryGenerator() {
@@ -29,7 +29,7 @@ export default function PolicySummaryGenerator() {
     },
   });
 
-  const { data: documentsList } = useQuery({
+  const { data: documentsList } = useQuery<DocumentListItem[]>({
     queryKey: ['/api/documents'],
   });
 
