@@ -135,6 +135,7 @@ Respond only with valid JSON that matches the exact structure specified above.
 
 function generateDemoAnalysis(documentText: string): PolicyData {
   console.log('Generating enhanced demo analysis from document content...');
+  console.log(`Analyzing document with ${documentText.length} characters of text content`);
   
   // Advanced text analysis using multiple patterns and context clues
   const lowerText = documentText.toLowerCase();
@@ -152,9 +153,48 @@ function generateDemoAnalysis(documentText: string): PolicyData {
   const isTravelPolicy = policyTypePatterns.travel.test(documentText);
   const hasEmergencyMedical = policyTypePatterns.emergency.test(documentText);
   
+  // Advanced text analysis to find real policy information
+  const findActualPolicyInfo = () => {
+    const policyInfo = {
+      realCoverageAmounts: [],
+      actualPolicyType: '',
+      realInsurer: '',
+      realContacts: {},
+      realEligibility: {}
+    };
+    
+    // Find actual dollar amounts in the text
+    const dollarMatches = documentText.match(/\$[\d,]+(?:\.\d{2})?(?:\s*(?:million|M|CAD|Canadian?))?/gi);
+    if (dollarMatches) {
+      policyInfo.realCoverageAmounts = dollarMatches.slice(0, 10); // Limit to avoid clutter
+    }
+    
+    // Find real policy numbers and references
+    const policyNumberMatch = documentText.match(/policy\s+(?:number|#)\s*:?\s*([A-Z0-9-]+)/i);
+    if (policyNumberMatch) {
+      policyInfo.realPolicyNumber = policyNumberMatch[1];
+    }
+    
+    // Find phone numbers for emergency contacts
+    const phoneMatches = documentText.match(/1-\d{3}-\d{3}-\d{4}|\(\d{3}\)\s*\d{3}-\d{4}/g);
+    if (phoneMatches) {
+      policyInfo.realContacts.emergencyPhone = phoneMatches[0];
+    }
+    
+    // Find email addresses
+    const emailMatches = documentText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g);
+    if (emailMatches) {
+      policyInfo.realContacts.email = emailMatches[0];
+    }
+    
+    return policyInfo;
+  };
+  
+  const realPolicyInfo = findActualPolicyInfo();
+  
   // Advanced coverage extraction with multiple currency formats
   const extractCoverageDetails = () => {
-    const coverageDetails = [];
+    const coverageDetails: any[] = [];
     
     // Enhanced pattern matching for different coverage types
     const coveragePatterns = [
