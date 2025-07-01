@@ -101,9 +101,22 @@ This is a full-stack policy document processing application built for Valley Tru
 - `OPENAI_API_KEY` - OpenAI API key for document processing
 - `NODE_ENV` - Environment flag (development/production)
 
+## Recent Changes
+- July 01, 2025: Enhanced application to comprehensive insurance document management platform
+  - Added PostgreSQL database integration with full schema for documents, history, and settings
+  - Implemented advanced processing options with configurable AI analysis parameters
+  - Created document dashboard with search, filtering, favorites, and management features
+  - Added comprehensive summary history with version tracking and comparison
+  - Built user settings interface for customizing processing defaults and preferences
+  - Enhanced navigation with sidebar layout and multi-page structure
+  - Added support for tags, client information, and policy references
+  - Implemented document statistics and usage tracking
+
 ## Changelog
 - July 01, 2025. Initial setup
+- July 01, 2025. Major enhancement: Transformed from simple PDF processor to comprehensive document management platform
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Request: Make application "way way more functional and incredible" with document history management, settings, and processing options.
