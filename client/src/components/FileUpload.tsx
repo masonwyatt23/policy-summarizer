@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Upload, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { FileText, Upload, CheckCircle, AlertCircle, Loader2, RefreshCw, Clock } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
@@ -14,9 +14,11 @@ interface FileUploadProps {
 interface UploadingFile {
   file: File;
   progress: number;
-  status: 'uploading' | 'processing' | 'success' | 'error';
+  status: 'uploading' | 'processing' | 'success' | 'error' | 'retrying';
   error?: string;
   documentId?: number;
+  retryCount?: number;
+  processingStage?: string;
 }
 
 export function FileUpload({ onUploadSuccess }: FileUploadProps) {
@@ -73,14 +75,55 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
     }
   }, [toast]);
 
+  const retryUpload = async (file: File) => {
+    setUploadingFiles(prev => prev.map(f => 
+      f.file === file 
+        ? { ...f, status: 'retrying', retryCount: (f.retryCount || 0) + 1, error: undefined }
+        : f
+    ));
+
+    try {
+      const result = await api.uploadDocument(file);
+      
+      setUploadingFiles(prev => prev.map(f => 
+        f.file === file 
+          ? { ...f, status: 'processing', documentId: result.documentId, processingStage: 'Extracting text...' }
+          : f
+      ));
+
+      pollProcessingStatus(result.documentId, file);
+    } catch (error) {
+      setUploadingFiles(prev => prev.map(f => 
+        f.file === file 
+          ? { ...f, status: 'error', error: error.message }
+          : f
+      ));
+    }
+  };
+
   const pollProcessingStatus = async (documentId: number, file: File) => {
     const maxAttempts = 60; // 5 minutes with 5-second intervals
     let attempts = 0;
+    const processingStages = [
+      'Extracting text...',
+      'Analyzing document structure...',
+      'Identifying key information...',
+      'Generating client summary...',
+      'Finalizing analysis...'
+    ];
 
     const pollInterval = setInterval(async () => {
       try {
         attempts++;
         const status = await api.getDocumentStatus(documentId);
+        
+        // Update processing stage for better user feedback
+        const stageIndex = Math.min(Math.floor(attempts / 3), processingStages.length - 1);
+        setUploadingFiles(prev => prev.map(f => 
+          f.file === file && f.status === 'processing'
+            ? { ...f, processingStage: processingStages[stageIndex] }
+            : f
+        ));
         
         if (status.processed) {
           clearInterval(pollInterval);
@@ -100,13 +143,13 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
           } else {
             setUploadingFiles(prev => prev.map(f => 
               f.file === file 
-                ? { ...f, status: 'success' }
+                ? { ...f, status: 'success', processingStage: 'Complete!' }
                 : f
             ));
             
             toast({
-              title: "Document processed",
-              description: `${status.originalName} has been successfully processed.`,
+              title: "Document processed successfully",
+              description: `${status.originalName} has been analyzed and is ready for review.`,
             });
             
             onUploadSuccess(documentId);
@@ -115,12 +158,20 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
           clearInterval(pollInterval);
           setUploadingFiles(prev => prev.map(f => 
             f.file === file 
-              ? { ...f, status: 'error', error: 'Processing timeout' }
+              ? { ...f, status: 'error', error: 'Processing timeout - document may be too complex' }
               : f
           ));
         }
       } catch (error) {
         console.error('Polling error:', error);
+        if (attempts > 3) {
+          clearInterval(pollInterval);
+          setUploadingFiles(prev => prev.map(f => 
+            f.file === file 
+              ? { ...f, status: 'error', error: 'Connection error during processing' }
+              : f
+          ));
+        }
       }
     }, 5000);
   };
@@ -191,8 +242,10 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
                     <CheckCircle className="w-5 h-5 text-green-600" />
                   ) : fileData.status === 'error' ? (
                     <AlertCircle className="w-5 h-5 text-red-600" />
+                  ) : fileData.status === 'retrying' ? (
+                    <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
                   ) : (
-                    <Loader2 className="w-5 h-5 animate-spin text-valley-primary" />
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

@@ -7,12 +7,24 @@ const openai = new OpenAI({
 });
 
 export async function extractPolicyData(documentText: string): Promise<PolicyData> {
-  if (!process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY_ENV_VAR) {
+  if (!process.env.OPENAI_API_KEY) {
     throw new Error("OpenAI API key is required. Please set OPENAI_API_KEY environment variable.");
   }
 
+  // Pre-process the document text for better analysis
+  const cleanedText = documentText
+    .replace(/\s+/g, ' ')
+    .replace(/[^\w\s\-\$\%\.,;:()]/g, '')
+    .trim();
+
+  if (cleanedText.length < 100) {
+    throw new Error("Document appears to be too short or contains insufficient text for analysis.");
+  }
+
   const prompt = `
-You are an expert insurance policy analyst. Analyze the following insurance policy document and extract key information in a structured format.
+You are an expert insurance policy analyst with deep knowledge of insurance terminology, regulations, and client communication. Analyze the following insurance policy document and extract key information in a structured format.
+
+IMPORTANT: Focus on accuracy and client-friendly explanations. Extract specific dollar amounts, dates, and conditions precisely as they appear in the document.
 
 Please analyze the document and provide a JSON response with the following structure:
 {
@@ -48,9 +60,17 @@ Focus on:
 5. Highlight why each type of coverage is valuable
 
 Policy Document Text:
-${documentText}
+${cleanedText}
 
-Respond only with the JSON object, no additional text.
+ANALYSIS INSTRUCTIONS:
+1. Extract all monetary amounts precisely (include currency symbols and exact figures)
+2. Identify specific exclusions and limitations that clients should understand
+3. Find emergency contact numbers and claim procedures
+4. Explain benefits in terms a non-insurance professional can understand
+5. Highlight time-sensitive elements (deadlines, age limits, etc.)
+6. Focus on practical implications for the policyholder
+
+Respond only with valid JSON that matches the exact structure specified above.
 `;
 
   try {
@@ -80,14 +100,14 @@ Respond only with the JSON object, no additional text.
     try {
       parsedData = JSON.parse(content);
     } catch (parseError) {
-      throw new Error(`Failed to parse OpenAI response as JSON: ${parseError.message}`);
+      throw new Error(`Failed to parse OpenAI response as JSON: ${parseError instanceof Error ? parseError.message : 'Parse error'}`);
     }
 
     // Validate the response against our schema
     const validatedData = PolicyDataSchema.parse(parsedData);
     
     return validatedData;
-  } catch (error) {
+  } catch (error: any) {
     console.error('OpenAI API error:', error);
     
     if (error.name === 'ZodError') {
@@ -106,7 +126,7 @@ Respond only with the JSON object, no additional text.
       throw new Error("OpenAI API service error. Please try again later.");
     }
     
-    throw new Error(`Failed to analyze policy document: ${error.message}`);
+    throw new Error(`Failed to analyze policy document: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

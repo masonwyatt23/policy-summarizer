@@ -44,11 +44,12 @@ export class DocumentProcessor {
 
   private async extractFromPDF(buffer: Buffer): Promise<string> {
     try {
-      // Dynamic import to avoid initialization issues
-      const pdf = await import('pdf-parse');
-      const data = await pdf.default(buffer);
+      // Use require for pdf-parse to avoid import issues
+      const pdfParse = require('pdf-parse');
+      const data = await pdfParse(buffer);
       return data.text;
     } catch (error) {
+      console.error('PDF extraction error:', error);
       throw new Error(`Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
