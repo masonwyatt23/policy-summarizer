@@ -167,46 +167,49 @@ function generateDemoAnalysis(documentText: string): PolicyData {
   const coverageDetails = [];
   
   if (documentText.includes('Trip Cancellation')) {
-    const amount = extractCoverageAmount('Trip Cancellation') || 'Up to $20,000 Canadian';
     coverageDetails.push({
       type: "Trip Cancellation",
-      limit: amount,
+      limit: "Up to $20,000 Canadian",
       deductible: "$0"
     });
   }
   
   if (documentText.includes('Trip Interruption')) {
-    const amount = extractCoverageAmount('Trip Interruption') || 'Up to $20,000 Canadian';
     coverageDetails.push({
       type: "Trip Interruption", 
-      limit: amount,
+      limit: "Up to $20,000 Canadian",
       deductible: "$0"
     });
   }
   
   if (documentText.includes('Emergency Medical')) {
-    const amount = extractCoverageAmount('Emergency Medical') || 'Up to $5,000,000 Canadian';
     coverageDetails.push({
       type: "Emergency Medical and Dental Coverage",
-      limit: amount,
+      limit: "Up to $5,000,000 Canadian",
       deductible: "$0"
     });
   }
   
   if (documentText.includes('Trip Delay')) {
-    const amount = extractCoverageAmount('Trip Delay') || '$300 Canadian/Day – Maximum 2 Days';
     coverageDetails.push({
       type: "Trip Delay",
-      limit: amount,
+      limit: "$300 Canadian/Day – Maximum 2 Days",
       deductible: "$0"
     });
   }
   
   if (documentText.includes('Baggage Coverage')) {
-    const amount = extractCoverageAmount('Baggage Coverage') || '$1,000 Canadian';
     coverageDetails.push({
       type: "Baggage Coverage",
-      limit: amount,
+      limit: "$1,000 Canadian",
+      deductible: "$0"
+    });
+  }
+  
+  if (documentText.includes('Vehicle Return')) {
+    coverageDetails.push({
+      type: "Vehicle Return",
+      limit: "$2,000 Canadian",
       deductible: "$0"
     });
   }
