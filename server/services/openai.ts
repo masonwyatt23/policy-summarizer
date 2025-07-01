@@ -134,74 +134,122 @@ Respond only with valid JSON that matches the exact structure specified above.
 }
 
 function generateDemoAnalysis(documentText: string): PolicyData {
-  // Analyze actual document content to generate realistic policy data
+  // Extract actual policy details from the document text
   const lowerText = documentText.toLowerCase();
   
-  // Extract key terms and policy details from the actual document
-  const isComprehensivePolicy = lowerText.includes('comprehensive') || lowerText.includes('certificate');
-  const hasLiabilityMention = lowerText.includes('liability') || lowerText.includes('public liability');
-  const hasPersonalAccident = lowerText.includes('personal accident') || lowerText.includes('accidental death');
-  const hasPropertyDamage = lowerText.includes('property damage') || lowerText.includes('third party');
+  // Detect policy type and insurer
+  const isAllianzPolicy = documentText.includes('Allianz');
+  const isComprehensivePolicy = lowerText.includes('comprehensive coverage');
+  const isTravelPolicy = lowerText.includes('travel') || lowerText.includes('trip');
   
-  // Try to extract limits and amounts from the text
-  const extractLimit = (pattern: RegExp) => {
-    const match = documentText.match(pattern);
-    return match ? match[0] : null;
+  // Extract specific coverage amounts from the document
+  const extractCoverageAmount = (coverageType: string): string => {
+    const patterns = [
+      new RegExp(`${coverageType}.*?\\$([\\d,]+(?:\\.\\d{2})?)\\s*Canadian`, 'gi'),
+      new RegExp(`${coverageType}.*?Up to \\$([\\d,]+(?:\\.\\d{2})?)\\s*Canadian`, 'gi'),
+      new RegExp(`${coverageType}.*?\\$([\\d,]+(?:\\.\\d{2})?)`, 'gi')
+    ];
+    
+    for (const pattern of patterns) {
+      const match = documentText.match(pattern);
+      if (match) {
+        return match[0].includes('Canadian') ? match[0] : match[0] + ' Canadian';
+      }
+    }
+    return "Coverage amount not specified";
   };
   
-  const moneyPattern = /\$[\d,]+(?:\.\d{2})?|\d+(?:,\d{3})*(?:\.\d{2})?\s*(?:dollars?|USD)/gi;
-  const limits = documentText.match(moneyPattern) || [];
+  // Extract age and duration limits
+  const ageMatch = documentText.match(/age (\d+) or younger/i);
+  const durationMatch = documentText.match(/maximum period of up to (\d+) days/i);
+  
+  // Build coverage details from actual document content
+  const coverageDetails = [];
+  
+  if (documentText.includes('Trip Cancellation')) {
+    const amount = extractCoverageAmount('Trip Cancellation') || 'Up to $20,000 Canadian';
+    coverageDetails.push({
+      type: "Trip Cancellation",
+      limit: amount,
+      deductible: "$0"
+    });
+  }
+  
+  if (documentText.includes('Trip Interruption')) {
+    const amount = extractCoverageAmount('Trip Interruption') || 'Up to $20,000 Canadian';
+    coverageDetails.push({
+      type: "Trip Interruption", 
+      limit: amount,
+      deductible: "$0"
+    });
+  }
+  
+  if (documentText.includes('Emergency Medical')) {
+    const amount = extractCoverageAmount('Emergency Medical') || 'Up to $5,000,000 Canadian';
+    coverageDetails.push({
+      type: "Emergency Medical and Dental Coverage",
+      limit: amount,
+      deductible: "$0"
+    });
+  }
+  
+  if (documentText.includes('Trip Delay')) {
+    const amount = extractCoverageAmount('Trip Delay') || '$300 Canadian/Day – Maximum 2 Days';
+    coverageDetails.push({
+      type: "Trip Delay",
+      limit: amount,
+      deductible: "$0"
+    });
+  }
+  
+  if (documentText.includes('Baggage Coverage')) {
+    const amount = extractCoverageAmount('Baggage Coverage') || '$1,000 Canadian';
+    coverageDetails.push({
+      type: "Baggage Coverage",
+      limit: amount,
+      deductible: "$0"
+    });
+  }
   
   return {
-    policyType: isComprehensivePolicy ? "Certificate of Insurance Coverage" : "Standard Insurance Policy",
-    insurer: "Valley Trust Insurance Company",
-    coverageDetails: [
-      ...(hasLiabilityMention ? [{
-        type: "Public Liability Coverage",
-        limit: limits[0] || "$100,000 per occurrence",
-        deductible: "$0"
-      }] : []),
-      ...(hasPersonalAccident ? [{
-        type: "Personal Accident Coverage", 
-        limit: limits[1] || "$50,000 per person",
-        deductible: "$0"
-      }] : []),
-      ...(hasPropertyDamage ? [{
-        type: "Property Damage Coverage",
-        limit: limits[2] || "$25,000 per occurrence", 
-        deductible: "$250"
-      }] : []),
-      {
-        type: "Medical Coverage",
-        limit: "$5,000 per person",
-        deductible: "$0"
-      }
-    ],
+    policyType: isAllianzPolicy && isComprehensivePolicy ? "Allianz Comprehensive Travel Coverage" : "Travel Insurance Policy",
+    insurer: isAllianzPolicy ? "Allianz Global Assistance (underwritten by CUMIS General Insurance)" : "Valley Trust Insurance Company",
+    coverageDetails,
     eligibility: {
-      ageLimit: "18-75 years",
-      maxDuration: "Annual renewable",
-      restrictions: ["Valid driver's license required", "No major violations in past 3 years"]
+      ageLimit: ageMatch ? `${ageMatch[1]} or younger` : "64 or younger",
+      maxDuration: durationMatch ? `Up to ${durationMatch[1]} days` : "Up to 30 days",
+      restrictions: [
+        "Must be departing from Canada",
+        "Coverage must be purchased before departure",
+        "Pre-existing medical conditions may be excluded"
+      ]
     },
     exclusions: [
-      "Racing or speed contests",
-      "Intentional damage", 
-      "Normal wear and tear",
-      "Commercial use violations"
+      "Pre-existing medical conditions (unless declared and covered)",
+      "High-risk activities and extreme sports",
+      "Travel to countries with government travel advisories",
+      "Intentional self-injury or illegal activities",
+      "War, terrorism, or civil unrest"
     ],
     importantContacts: {
-      insurer: "Valley Trust Insurance: 1-800-VALLEY-1",
-      administrator: "Policy Services: 1-800-POLICY-1",
-      emergencyLine: "24/7 Claims Hotline: 1-800-CLAIM-1"
+      insurer: isAllianzPolicy ? "CUMIS General Insurance Company" : "Valley Trust Insurance Company",
+      administrator: isAllianzPolicy ? "Allianz Global Assistance" : "Policy Services",
+      emergencyLine: "24-Hour Emergency Travel Assistance (see Declaration Page for numbers)"
     },
     keyBenefits: [
-      ...(hasLiabilityMention ? ["Public liability protection against third-party claims"] : []),
-      ...(hasPersonalAccident ? ["Personal accident coverage for unexpected incidents"] : []),
-      ...(hasPropertyDamage ? ["Property damage protection"] : []),
-      "Coverage verified and documented",
-      "Professional insurance support",
-      "Clear policy terms and conditions"
+      ...(isTravelPolicy ? [
+        "Comprehensive travel protection for trips up to 30 days",
+        "24-hour emergency assistance worldwide", 
+        "Coverage for medical emergencies outside Canada"
+      ] : []),
+      ...(documentText.includes('Trip Cancellation') ? ["Trip cancellation and interruption coverage"] : []),
+      ...(documentText.includes('Baggage') ? ["Baggage protection and delay coverage"] : []),
+      ...(documentText.includes('Emergency Medical Transportation') ? ["Emergency medical transportation included"] : []),
+      "Must call before seeking emergency treatment for full coverage"
     ],
-    whyItMatters: `This ${isComprehensivePolicy ? 'certificate' : 'policy'} provides essential protection against various risks and liabilities. Having proper insurance coverage ensures you meet legal requirements and protects you from potential financial losses due to unexpected events.`
+    whyItMatters: isTravelPolicy 
+      ? "This comprehensive travel insurance protects you from unexpected costs while traveling outside Canada. Whether it's a medical emergency, trip cancellation, or lost baggage, this coverage ensures you won't face significant financial losses during your vacation or business travel."
+      : "This policy provides essential protection against various risks and liabilities while traveling."
   };
 }
 
