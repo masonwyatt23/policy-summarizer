@@ -59,25 +59,27 @@
   }
 
   body {
-    @apply font-sans background antialiased text-foreground;
+    @apply font-sans bg-background antialiased text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
 @layer components {
   .valley-primary {
-    @apply bg-valley-primary text-white;
+    background-color: hsl(217, 91%, 60%);
+    color: white;
   }
   
-  .valley-primary-hover {
-    @apply hover:bg-valley-primary-dark;
+  .valley-primary-hover:hover {
+    background-color: hsl(217, 91%, 35%);
   }
   
   .valley-secondary {
-    @apply bg-valley-secondary text-slate-900;
+    background-color: hsl(45, 93%, 47%);
+    color: hsl(222, 84%, 4.9%);
   }
   
-  .valley-secondary-hover {
-    @apply hover:bg-valley-secondary-light;
+  .valley-secondary-hover:hover {
+    background-color: hsl(45, 93%, 70%);
   }
 }

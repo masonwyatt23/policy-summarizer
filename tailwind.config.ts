@@ -51,6 +51,10 @@ export default {
           "4": "var(--chart-4)",
           "5": "var(--chart-5)",
         },
+        "valley-primary": "var(--valley-primary)",
+        "valley-primary-dark": "var(--valley-primary-dark)",
+        "valley-secondary": "var(--valley-secondary)",
+        "valley-secondary-light": "var(--valley-secondary-light)",
         sidebar: {
           DEFAULT: "var(--sidebar-background)",
           foreground: "var(--sidebar-foreground)",
