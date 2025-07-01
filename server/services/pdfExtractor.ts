@@ -1,5 +1,4 @@
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
-import pdfParse from 'pdf-parse';
 
 export class PDFExtractor {
   async extractText(buffer: Buffer): Promise<string> {
@@ -9,7 +8,6 @@ export class PDFExtractor {
     const strategies = [
       () => this.extractWithAdvancedPdfjs(buffer),
       () => this.extractWithBasicPdfjs(buffer),
-      () => this.extractWithPdfParse(buffer),
       () => this.extractWithLenientOptions(buffer)
     ];
 
@@ -97,7 +95,7 @@ export class PDFExtractor {
           fullText += pageText + '\n\n';
         }
       } catch (pageError) {
-        console.warn(`Basic extraction failed for page ${pageNumber}:`, pageError.message);
+        console.warn(`Basic extraction failed for page ${pageNumber}:`, pageError instanceof Error ? pageError.message : String(pageError));
         continue;
       }
     }
@@ -105,15 +103,7 @@ export class PDFExtractor {
     return fullText;
   }
 
-  private async extractWithPdfParse(buffer: Buffer): Promise<string> {
-    try {
-      const data = await pdfParse(buffer);
-      return data.text || '';
-    } catch (error) {
-      console.warn('pdf-parse extraction failed:', error instanceof Error ? error.message : String(error));
-      return '';
-    }
-  }
+
 
   private async extractWithLenientOptions(buffer: Buffer): Promise<string> {
     const loadingTask = pdfjsLib.getDocument({
@@ -141,10 +131,7 @@ export class PDFExtractor {
         
         // Try different text extraction approaches
         try {
-          const textContent = await page.getTextContent({
-            normalizeWhitespace: false,
-            disableCombineTextItems: true
-          });
+          const textContent = await page.getTextContent();
           
           if (textContent.items.length > 0) {
             const pageText = textContent.items
@@ -176,7 +163,7 @@ export class PDFExtractor {
           }
         }
       } catch (pageError) {
-        console.warn(`Lenient extraction failed for page ${pageNumber}:`, pageError.message);
+        console.warn(`Lenient extraction failed for page ${pageNumber}:`, pageError instanceof Error ? pageError.message : String(pageError));
         continue;
       }
     }
