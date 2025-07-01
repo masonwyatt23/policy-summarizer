@@ -60,6 +60,20 @@ export function SummaryPreview({ document, isLoading }: SummaryPreviewProps) {
           </div>
         </div>
 
+        {/* Generated Summary Text */}
+        {document.summary && (
+          <div className="mb-6 p-6 bg-white border border-slate-200 rounded-lg shadow-sm">
+            <h4 className="font-semibold text-slate-900 mb-4 flex items-center">
+              <span className="mr-2">📄</span>AI-Generated Summary
+            </h4>
+            <div className="prose prose-sm max-w-none">
+              <pre className="whitespace-pre-wrap text-sm text-slate-700 font-sans leading-relaxed">
+                {document.summary}
+              </pre>
+            </div>
+          </div>
+        )}
+
         {/* Coverage Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
