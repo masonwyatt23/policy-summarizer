@@ -64,6 +64,7 @@ export class DocumentProcessor {
   }
 
   private async generateSummary(policyData: PolicyData): Promise<string> {
+    console.log('Generating summary for policy data:', JSON.stringify(policyData, null, 2));
     const summary = `
 **${policyData.policyType}**
 

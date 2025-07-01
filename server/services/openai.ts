@@ -139,13 +139,8 @@ function generateDemoAnalysis(documentText: string): PolicyData {
   const hasLiabilityMention = documentText.toLowerCase().includes('liability');
   
   return {
-    policyNumber: "DEMO-POL-" + Math.random().toString(36).substr(2, 9).toUpperCase(),
-    policyHolder: "Demo Policy Holder",
-    policyType: isComprehensivePolicy ? "Comprehensive Insurance" : "Standard Insurance Policy",
-    effectiveDate: "2024-01-01",
-    expirationDate: "2024-12-31",
-    premiumAmount: "$1,250.00",
-    deductible: "$500",
+    policyType: isComprehensivePolicy ? "Comprehensive Insurance Coverage" : "Standard Insurance Policy",
+    insurer: "Valley Trust Insurance Company",
     coverageDetails: [
       {
         type: "Liability Coverage",
@@ -163,27 +158,30 @@ function generateDemoAnalysis(documentText: string): PolicyData {
         deductible: "$0"
       }
     ],
+    eligibility: {
+      ageLimit: "18-75 years",
+      maxDuration: "Annual renewable",
+      restrictions: ["Valid driver's license required", "No major violations in past 3 years"]
+    },
     exclusions: [
       "Racing or speed contests",
       "Intentional damage", 
-      "Normal wear and tear"
+      "Normal wear and tear",
+      "Commercial use violations"
     ],
-    conditions: [
-      "Policy must be renewed annually",
-      "Claims must be reported within 30 days", 
-      "Premium payments due monthly"
+    importantContacts: {
+      insurer: "Valley Trust Insurance: 1-800-VALLEY-1",
+      administrator: "Policy Services: 1-800-POLICY-1",
+      emergencyLine: "24/7 Claims Hotline: 1-800-CLAIM-1"
+    },
+    keyBenefits: [
+      "Comprehensive protection for your vehicle",
+      "24/7 roadside assistance included",
+      "Rental car coverage while your car is being repaired",
+      "No-fault medical coverage for all passengers",
+      "Flexible deductible options"
     ],
-    beneficiaries: [],
-    keyTerms: [
-      {
-        term: "Deductible",
-        definition: "The amount you pay out of pocket before insurance coverage begins"
-      },
-      {
-        term: "Premium",
-        definition: "The amount paid for insurance coverage"
-      }
-    ]
+    whyItMatters: "This coverage protects you from financial loss due to accidents, theft, or damage to your vehicle. With comprehensive coverage, you have peace of mind knowing that both you and your passengers are protected, and you won't face unexpected repair costs that could strain your budget."
   };
 }
 
