@@ -16,8 +16,7 @@ export class DocumentProcessor {
         throw new Error('No text content could be extracted from the document');
       }
 
-      console.log('Extracted text length:', extractedText.length);
-      console.log('First 500 characters:', extractedText.substring(0, 500));
+
 
       const policyData = await extractPolicyData(extractedText);
       const summary = await this.generateSummary(policyData);
