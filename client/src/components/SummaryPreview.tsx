@@ -67,9 +67,9 @@ export function SummaryPreview({ document, isLoading }: SummaryPreviewProps) {
               <span className="mr-2">📄</span>AI-Generated Summary
             </h4>
             <div className="prose prose-sm max-w-none">
-              <pre className="whitespace-pre-wrap text-sm text-slate-700 font-sans leading-relaxed">
+              <div className="whitespace-pre-wrap text-sm text-slate-900 font-sans leading-relaxed bg-slate-50 p-4 rounded border">
                 {document.summary}
-              </pre>
+              </div>
             </div>
           </div>
         )}
