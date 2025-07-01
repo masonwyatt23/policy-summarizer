@@ -20,8 +20,8 @@ export default function PolicySummaryGenerator() {
     includeImportance: false,
   });
 
-  const { data: document, isLoading, refetch } = useQuery({
-    queryKey: ['/api/documents', currentDocumentId],
+  const { data: document, isLoading, refetch } = useQuery<ProcessedDocument>({
+    queryKey: [`/api/documents/${currentDocumentId}`],
     enabled: !!currentDocumentId,
     refetchInterval: (data) => {
       // Keep polling if document is still being processed
