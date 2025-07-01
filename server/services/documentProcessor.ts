@@ -1,5 +1,4 @@
 import mammoth from 'mammoth';
-import pdf from 'pdf-parse';
 import { PolicyData, PolicyDataSchema } from '@shared/schema';
 import { extractPolicyData } from './openai';
 
@@ -26,7 +25,7 @@ export class DocumentProcessor {
       };
     } catch (error) {
       console.error('Document processing error:', error);
-      throw new Error(`Failed to process document: ${error.message}`);
+      throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -45,10 +44,12 @@ export class DocumentProcessor {
 
   private async extractFromPDF(buffer: Buffer): Promise<string> {
     try {
-      const data = await pdf(buffer);
+      // Dynamic import to avoid initialization issues
+      const pdf = await import('pdf-parse');
+      const data = await pdf.default(buffer);
       return data.text;
     } catch (error) {
-      throw new Error(`Failed to extract text from PDF: ${error.message}`);
+      throw new Error(`Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -57,7 +58,7 @@ export class DocumentProcessor {
       const result = await mammoth.extractRawText({ buffer });
       return result.value;
     } catch (error) {
-      throw new Error(`Failed to extract text from DOCX: ${error.message}`);
+      throw new Error(`Failed to extract text from DOCX: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

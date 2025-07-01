@@ -49,6 +49,10 @@ export class MemStorage implements IStorage {
       ...insertDocument,
       id,
       uploadedAt: new Date(),
+      summary: insertDocument.summary || null,
+      processed: insertDocument.processed || false,
+      extractedData: insertDocument.extractedData || null,
+      processingError: insertDocument.processingError || null,
     };
     this.policyDocuments.set(id, document);
     return document;

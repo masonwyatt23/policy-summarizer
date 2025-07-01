@@ -55,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Upload error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Upload failed' });
     }
   });
 
@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Status check error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Status check failed' });
     }
   });
 
@@ -117,7 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Get document error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Get document failed' });
     }
   });
 
@@ -153,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.send(pdfBuffer);
     } catch (error) {
       console.error("PDF export error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'PDF export failed' });
     }
   });
 
@@ -172,7 +172,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       })));
     } catch (error) {
       console.error("List documents error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'List documents failed' });
     }
   });
 
@@ -189,7 +189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Document deleted successfully" });
     } catch (error) {
       console.error("Delete document error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Delete document failed' });
     }
   });
 
@@ -213,7 +213,7 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
     
     await storage.updatePolicyDocument(documentId, {
       processed: true,
-      processingError: error.message,
+      processingError: error instanceof Error ? error.message : 'Processing failed',
     });
   }
 }
