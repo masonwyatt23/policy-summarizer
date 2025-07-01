@@ -360,7 +360,7 @@ function generateDemoAnalysis(documentText: string): PolicyData {
     eligibility,
     exclusions: [
       "Pre-existing medical conditions (unless declared, covered, and stable)",
-      "High-risk activities including extreme sports and adventure activities",
+      "High-risk activities including extreme sports and adventure activities", 
       "Travel to countries with government-issued travel advisories level 3 or 4",
       "Intentional self-injury, suicide, or participation in illegal activities",
       "War, terrorism, civil unrest, or acts of foreign enemies",
