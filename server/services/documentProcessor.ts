@@ -1,6 +1,7 @@
 import mammoth from 'mammoth';
 import { PolicyData, PolicyDataSchema } from '@shared/schema';
 import { extractPolicyData } from './openai-simplified';
+import { xaiService } from './xai';
 import { pdfExtractor } from './pdfExtractor';
 
 export class DocumentProcessor {
@@ -18,8 +19,22 @@ export class DocumentProcessor {
 
 
 
-      const policyData = await extractPolicyData(extractedText);
-      const summary = await this.generateSummary(policyData);
+      // Use xAI for superior analysis and summary generation with fallback
+      let policyData: PolicyData;
+      let summary: string;
+      
+      try {
+        console.log('🚀 Using xAI (Grok) for advanced policy analysis...');
+        policyData = await xaiService.analyzePolicy(extractedText);
+        summary = await xaiService.generateEnhancedSummary(policyData);
+        console.log('✅ xAI analysis completed successfully');
+      } catch (xaiError) {
+        console.log('⚠️ xAI analysis failed, falling back to advanced analyzer:', xaiError);
+        // Import advanced analyzer here to avoid circular dependencies
+        const { advancedAnalyzer } = await import('./advancedAnalyzer');
+        policyData = advancedAnalyzer.analyzePolicy(extractedText);
+        summary = await this.generateSummary(policyData);
+      }
 
       return {
         extractedText,
