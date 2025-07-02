@@ -84,8 +84,8 @@ export function ExtractedData({ document, isLoading }: ExtractedDataProps) {
           <div className="bg-slate-50 p-4 rounded-lg">
             <h3 className="text-sm font-medium text-slate-900 mb-3">Important Exclusions</h3>
             <ul className="text-sm text-slate-600 space-y-1">
-              {policyData.exclusions?.map((exclusion: string, index: number) => (
-                <li key={index}>• {exclusion}</li>
+              {policyData.exclusions?.map((exclusion: any, index: number) => (
+                <li key={index}>• {typeof exclusion === 'string' ? exclusion : exclusion.description}</li>
               ))}
             </ul>
           </div>
