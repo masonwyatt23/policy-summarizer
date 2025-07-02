@@ -193,6 +193,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get summary history for a document
+  app.get("/api/documents/:id/summary-history", async (req, res) => {
+    try {
+      const documentId = parseInt(req.params.id);
+      const history = await storage.getSummaryHistory(documentId);
+      
+      res.json(history.map(h => ({
+        id: h.id,
+        documentId: h.documentId,
+        versionNumber: h.versionNumber,
+        summary: h.summary,
+        generatedAt: h.generatedAt,
+        isActive: h.isActive,
+        generatedBy: h.generatedBy,
+        processingOptions: h.processingOptions
+      })));
+    } catch (error) {
+      console.error("Get summary history error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Get summary history failed' });
+    }
+  });
+
+  // Set active summary version
+  app.post("/api/documents/:id/summary-history/:versionId/activate", async (req, res) => {
+    try {
+      const documentId = parseInt(req.params.id);
+      const versionId = parseInt(req.params.versionId);
+      
+      const success = await storage.setActiveSummary(documentId, versionId);
+      
+      if (!success) {
+        return res.status(404).json({ error: "Summary version not found" });
+      }
+
+      res.json({ message: "Summary version activated successfully" });
+    } catch (error) {
+      console.error("Set active summary error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Set active summary failed' });
+    }
+  });
+
+  // Delete summary version
+  app.delete("/api/documents/:id/summary-history/:versionId", async (req, res) => {
+    try {
+      const versionId = parseInt(req.params.versionId);
+      
+      const deleted = await storage.deleteSummaryVersion(versionId);
+      
+      if (!deleted) {
+        return res.status(404).json({ error: "Summary version not found" });
+      }
+
+      res.json({ message: "Summary version deleted successfully" });
+    } catch (error) {
+      console.error("Delete summary version error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Delete summary version failed' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
@@ -202,12 +261,25 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
   try {
     const result = await documentProcessor.processDocument(buffer, filename);
     
+    // Update the document
     await storage.updatePolicyDocument(documentId, {
       processed: true,
       extractedData: result.policyData as any,
       summary: result.summary,
       processingError: null,
     });
+
+    // Create summary history entry
+    if (result.summary) {
+      await storage.createSummaryVersion({
+        documentId,
+        summary: result.summary,
+        versionNumber: 1, // First version
+        isActive: true,
+        generatedBy: 'xAI Analysis',
+        processingOptions: null
+      });
+    }
   } catch (error) {
     console.error(`Processing error for document ${documentId}:`, error);
     

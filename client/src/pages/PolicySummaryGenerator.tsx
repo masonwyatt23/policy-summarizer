@@ -8,6 +8,7 @@ import { SimpleProcessingOptions } from '@/components/SimpleProcessingOptions';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { ExtractedData } from '@/components/ExtractedData';
 import { ExportOptions } from '@/components/ExportOptions';
+import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
 import { Clock, FileText, CheckCircle, User } from 'lucide-react';
 import { api, ProcessedDocument, DocumentListItem } from '@/lib/api';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
@@ -15,6 +16,7 @@ import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
 export default function PolicySummaryGenerator() {
   const [currentDocumentId, setCurrentDocumentId] = useState<number | null>(null);
   const [processingConfig, setProcessingConfig] = useState<any>(null);
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   const { data: document, isLoading, refetch } = useQuery<ProcessedDocument>({
     queryKey: [`/api/documents/${currentDocumentId}`],
@@ -142,7 +144,12 @@ export default function PolicySummaryGenerator() {
               )}
             </div>
             <div className="flex items-center space-x-3">
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setIsHistoryDialogOpen(true)}
+                disabled={!currentDocumentId}
+              >
                 <Clock className="w-4 h-4 mr-2" />
                 View History
               </Button>
@@ -161,6 +168,13 @@ export default function PolicySummaryGenerator() {
           </div>
         </div>
       </main>
+      
+      {/* Summary History Dialog */}
+      <SummaryHistoryDialog
+        documentId={currentDocumentId}
+        isOpen={isHistoryDialogOpen}
+        onClose={() => setIsHistoryDialogOpen(false)}
+      />
     </div>
   );
 }
