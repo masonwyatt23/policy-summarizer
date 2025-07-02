@@ -68,11 +68,12 @@ export default function PolicySummaryGenerator() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Upload Section */}
-          <div className="lg:col-span-1 space-y-6">
+        {/* Upload and Processing Options Section - Top */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div>
             <FileUpload onUploadSuccess={handleUploadSuccess} />
-            
+          </div>
+          <div>
             <Card>
               <ProcessingOptions
                 options={processingOptions}
@@ -80,51 +81,51 @@ export default function PolicySummaryGenerator() {
               />
             </Card>
           </div>
+        </div>
 
-          {/* Summary Preview Section */}
-          <div className="lg:col-span-2">
-            <Card className="shadow-sm border border-slate-200">
-              <Tabs defaultValue="summary" className="w-full">
-                <div className="border-b border-slate-200">
-                  <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0">
-                    <TabsTrigger 
-                      value="summary" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-valley-primary data-[state=active]:text-valley-primary rounded-none py-4"
-                    >
-                      <FileText className="w-4 h-4 mr-2" />
-                      Summary Preview
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="extracted"
-                      className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-valley-primary data-[state=active]:text-valley-primary rounded-none py-4"
-                    >
-                      <FileText className="w-4 h-4 mr-2" />
-                      Extracted Data
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="export"
-                      className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-valley-primary data-[state=active]:text-valley-primary rounded-none py-4"
-                    >
-                      <FileText className="w-4 h-4 mr-2" />
-                      Export Options
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
+        {/* Summary Preview Section - Full Width */}
+        <div className="w-full">
+          <Card className="shadow-sm border border-slate-200">
+            <Tabs defaultValue="summary" className="w-full">
+              <div className="border-b border-slate-200">
+                <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0">
+                  <TabsTrigger 
+                    value="summary" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-valley-primary data-[state=active]:text-valley-primary rounded-none py-4"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Summary Preview
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="extracted"
+                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-valley-primary data-[state=active]:text-valley-primary rounded-none py-4"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Extracted Data
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="export"
+                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-valley-primary data-[state=active]:text-valley-primary rounded-none py-4"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Export Options
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-                <TabsContent value="summary" className="mt-0">
-                  <SummaryPreview document={document} isLoading={isLoading} />
-                </TabsContent>
+              <TabsContent value="summary" className="mt-0">
+                <SummaryPreview document={document} isLoading={isLoading} />
+              </TabsContent>
 
-                <TabsContent value="extracted" className="mt-0">
-                  <ExtractedData document={document} isLoading={isLoading} />
-                </TabsContent>
+              <TabsContent value="extracted" className="mt-0">
+                <ExtractedData document={document} isLoading={isLoading} />
+              </TabsContent>
 
-                <TabsContent value="export" className="mt-0">
-                  <ExportOptions documentId={currentDocumentId} isReady={!!isDocumentReady} />
-                </TabsContent>
-              </Tabs>
-            </Card>
-          </div>
+              <TabsContent value="export" className="mt-0">
+                <ExportOptions documentId={currentDocumentId} isReady={!!isDocumentReady} />
+              </TabsContent>
+            </Tabs>
+          </Card>
         </div>
 
         {/* Quick Actions Bar */}
