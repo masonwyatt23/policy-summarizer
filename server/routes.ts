@@ -202,11 +202,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(history.map(h => ({
         id: h.id,
         documentId: h.documentId,
-        versionNumber: h.versionNumber,
+        versionNumber: h.version,
         summary: h.summary,
-        generatedAt: h.generatedAt,
+        generatedAt: h.createdAt,
         isActive: h.isActive,
-        generatedBy: h.generatedBy,
+        generatedBy: 'xAI Analysis',
         processingOptions: h.processingOptions
       })));
     } catch (error) {
@@ -274,10 +274,9 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
       await storage.createSummaryVersion({
         documentId,
         summary: result.summary,
-        versionNumber: 1, // First version
+        version: 1, // First version
         isActive: true,
-        generatedBy: 'xAI Analysis',
-        processingOptions: null
+        processingOptions: {}
       });
     }
   } catch (error) {
