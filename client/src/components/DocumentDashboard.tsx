@@ -367,7 +367,7 @@ export function DocumentDashboard() {
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4">
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm text-gray-600">
             <span>{formatFileSize(document.fileSize)}</span>
@@ -421,44 +421,49 @@ export function DocumentDashboard() {
 
           {/* Quick Action Buttons */}
           {document.processed && !document.processingError && (
-            <div className="flex items-center justify-between pt-3 border-t space-x-2">
+            <div className="pt-3 border-t space-y-2">
+              {/* Primary Action - View Summary */}
               <Button
                 variant="default"
                 size="sm"
-                className="flex-1 h-9 text-xs bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                className="w-full h-8 text-xs bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold transition-all duration-300 shadow-md hover:shadow-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleViewSummary(document.id);
                 }}
               >
-                <Eye className="w-4 h-4 mr-1.5" />
+                <Eye className="w-3 h-3 mr-1.5" />
                 View Summary
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 h-8 text-xs border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleViewHistory(document.id);
-                }}
-              >
-                <History className="w-3 h-3 mr-1" />
-                History
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 h-8 text-xs border-green-300 text-green-700 hover:border-green-400 hover:bg-green-50 transition-all duration-200"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleExportPDF(document.id);
-                }}
-                disabled={exportPDFMutation.isPending}
-              >
-                <Download className="w-3 h-3 mr-1" />
-                {exportPDFMutation.isPending ? 'Exporting...' : 'Export PDF'}
-              </Button>
+              
+              {/* Secondary Actions */}
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 h-7 text-xs border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewHistory(document.id);
+                  }}
+                >
+                  <History className="w-3 h-3 mr-1" />
+                  History
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 h-7 text-xs border-green-300 text-green-700 hover:border-green-400 hover:bg-green-50 transition-all duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExportPDF(document.id);
+                  }}
+                  disabled={exportPDFMutation.isPending}
+                >
+                  <Download className="w-3 h-3 mr-1" />
+                  {exportPDFMutation.isPending ? 'Export...' : 'Export'}
+                </Button>
+              </div>
             </div>
           )}
         </div>
