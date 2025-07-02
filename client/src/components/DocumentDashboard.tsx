@@ -47,7 +47,7 @@ interface DocumentListItem {
   lastViewedAt?: string;
   isFavorite: boolean;
   tags: string[];
-  hasError: boolean;
+  processingError?: string | null;
   clientName?: string;
   policyReference?: string;
 }
@@ -107,7 +107,7 @@ export function DocumentDashboard() {
                          (filterBy === "favorites" && doc.isFavorite) ||
                          (filterBy === "processed" && doc.processed) ||
                          (filterBy === "unprocessed" && !doc.processed) ||
-                         (filterBy === "errors" && doc.hasError);
+                         (filterBy === "errors" && doc.processingError);
     
     return matchesSearch && matchesFilter;
   });
@@ -348,7 +348,7 @@ export function DocumentDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">With Errors</p>
                 <p className="text-2xl font-bold">
-                  {documents.filter((d: DocumentListItem) => d.hasError).length}
+                  {documents.filter((d: DocumentListItem) => d.processingError).length}
                 </p>
               </div>
               <Filter className="w-8 h-8 text-orange-500" />
