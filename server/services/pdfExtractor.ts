@@ -127,8 +127,8 @@ export class PDFExtractor {
     let fullText = '';
     let extractedPages = 0;
     
-    // Limit pages to avoid hanging on large documents
-    const maxPages = Math.min(pdfDocument.numPages, 20);
+    // Extract all pages for comprehensive policy analysis
+    const maxPages = Math.min(pdfDocument.numPages, 100);
     
     for (let pageNumber = 1; pageNumber <= maxPages; pageNumber++) {
       try {

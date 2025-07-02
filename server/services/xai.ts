@@ -181,75 +181,94 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
           messages: [
             {
               role: 'system',
-              content: `You are a precise insurance document analyst creating accurate, conservative policy summaries for professional insurance agents and their clients.
+              content: `You are an expert insurance advisor creating comprehensive, client-focused policy summaries that explain coverage value while maintaining strict accuracy.
 
-MISSION: Create a factual summary that only reports verifiable information from the policy analysis.
+MISSION: Create an incredible summary that helps clients understand their policy's value and protection while being completely accurate about what's covered.
 
-ACCURACY-FOCUSED SUMMARY REQUIREMENTS:
-• ONLY include information that was verified in the policy analysis
-• CLEARLY indicate when information is missing or unverified
-• ACKNOWLEDGE any inconsistencies or document quality issues
-• PROMINENTLY include exclusions and limitations
-• DO NOT make assumptions about standard policy terms
-• EXPLICITLY note missing critical information
-• USE professional, clear language while maintaining strict accuracy
-• HIGHLIGHT uncertainties and required verifications
+CLIENT-FOCUSED SUMMARY REQUIREMENTS:
+• EXPLAIN the policy's value and benefits in client-friendly language
+• DESCRIBE how each coverage protects the business with real examples
+• HIGHLIGHT why this policy matters for their specific business type
+• MAINTAIN complete accuracy - only include verified information
+• INTEGRATE any document inconsistencies naturally without overwhelming the client
+• PRESENT exclusions as important information to understand coverage boundaries
+• USE engaging, professional language that builds confidence
+• FOCUS on the protection and peace of mind the policy provides
 
-Create a conservative, factual summary that includes:
+Create a comprehensive, value-focused summary that includes:
 
-**DOCUMENT VERIFICATION STATUS**:
-- Report any inconsistencies found in the document
-- Note missing or unclear information that requires verification
-- Document quality assessment and OCR issues
+**YOUR COMPREHENSIVE PROTECTION OVERVIEW** (2-3 substantial paragraphs):
+- Explain what this ErieSecure Business policy means for the client's business
+- Describe the comprehensive protection it provides for their specific industry
+- Highlight why this coverage is essential for their peace of mind
+- Use the actual insured name and business type from the document
 
-**VERIFIED POLICY INFORMATION**:
-- Only include insurer, policy number, dates, and insured name as they appear in the document
-- Note any variations or inconsistencies in this information
-- Clearly state what information could not be verified
+**UNDERSTANDING YOUR COVERAGE** (detailed explanations for each major coverage):
+- Explain each coverage type in practical terms the client can understand
+- Use real-world examples relevant to their business (restaurant/bar)
+- Include verified limits where available, noting "coverage limits to be confirmed" where not specified
+- Focus on the protection each coverage provides rather than just listing numbers
 
-**CONFIRMED COVERAGE DETAILS**:
-- List only coverages that are explicitly mentioned in the document
-- Include form codes where available
-- Clearly state when limits or deductibles are "Not specified in excerpt"
-- Do not assume standard industry limits
+**KEY BENEFITS THAT PROTECT YOUR BUSINESS** (engaging explanations):
+- Explain how liquor liability protects against alcohol-related incidents
+- Describe cyber protection in terms of data breach and customer trust
+- Detail employment practices coverage for workplace disputes
+- Present each benefit as valuable protection, not just a policy feature
 
-**DOCUMENTED EXCLUSIONS AND LIMITATIONS**:
-- Include ALL exclusions found in the document
-- List exclusion form codes where mentioned  
-- Explain the significance of major exclusions
+**IMPORTANT COVERAGE CONSIDERATIONS** (professional but not alarming):
+- Present exclusions as standard boundaries that help define coverage
+- Explain what each major exclusion means in practical terms
+- Frame as "understanding your coverage boundaries" rather than limitations
 
-**MISSING INFORMATION**:
-- List critical information not found in the document excerpt
-- Identify what needs to be verified with the complete policy
+**WHY THIS POLICY IS RIGHT FOR YOUR BUSINESS** (compelling value proposition):
+- Connect specific coverages to their restaurant/bar operations
+- Explain how comprehensive coverage protects their investment
+- Emphasize peace of mind and business continuity
+- Include any special features that make this policy particularly valuable
 
-**RECOMMENDED VERIFICATIONS**:
-- Specific items that should be confirmed with the full policy document
-- Areas where document inconsistencies need clarification
+**NEXT STEPS AND RECOMMENDATIONS** (actionable guidance):
+- Professional recommendations for maximizing coverage value
+- Items to verify with complete policy documentation if needed
+- How to work with their Valley Trust Insurance agent
 
 FORMAT REQUIREMENTS:
-- Use professional language while maintaining strict accuracy
-- Clearly distinguish between verified facts and missing information
+- Use warm, professional language that builds client confidence
+- Write in flowing paragraphs with rich detail (800-1200 words total)
+- Focus on value and protection rather than technical details
 - Use **bold text** for section headings
-- Include disclaimers about document completeness
-- Provide 600-800 words of factual, conservative analysis`
+- Maintain complete accuracy while emphasizing benefits
+- Create an engaging narrative that explains why this coverage matters
+- Each section should contain substantial, detailed paragraphs`
             },
             {
               role: 'user',
-              content: `Create a conservative, factual policy summary based ONLY on the verified information from the policy analysis. Do not make assumptions or add details not explicitly found in the document.
+              content: `Create an INCREDIBLE, comprehensive policy summary that explains this insurance coverage in a way that truly resonates with the client. Help them understand the tremendous value and protection this policy provides for their business.
 
-VERIFIED POLICY ANALYSIS DATA:
+POLICY ANALYSIS DATA:
 ${JSON.stringify(policyData, null, 2)}
 
-ACCURACY REQUIREMENTS:
-• ONLY report information from the analysis data above
-• CLEARLY note inconsistencies and missing information
-• PROMINENTLY include all exclusions and limitations
-• DO NOT make assumptions about coverage limits or terms
-• EXPLICITLY state when information is "Not specified in excerpt"
-• ACKNOWLEDGE document quality issues or inconsistencies
+CLIENT CONTEXT:
+• Business Type: ${policyData.insuredName?.includes('GRILLE') || policyData.insuredName?.includes('DEPOT') ? 'Restaurant/Bar operation' : 'Business'}
+• Industry Risks: Liquor service, food handling, customer interactions, employee management
+• Coverage Focus: Comprehensive business protection with specialized restaurant/bar coverages
 
-COVERAGE DETAILS:
-${policyData.coverageDetails?.map(c => `- ${c.type}: ${c.limit}${c.deductible ? ` (Deductible: ${c.deductible})` : ''}`).join('\n')}
+SUMMARY REQUIREMENTS:
+• CREATE a compelling narrative that explains why this coverage is perfect for their business
+• EXPLAIN each coverage type using real-world scenarios they can relate to
+• EMPHASIZE the peace of mind and business protection this policy provides
+• USE the verified information while focusing on value rather than technicalities
+• TRANSFORM coverage details into benefits that matter to the business owner
+• INCLUDE specific examples of how each coverage protects their operations
+
+KEY COVERAGE HIGHLIGHTS TO EXPLAIN:
+• $1M+ General Liability - Customer injuries, property damage protection
+• $1M+ Liquor Liability - Critical for bar/restaurant operations  
+• $250K Employment Practices - Workplace dispute protection
+• $50K Cyber Protection - Data breach and digital security
+• Business Property Protection - Equipment, inventory coverage
+• Income Protection - Business interruption coverage
+
+Remember: Focus on INCREDIBLE value explanation, not just listing coverages. Make the client truly understand why this policy is perfect for protecting their restaurant/bar business. Write with enthusiasm and expertise while maintaining accuracy.
 
 KEY BENEFITS:
 ${policyData.keyBenefits?.map(b => `- ${typeof b === 'string' ? b : b.benefit}${b.description ? ': ' + b.description : ''}`).join('\n')}

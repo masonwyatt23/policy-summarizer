@@ -111,6 +111,16 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced navigation with sidebar layout and multi-page structure
   - Added support for tags, client information, and policy references
   - Implemented document statistics and usage tracking
+- July 02, 2025: Major improvements to AI accuracy and client-focused summaries
+  - Completely overhauled xAI prompts to prioritize accuracy and avoid assumptions
+  - Added document inconsistency tracking (policy numbers, names, dates)
+  - Implemented verification fields for unverified information
+  - Enhanced exclusions prominence with form codes
+  - Shifted from technical verification focus to client value explanations
+  - Increased PDF extraction limit from 20 to 100 pages for comprehensive analysis
+  - Created engaging, narrative-style summaries that explain coverage value
+  - Added business context detection for restaurant/bar operations
+  - Fixed remaining dark mode issues in CleanSummaryPreview component
 
 ## Changelog
 - July 01, 2025. Initial setup
