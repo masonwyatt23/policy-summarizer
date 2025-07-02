@@ -46,7 +46,7 @@ export function SimpleProcessingOptions({ onProcessingChange }: SimpleProcessing
   };
 
   return (
-    <Card className="h-full">
+    <Card className="h-full bg-card">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg flex items-center gap-2">
           <Settings className="w-5 h-5 text-blue-600" />

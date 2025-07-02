@@ -190,9 +190,9 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
   };
 
   return (
-    <Card>
+    <Card className="bg-card">
       <CardContent className="p-6">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
           <Upload className="w-5 h-5 text-valley-primary mr-2" />
           Upload Policy Document
         </h2>
@@ -202,8 +202,8 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
           {...getRootProps()}
           className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
             isDragActive 
-              ? 'border-valley-primary bg-blue-50' 
-              : 'border-slate-300 hover:border-valley-primary'
+              ? 'border-valley-primary bg-blue-50 dark:bg-blue-950/30' 
+              : 'border-border hover:border-valley-primary'
           }`}
         >
           <input {...getInputProps()} />
@@ -212,10 +212,10 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
               <FileText className="w-6 h-6 text-valley-primary" />
             </div>
             <div>
-              <p className="text-base font-medium text-slate-900">
+              <p className="text-base font-medium text-foreground">
                 {isDragActive ? 'Drop files here' : 'Drop files here or click to browse'}
               </p>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Supports PDF and DOCX files up to 10MB
               </p>
             </div>
@@ -232,9 +232,9 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
               <div
                 key={index}
                 className={`flex items-center space-x-3 p-3 rounded-lg ${
-                  fileData.status === 'success' ? 'bg-green-50' :
-                  fileData.status === 'error' ? 'bg-red-50' :
-                  'bg-blue-50'
+                  fileData.status === 'success' ? 'bg-green-50 dark:bg-green-950/30' :
+                  fileData.status === 'error' ? 'bg-red-50 dark:bg-red-950/30' :
+                  'bg-blue-50 dark:bg-blue-950/30'
                 }`}
               >
                 <div className="flex-shrink-0">
@@ -249,10 +249,10 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">
+                  <p className="text-sm font-medium text-foreground truncate">
                     {fileData.file.name}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     {(fileData.file.size / 1024 / 1024).toFixed(1)} MB
                   </p>
                   {fileData.status === 'uploading' && (
@@ -291,7 +291,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
                     variant="ghost"
                     size="sm"
                     onClick={() => removeFile(fileData.file)}
-                    className="text-slate-400 hover:text-slate-600"
+                    className="text-muted-foreground hover:text-foreground"
                   >
                     ×
                   </Button>
