@@ -1,183 +1,196 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { 
-  Settings, 
   User, 
-  Palette, 
+  Mail, 
+  Phone, 
   FileText, 
-  Download,
-  Bell,
-  Shield,
-  HelpCircle,
+  Building2, 
+  Globe, 
+  MapPin,
   Save,
   RefreshCw,
-  Eye,
-  Monitor,
+  Sun,
   Moon,
-  Sun
+  Monitor,
+  Upload,
+  Signature,
+  Shield,
+  Award
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { useTheme } from "@/hooks/use-theme";
+import { queryClient } from "@/lib/queryClient";
 
-const UserSettingsSchema = z.object({
-  defaultProcessingOptions: z.object({
-    extractCoverage: z.boolean().default(true),
-    generateExplanations: z.boolean().default(true),
-    includeImportance: z.boolean().default(true),
-    detailLevel: z.enum(["basic", "standard", "comprehensive", "expert"]).default("comprehensive"),
-    focusAreas: z.array(z.string()).default(["coverage", "exclusions", "eligibility"]),
-    outputFormat: z.enum(["structured", "narrative", "bullet", "detailed"]).default("structured"),
-    includeComparisons: z.boolean().default(false),
-    generateRecommendations: z.boolean().default(false),
-    highlightRisks: z.boolean().default(true),
-    includeScenarios: z.boolean().default(false),
+const AgentProfileSchema = z.object({
+  agentProfile: z.object({
+    name: z.string().min(1, "Agent name is required"),
+    title: z.string().min(1, "Job title is required"),
+    phone: z.string().min(1, "Phone number is required"),
+    email: z.string().email("Valid email is required"),
+    license: z.string().min(1, "License number is required"),
+    signature: z.string().optional(),
+    firmName: z.string().min(1, "Firm name is required"),
+    firmAddress: z.string().min(1, "Firm address is required"),
+    firmPhone: z.string().min(1, "Firm phone is required"),
+    firmWebsite: z.string().url("Valid website URL is required").optional().or(z.literal(""))
   }),
   exportPreferences: z.object({
-    includeBranding: z.boolean().default(true),
-    includeExplanations: z.boolean().default(true),
-    includeTechnicalDetails: z.boolean().default(false),
-    defaultClientName: z.string().default(""),
-    defaultPolicyReference: z.string().default(""),
+    includeBranding: z.boolean(),
+    includeExplanations: z.boolean(),
+    includeTechnicalDetails: z.boolean(),
+    includeAgentSignature: z.boolean(),
+    defaultClientName: z.string().optional(),
+    defaultPolicyReference: z.string().optional()
   }),
   uiPreferences: z.object({
-    theme: z.enum(["light", "dark", "system"]).default("light"),
-    compactView: z.boolean().default(false),
-    autoRefresh: z.boolean().default(true),
-    showPreview: z.boolean().default(true),
-  }),
+    theme: z.enum(["light", "dark", "system"])
+  })
 });
 
-type UserSettingsData = z.infer<typeof UserSettingsSchema>;
+type AgentProfileFormData = z.infer<typeof AgentProfileSchema>;
 
 export function UserSettings() {
-  const [activeTab, setActiveTab] = useState("processing");
   const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const { theme, setTheme } = useTheme();
+  const [signatureText, setSignatureText] = useState("");
 
   const { data: settings, isLoading } = useQuery({
-    queryKey: ['/api/settings'],
+    queryKey: ["/api/settings"],
   });
 
-  const form = useForm<UserSettingsData>({
-    resolver: zodResolver(UserSettingsSchema),
-    defaultValues: settings || {
-      defaultProcessingOptions: {
-        extractCoverage: true,
-        generateExplanations: true,
-        includeImportance: true,
-        detailLevel: "comprehensive",
-        focusAreas: ["coverage", "exclusions", "eligibility"],
-        outputFormat: "structured",
-        includeComparisons: false,
-        generateRecommendations: false,
-        highlightRisks: true,
-        includeScenarios: false,
+  const form = useForm<AgentProfileFormData>({
+    resolver: zodResolver(AgentProfileSchema),
+    defaultValues: {
+      agentProfile: {
+        name: "",
+        title: "",
+        phone: "",
+        email: "",
+        license: "",
+        signature: "",
+        firmName: "Valley Trust Insurance",
+        firmAddress: "",
+        firmPhone: "",
+        firmWebsite: ""
       },
       exportPreferences: {
         includeBranding: true,
         includeExplanations: true,
         includeTechnicalDetails: false,
+        includeAgentSignature: true,
         defaultClientName: "",
-        defaultPolicyReference: "",
+        defaultPolicyReference: ""
       },
       uiPreferences: {
-        theme: "light",
-        compactView: false,
-        autoRefresh: true,
-        showPreview: true,
-      },
-    },
+        theme: "system"
+      }
+    }
   });
 
+  // Update form when settings are loaded
+  useEffect(() => {
+    if (settings && typeof settings === 'object') {
+      form.reset(settings as AgentProfileFormData);
+      if ('agentProfile' in settings && settings.agentProfile && typeof settings.agentProfile === 'object' && 'signature' in settings.agentProfile) {
+        setSignatureText(settings.agentProfile.signature as string || "");
+      }
+    }
+  }, [settings, form]);
+
   const updateSettingsMutation = useMutation({
-    mutationFn: async (data: UserSettingsData) => {
-      return apiRequest('/api/settings', {
-        method: 'PUT',
+    mutationFn: async (data: AgentProfileFormData) => {
+      const response = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error("Failed to update settings");
+      return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
       toast({
         title: "Settings saved",
-        description: "Your preferences have been updated successfully.",
+        description: "Your agent profile and preferences have been updated successfully.",
       });
+      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
     },
     onError: () => {
       toast({
-        title: "Error saving settings",
-        description: "There was a problem updating your preferences.",
+        title: "Error",
+        description: "Failed to save settings. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: UserSettingsData) => {
+  const handleThemeChange = (newTheme: "light" | "dark" | "system") => {
+    setTheme(newTheme);
+    form.setValue("uiPreferences.theme", newTheme);
+  };
+
+  const handleSignatureChange = (text: string) => {
+    setSignatureText(text);
+    form.setValue("agentProfile.signature", text);
+  };
+
+  const onSubmit = (data: AgentProfileFormData) => {
     updateSettingsMutation.mutate(data);
   };
 
   const resetToDefaults = () => {
     form.reset({
-      defaultProcessingOptions: {
-        extractCoverage: true,
-        generateExplanations: true,
-        includeImportance: true,
-        detailLevel: "comprehensive",
-        focusAreas: ["coverage", "exclusions", "eligibility"],
-        outputFormat: "structured",
-        includeComparisons: false,
-        generateRecommendations: false,
-        highlightRisks: true,
-        includeScenarios: false,
+      agentProfile: {
+        name: "",
+        title: "",
+        phone: "",
+        email: "",
+        license: "",
+        signature: "",
+        firmName: "Valley Trust Insurance",
+        firmAddress: "",
+        firmPhone: "",
+        firmWebsite: ""
       },
       exportPreferences: {
         includeBranding: true,
         includeExplanations: true,
         includeTechnicalDetails: false,
+        includeAgentSignature: true,
         defaultClientName: "",
-        defaultPolicyReference: "",
+        defaultPolicyReference: ""
       },
       uiPreferences: {
-        theme: "light",
-        compactView: false,
-        autoRefresh: true,
-        showPreview: true,
-      },
+        theme: "system"
+      }
+    });
+    setSignatureText("");
+    setTheme("system");
+    toast({
+      title: "Settings reset",
+      description: "All settings have been reset to default values.",
     });
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
+      <div className="flex items-center justify-center min-h-[400px]">
+        <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -187,96 +200,291 @@ export function UserSettings() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
-            <Settings className="w-6 h-6" />
-            <span>Settings</span>
-          </h1>
-          <p className="text-gray-600">Customize your document processing preferences</p>
+          <h1 className="text-2xl font-bold text-foreground">Agent Settings</h1>
+          <p className="text-muted-foreground">Configure your profile and export preferences</p>
         </div>
-        <Badge variant="outline">Valley Trust Insurance</Badge>
+        <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+          <Shield className="w-4 h-4 mr-2" />
+          Valley Trust Agent
+        </Badge>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="processing">
-                <FileText className="w-4 h-4 mr-2" />
-                Processing
-              </TabsTrigger>
-              <TabsTrigger value="export">
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </TabsTrigger>
-              <TabsTrigger value="interface">
-                <Monitor className="w-4 h-4 mr-2" />
-                Interface
-              </TabsTrigger>
-              <TabsTrigger value="account">
-                <User className="w-4 h-4 mr-2" />
-                Account
-              </TabsTrigger>
+          <Tabs defaultValue="profile" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="profile">Agent Profile</TabsTrigger>
+              <TabsTrigger value="export">Export Settings</TabsTrigger>
+              <TabsTrigger value="appearance">Appearance</TabsTrigger>
             </TabsList>
 
-            {/* Processing Settings */}
-            <TabsContent value="processing" className="space-y-6">
+            {/* Agent Profile Tab */}
+            <TabsContent value="profile" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Default Processing Options</CardTitle>
-                  <p className="text-sm text-gray-600">
-                    These settings will be applied to all new document uploads
+                  <CardTitle className="flex items-center space-x-2">
+                    <User className="w-5 h-5" />
+                    <span>Personal Information</span>
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    This information will appear on your PDF exports and client reports
                   </p>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="defaultProcessingOptions.detailLevel"
+                      name="agentProfile.name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Default Detail Level</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="basic">Basic</SelectItem>
-                              <SelectItem value="standard">Standard</SelectItem>
-                              <SelectItem value="comprehensive">Comprehensive</SelectItem>
-                              <SelectItem value="expert">Expert</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormDescription>
-                            How detailed should the analysis be by default
-                          </FormDescription>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="John Smith" />
+                          </FormControl>
                         </FormItem>
                       )}
                     />
 
                     <FormField
                       control={form.control}
-                      name="defaultProcessingOptions.outputFormat"
+                      name="agentProfile.title"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Default Output Format</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="structured">Structured</SelectItem>
-                              <SelectItem value="narrative">Narrative</SelectItem>
-                              <SelectItem value="bullet">Bullet Points</SelectItem>
-                              <SelectItem value="detailed">Detailed</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormDescription>
-                            How should summaries be formatted
-                          </FormDescription>
+                          <FormLabel>Job Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="Senior Insurance Agent" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="agentProfile.email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="email" placeholder="john.smith@valleytrust.com" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="agentProfile.phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="(555) 123-4567" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="agentProfile.license"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>License Number</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="LIC123456789" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Building2 className="w-5 h-5" />
+                    <span>Firm Information</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="agentProfile.firmName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Firm Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="agentProfile.firmPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Firm Phone</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="(555) 987-6543" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="agentProfile.firmWebsite"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Website</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="https://valleytrust.com" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="agentProfile.firmAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Firm Address</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="123 Main Street&#10;Suite 100&#10;City, State 12345"
+                            rows={3}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Signature className="w-5 h-5" />
+                    <span>Digital Signature</span>
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Add a personalized signature to appear on your PDF exports
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="signature">Signature Text</Label>
+                    <Textarea 
+                      id="signature"
+                      value={signatureText}
+                      onChange={(e) => handleSignatureChange(e.target.value)}
+                      placeholder="Best regards,&#10;John Smith&#10;Senior Insurance Agent"
+                      rows={4}
+                      className="font-serif"
+                    />
+                  </div>
+                  
+                  {signatureText && (
+                    <div className="border rounded-lg p-4 bg-muted/50">
+                      <Label className="text-sm font-medium">Preview:</Label>
+                      <div className="mt-2 font-serif text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                        {signatureText}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Export Settings Tab */}
+            <TabsContent value="export" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <FileText className="w-5 h-5" />
+                    <span>PDF Export Preferences</span>
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Configure how your PDF reports are generated and what information to include
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="exportPreferences.includeBranding"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel>Include Branding</FormLabel>
+                            <FormDescription className="text-sm">
+                              Add Valley Trust Insurance branding to PDFs
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="exportPreferences.includeAgentSignature"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel>Include Agent Signature</FormLabel>
+                            <FormDescription className="text-sm">
+                              Add your digital signature to PDF exports
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="exportPreferences.includeExplanations"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel>Include Explanations</FormLabel>
+                            <FormDescription className="text-sm">
+                              Add detailed explanations for policy terms
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="exportPreferences.includeTechnicalDetails"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel>Technical Details</FormLabel>
+                            <FormDescription className="text-sm">
+                              Include technical policy details and fine print
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
                         </FormItem>
                       )}
                     />
@@ -284,97 +492,7 @@ export function UserSettings() {
 
                   <Separator />
 
-                  <div className="space-y-4">
-                    <Label className="text-base font-semibold">Default Analysis Features</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="defaultProcessingOptions.extractCoverage"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel>Coverage Extraction</FormLabel>
-                              <FormDescription className="text-sm">
-                                Extract detailed coverage information
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="defaultProcessingOptions.generateExplanations"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel>Generate Explanations</FormLabel>
-                              <FormDescription className="text-sm">
-                                Include client-friendly explanations
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="defaultProcessingOptions.highlightRisks"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel>Highlight Risks</FormLabel>
-                              <FormDescription className="text-sm">
-                                Identify potential coverage gaps
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="defaultProcessingOptions.generateRecommendations"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel>Generate Recommendations</FormLabel>
-                              <FormDescription className="text-sm">
-                                Provide policy improvement suggestions
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Export Settings */}
-            <TabsContent value="export" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Export Preferences</CardTitle>
-                  <p className="text-sm text-gray-600">
-                    Default settings for PDF exports and document sharing
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="exportPreferences.defaultClientName"
@@ -382,10 +500,10 @@ export function UserSettings() {
                         <FormItem>
                           <FormLabel>Default Client Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Client name for exports" {...field} />
+                            <Input {...field} placeholder="Preferred client name format" />
                           </FormControl>
                           <FormDescription>
-                            Pre-fill client name field in export options
+                            Default client name to use when none is specified
                           </FormDescription>
                         </FormItem>
                       )}
@@ -398,200 +516,69 @@ export function UserSettings() {
                         <FormItem>
                           <FormLabel>Default Policy Reference</FormLabel>
                           <FormControl>
-                            <Input placeholder="Policy reference prefix" {...field} />
+                            <Input {...field} placeholder="Policy reference format" />
                           </FormControl>
                           <FormDescription>
-                            Pre-fill policy reference in export options
+                            Default policy reference format
                           </FormDescription>
                         </FormItem>
                       )}
                     />
                   </div>
-
-                  <Separator />
-
-                  <div className="space-y-4">
-                    <Label className="text-base font-semibold">Export Options</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="exportPreferences.includeBranding"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel>Include Branding</FormLabel>
-                              <FormDescription className="text-sm">
-                                Add Valley Trust Insurance logo and branding
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="exportPreferences.includeExplanations"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel>Include Explanations</FormLabel>
-                              <FormDescription className="text-sm">
-                                Add detailed explanations in exports
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* Interface Settings */}
-            <TabsContent value="interface" className="space-y-6">
+            {/* Appearance Tab */}
+            <TabsContent value="appearance" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Interface Preferences</CardTitle>
-                  <p className="text-sm text-gray-600">
-                    Customize the look and behavior of the application
+                  <CardTitle className="flex items-center space-x-2">
+                    <Monitor className="w-5 h-5" />
+                    <span>Theme Settings</span>
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Choose your preferred color theme
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="uiPreferences.theme"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Theme</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="w-48">
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="light">
-                              <div className="flex items-center space-x-2">
-                                <Sun className="w-4 h-4" />
-                                <span>Light</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="dark">
-                              <div className="flex items-center space-x-2">
-                                <Moon className="w-4 h-4" />
-                                <span>Dark</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="system">
-                              <div className="flex items-center space-x-2">
-                                <Monitor className="w-4 h-4" />
-                                <span>System</span>
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Choose your preferred color theme
-                        </FormDescription>
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Button
+                      type="button"
+                      variant={theme === "light" ? "default" : "outline"}
+                      className="h-24 flex flex-col items-center justify-center space-y-2"
+                      onClick={() => handleThemeChange("light")}
+                    >
+                      <Sun className="w-6 h-6" />
+                      <span>Light</span>
+                    </Button>
 
-                  <Separator />
+                    <Button
+                      type="button"
+                      variant={theme === "dark" ? "default" : "outline"}
+                      className="h-24 flex flex-col items-center justify-center space-y-2"
+                      onClick={() => handleThemeChange("dark")}
+                    >
+                      <Moon className="w-6 h-6" />
+                      <span>Dark</span>
+                    </Button>
 
-                  <div className="space-y-4">
-                    <Label className="text-base font-semibold">View Preferences</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="uiPreferences.compactView"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel>Compact View</FormLabel>
-                              <FormDescription className="text-sm">
-                                Use a more compact layout to fit more content
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="uiPreferences.showPreview"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel>Show Preview</FormLabel>
-                              <FormDescription className="text-sm">
-                                Display summary preview while processing
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    <Button
+                      type="button"
+                      variant={theme === "system" ? "default" : "outline"}
+                      className="h-24 flex flex-col items-center justify-center space-y-2"
+                      onClick={() => handleThemeChange("system")}
+                    >
+                      <Monitor className="w-6 h-6" />
+                      <span>System</span>
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
 
-            {/* Account Settings */}
-            <TabsContent value="account" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Account Information</CardTitle>
-                  <p className="text-sm text-gray-600">
-                    Manage your account settings and security
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-center space-x-2">
-                      <Shield className="w-5 h-5 text-blue-600" />
-                      <span className="font-medium text-blue-900">Valley Trust Insurance Agent</span>
-                    </div>
-                    <p className="text-sm text-blue-700 mt-1">
-                      You have full access to all policy document processing features.
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Current theme:</strong> {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                      {theme === "system" && " (automatically matches your device settings)"}
                     </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-base font-semibold">Usage Statistics</Label>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="text-2xl font-bold text-blue-600">24</div>
-                          <div className="text-sm text-gray-600">Documents Processed</div>
-                        </div>
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="text-2xl font-bold text-green-600">156</div>
-                          <div className="text-sm text-gray-600">Summaries Generated</div>
-                        </div>
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="text-2xl font-bold text-purple-600">89</div>
-                          <div className="text-sm text-gray-600">PDFs Exported</div>
-                        </div>
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="text-2xl font-bold text-orange-600">12</div>
-                          <div className="text-sm text-gray-600">This Month</div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </CardContent>
               </Card>

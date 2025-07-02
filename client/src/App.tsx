@@ -21,6 +21,7 @@ import PolicySummaryGenerator from "@/pages/PolicySummaryGenerator";
 import NotFound from "@/pages/not-found";
 import { DocumentDashboard } from "@/components/DocumentDashboard";
 import { UserSettings } from "@/components/UserSettings";
+import { ThemeProvider } from "@/hooks/use-theme";
 
 function Navigation({ 
   isSidebarCollapsed, 
@@ -181,8 +182,9 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="min-h-screen bg-gray-50">
+      <ThemeProvider defaultTheme="system" storageKey="valley-trust-theme">
+        <TooltipProvider>
+          <div className="min-h-screen bg-background text-foreground">
           <Navigation 
             isSidebarCollapsed={isSidebarCollapsed}
             setIsSidebarCollapsed={setIsSidebarCollapsed}
@@ -196,8 +198,9 @@ function App() {
           </div>
         </div>
         
-        <Toaster />
-      </TooltipProvider>
+          <Toaster />
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

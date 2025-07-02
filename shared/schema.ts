@@ -50,18 +50,29 @@ export const userSettings = pgTable("user_settings", {
     focusAreas: ["coverage", "exclusions", "eligibility"],
     outputFormat: "structured"
   }).notNull(),
+  // Agent Profile Information
+  agentProfile: jsonb("agent_profile").default({
+    name: "",
+    title: "",
+    phone: "",
+    email: "",
+    license: "",
+    signature: "", // Base64 encoded image or text signature
+    firmName: "Valley Trust Insurance",
+    firmAddress: "",
+    firmPhone: "",
+    firmWebsite: ""
+  }).notNull(),
   exportPreferences: jsonb("export_preferences").default({
     includeBranding: true,
     includeExplanations: true,
     includeTechnicalDetails: false,
+    includeAgentSignature: true,
     defaultClientName: "",
     defaultPolicyReference: ""
   }).notNull(),
   uiPreferences: jsonb("ui_preferences").default({
-    theme: "light",
-    compactView: false,
-    autoRefresh: true,
-    showPreview: true
+    theme: "system"
   }).notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
