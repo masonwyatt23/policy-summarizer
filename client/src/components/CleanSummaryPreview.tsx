@@ -12,14 +12,14 @@ interface CleanSummaryPreviewProps {
 export function CleanSummaryPreview({ document, isLoading }: CleanSummaryPreviewProps) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-8">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-8">
         <div className="animate-pulse">
-          <div className="h-4 bg-slate-200 rounded w-3/4 mb-4"></div>
-          <div className="h-4 bg-slate-200 rounded w-1/2 mb-6"></div>
+          <div className="h-4 bg-muted rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-muted rounded w-1/2 mb-6"></div>
           <div className="space-y-3">
-            <div className="h-3 bg-slate-200 rounded"></div>
-            <div className="h-3 bg-slate-200 rounded w-5/6"></div>
-            <div className="h-3 bg-slate-200 rounded w-4/6"></div>
+            <div className="h-3 bg-muted rounded"></div>
+            <div className="h-3 bg-muted rounded w-5/6"></div>
+            <div className="h-3 bg-muted rounded w-4/6"></div>
           </div>
         </div>
       </div>
@@ -28,24 +28,24 @@ export function CleanSummaryPreview({ document, isLoading }: CleanSummaryPreview
 
   if (!document || !document.summary) {
     return (
-      <div className="bg-slate-50 rounded-lg border border-slate-200 p-8 text-center">
-        <p className="text-slate-500">No summary available. Upload and process a document to see the analysis.</p>
+      <div className="bg-muted/50 rounded-lg border border-border p-8 text-center">
+        <p className="text-muted-foreground">No summary available. Upload and process a document to see the analysis.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+    <div className="bg-card rounded-lg shadow-sm border border-border">
       {/* Header */}
-      <div className="border-b border-slate-200 px-8 py-6">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Policy Summary</h2>
-        <p className="text-slate-600">Professional analysis of your insurance policy</p>
+      <div className="border-b border-border px-8 py-6">
+        <h2 className="text-2xl font-bold text-foreground mb-2">Policy Summary</h2>
+        <p className="text-muted-foreground">Professional analysis of your insurance policy</p>
       </div>
 
       {/* Summary Content */}
       <div className="px-8 py-6">
-        <div className="prose prose-slate max-w-none">
-          <div className="text-slate-800 leading-relaxed space-y-4">
+        <div className="prose prose-slate dark:prose-invert max-w-none">
+          <div className="text-foreground leading-relaxed space-y-4">
             {document.summary.split('\n').map((paragraph, index) => {
               // Skip empty lines
               if (paragraph.trim() === '') {

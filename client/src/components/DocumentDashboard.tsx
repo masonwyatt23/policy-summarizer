@@ -262,7 +262,7 @@ export function DocumentDashboard() {
           ? 'border-l-red-500 hover:border-l-red-600' 
           : 'border-l-green-500 hover:border-l-green-600'
         : 'border-l-yellow-500 hover:border-l-yellow-600'
-    } ${isSelectionMode && selectedDocuments.includes(document.id) ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'}`}>
+    } ${isSelectionMode && selectedDocuments.includes(document.id) ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950/30' : 'bg-card hover:bg-muted/50'}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3 flex-1 min-w-0">
@@ -292,7 +292,7 @@ export function DocumentDashboard() {
                   : 'text-yellow-500'
               }`} />
               <div className="min-w-0 flex-1">
-                <CardTitle className="text-sm font-medium truncate text-gray-900" title={document.originalName}>
+                <CardTitle className="text-sm font-medium truncate text-foreground" title={document.originalName}>
                   {document.originalName}
                 </CardTitle>
                 <div className="flex items-center space-x-2 mt-1">
@@ -300,9 +300,9 @@ export function DocumentDashboard() {
                     className={`text-xs ${
                       document.processed 
                         ? document.processingError 
-                          ? 'bg-red-100 text-red-800 border-red-200' 
-                          : 'bg-green-100 text-green-800 border-green-200'
-                        : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                          ? 'bg-red-100 dark:bg-red-950/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' 
+                          : 'bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800'
+                        : 'bg-yellow-100 dark:bg-yellow-950/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
                     }`}>
                     {document.processed 
                       ? document.processingError 
@@ -319,7 +319,7 @@ export function DocumentDashboard() {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted">
                 <MoreVertical className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -412,7 +412,7 @@ export function DocumentDashboard() {
             </div>
           )}
           
-          <div className="text-xs text-gray-500 pt-2 border-t">
+          <div className="text-xs text-muted-foreground pt-2 border-t border-border">
             <div>Uploaded: {formatDate(document.uploadedAt)}</div>
             {document.lastViewedAt && (
               <div>Last viewed: {formatDate(document.lastViewedAt)}</div>
@@ -421,7 +421,7 @@ export function DocumentDashboard() {
 
           {/* Quick Action Buttons */}
           {document.processed && !document.processingError && (
-            <div className="pt-3 border-t space-y-2">
+            <div className="pt-3 border-t border-border space-y-2">
               {/* Primary Action - View Summary */}
               <Button
                 variant="default"
@@ -441,7 +441,7 @@ export function DocumentDashboard() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 h-7 text-xs border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                  className="flex-1 h-7 text-xs transition-all duration-200"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleViewHistory(document.id);
