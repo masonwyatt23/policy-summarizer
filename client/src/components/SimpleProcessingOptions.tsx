@@ -93,8 +93,8 @@ export function SimpleProcessingOptions({ onProcessingChange }: SimpleProcessing
         </div>
 
         {/* Status */}
-        <div className="p-2 bg-blue-50 rounded border border-blue-200 text-center">
-          <span className="text-sm text-blue-800 font-medium">Ready to Process</span>
+        <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded border border-blue-200 dark:border-blue-800 text-center">
+          <span className="text-sm text-blue-800 dark:text-blue-300 font-medium">Ready to Process</span>
         </div>
       </CardContent>
     </Card>
