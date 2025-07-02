@@ -19,23 +19,14 @@ export class DocumentProcessor {
 
 
 
-      // Use xAI for superior analysis and summary generation with fallback
-      let policyData: PolicyData;
-      let summary: string;
+      // Use xAI exclusively for superior policy analysis and summaries
+      console.log('🚀 Using xAI (Grok) for comprehensive policy analysis...');
+      console.log(`📄 Processing ${extractedText.length} characters of document text`);
       
-      try {
-        console.log('🚀 Using xAI (Grok) for advanced policy analysis...');
-        policyData = await xaiService.analyzePolicy(extractedText);
-        summary = await xaiService.generateEnhancedSummary(policyData);
-        console.log('✅ xAI analysis completed successfully');
-      } catch (xaiError) {
-        console.log('⚠️ xAI analysis failed, using accurate text analyzer:', xaiError);
-        // Use the enhanced text analyzer for accurate extraction
-        const { textAnalyzer } = await import('./textAnalyzer');
-        policyData = textAnalyzer.analyzePolicy(extractedText);
-        summary = textAnalyzer.generateSummary(policyData);
-        console.log('✅ Text analysis completed with high accuracy');
-      }
+      const policyData = await xaiService.analyzePolicy(extractedText);
+      const summary = await xaiService.generateEnhancedSummary(policyData);
+      
+      console.log('✅ xAI analysis completed with comprehensive results');
 
       return {
         extractedText,
