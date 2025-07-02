@@ -72,9 +72,7 @@ export function DocumentDashboard() {
 
   const toggleFavoriteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/documents/${id}/favorite`, {
-        method: 'POST',
-      });
+      return apiRequest('POST', `/api/documents/${id}/favorite`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
@@ -83,9 +81,7 @@ export function DocumentDashboard() {
 
   const deleteDocumentMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/documents/${id}`, {
-        method: 'DELETE',
-      });
+      return apiRequest('DELETE', `/api/documents/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
@@ -96,9 +92,7 @@ export function DocumentDashboard() {
     mutationFn: async (ids: number[]) => {
       // Delete documents one by one since we don't have a batch endpoint
       const promises = ids.map(id => 
-        apiRequest(`/api/documents/${id}`, {
-          method: 'DELETE',
-        })
+        apiRequest('DELETE', `/api/documents/${id}`)
       );
       return Promise.all(promises);
     },
@@ -135,10 +129,7 @@ export function DocumentDashboard() {
 
   const updateTagsMutation = useMutation({
     mutationFn: async ({ id, tags }: { id: number; tags: string[] }) => {
-      return apiRequest(`/api/documents/${id}/tags`, {
-        method: 'PATCH',
-        body: JSON.stringify({ tags }),
-      });
+      return apiRequest('PATCH', `/api/documents/${id}/tags`, { tags });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
