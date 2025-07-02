@@ -6,458 +6,468 @@ export class AdvancedPolicyAnalyzer {
   analyzePolicy(documentText: string): PolicyData {
     console.log(`🔍 Advanced Analysis: Processing ${documentText.length} characters`);
     
-    const analysis = {
-      businessInfo: this.extractBusinessInformation(documentText),
-      insurer: this.extractInsurer(documentText),
-      policyDetails: this.extractPolicyDetails(documentText),
-      coverage: this.extractComprehensiveCoverage(documentText),
-      dates: this.extractPolicyDates(documentText),
-      financial: this.extractFinancialInfo(documentText),
-      contacts: this.extractContactInformation(documentText),
-      risks: this.analyzeRiskFactors(documentText)
-    };
-    
-    const policyType = this.determinePolicyType(analysis, documentText);
+    // Smart policy detection and parsing
+    const policyInfo = this.intelligentPolicyExtraction(documentText);
+    const coverageData = this.extractRealCoverage(documentText);
+    const contactInfo = this.findContactDetails(documentText);
+    const policyType = this.detectPolicyType(documentText);
     
     return {
-      policyType,
-      insurer: analysis.insurer,
-      coverageDetails: this.generateAdvancedCoverageDetails(analysis, documentText),
-      keyBenefits: this.generateIntelligentBenefits(analysis, documentText, policyType),
-      eligibility: this.generateAdvancedEligibility(analysis, documentText),
-      exclusions: this.generateDetailedExclusions(analysis, documentText, policyType),
-      importantContacts: this.generateContactInformation(analysis),
-      whyItMatters: this.generateAdvancedExplanation(analysis, policyType, documentText),
+      policyType: policyType,
+      insurer: policyInfo.insurer,
+      coverageDetails: coverageData.details,
+      keyBenefits: coverageData.benefits,
+      eligibility: this.extractEligibilityRequirements(documentText),
+      exclusions: this.extractExclusions(documentText),
+      importantContacts: contactInfo,
+      whyItMatters: this.generateContextualExplanation(policyType, coverageData, documentText),
       riskAssessment: {
-        highRiskFactors: analysis.risks.factors,
-        recommendations: this.generateRiskRecommendations(analysis, policyType),
-        scenarios: this.generateRiskScenarios(analysis, policyType)
+        highRiskFactors: this.identifyRiskFactors(documentText),
+        recommendations: this.generateSmartRecommendations(policyType, documentText),
+        scenarios: this.createRiskScenarios(policyType)
       },
-      clientRecommendations: this.generateClientRecommendations(analysis, policyType)
+      clientRecommendations: this.generateClientGuidance(policyType, coverageData)
     };
   }
 
-  private extractBusinessInformation(text: string) {
-    const businessPatterns = {
-      name: /(?:Named Insured|Insured|Business Name|Company)[:\s]+([A-Z][A-Z0-9\s,&\.\-']+?)(?:\n|$|[A-Z]{2}\s+\d{5})/i,
-      dba: /(?:D\s*B\s*A|DBA|doing business as)[:\s]+([A-Z][A-Z0-9\s,&\.\-']+?)(?:\n|$)/i,
-      address: /(\d+[^\n]*(?:ST|STREET|AVE|AVENUE|RD|ROAD|BLVD|BOULEVARD|DR|DRIVE|LN|LANE|CT|COURT|PL|PLACE|WAY)[^\n]*)/i,
-      city: /([A-Z]{2}\s+\d{5}|\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+[A-Z]{2}\s+\d{5})/,
-      entity: /(?:Legal entity|Entity type|Corporation|LLC|Partnership)[:\s]+([A-Z][a-zA-Z\s]+)/i
-    };
-
-    return {
-      name: this.extractMatch(text, businessPatterns.name) || "Business Name Not Found",
-      dba: this.extractMatch(text, businessPatterns.dba),
-      location: this.extractMatch(text, businessPatterns.address) + " " + this.extractMatch(text, businessPatterns.city),
-      entityType: this.extractMatch(text, businessPatterns.entity) || "Corporation"
-    };
-  }
-
-  private extractInsurer(text: string): string {
-    const insurerPatterns = [
-      /Erie Insurance Company/i,
-      /State Farm/i,
-      /Allstate/i,
-      /Progressive/i,
-      /Geico/i,
-      /Farmers/i,
-      /Nationwide/i,
-      /Liberty Mutual/i,
-      /Traveler/i,
-      /Chubb/i,
-      /AIG/i,
-      /Zurich/i,
-      /Hartford/i,
-      /Valley Trust Insurance/i
+  // Intelligent policy information extraction
+  private intelligentPolicyExtraction(text: string) {
+    // Look for policy numbers with various formats
+    const policyNumberPatterns = [
+      /(?:Policy\s*(?:Number|No\.?|#)|POL)[:\s-]*([A-Z0-9\-]{6,20})/i,
+      /(?:Certificate\s*(?:Number|No\.?|#))[:\s-]*([A-Z0-9\-]{6,20})/i,
+      /([A-Z]{2,4}[0-9]{6,12})/g
     ];
 
+    // Insurance company patterns
+    const insurerPatterns = [
+      /(?:Company|Insurer|Carrier|Underwriter)[:\s]*([A-Z][A-Za-z\s&,\.]+?)(?:\n|Policy|Certificate)/i,
+      /(Valley Trust Insurance[^|\n]*)/i,
+      /([A-Z][A-Za-z\s&,\.]+Insurance[^|\n]*)/i,
+      /Underwritten by\s+([A-Z][A-Za-z\s&,\.]+)/i
+    ];
+
+    let policyNumber = '';
+    for (const pattern of policyNumberPatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        policyNumber = match[1] || match[0];
+        break;
+      }
+    }
+
+    let insurer = '';
     for (const pattern of insurerPatterns) {
       const match = text.match(pattern);
-      if (match) return match[0];
+      if (match) {
+        insurer = match[1].trim();
+        break;
+      }
     }
-    
-    return "Valley Trust Insurance Company";
-  }
 
-  private extractPolicyDetails(text: string) {
     return {
-      number: this.extractMatch(text, /(?:Policy\s*(?:Number|No|#))[:\s]*([A-Z0-9\-]+)/i) || "Policy Number Not Found",
-      type: this.extractMatch(text, /(?:Policy Type|Coverage Type)[:\s]*([A-Za-z\s]+)/i),
-      term: this.extractMatch(text, /(?:Policy Term|Term)[:\s]*(\d+\s*(?:month|year)s?)/i) || "12 months"
+      policyNumber: policyNumber || 'Policy number not found',
+      insurer: insurer || 'Valley Trust Insurance',
     };
   }
 
-  private extractComprehensiveCoverage(text: string) {
-    const dollarAmounts = Array.from(text.matchAll(/\$([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?)/g))
-      .map(match => `$${match[1]}`)
-      .filter((amount, index, arr) => arr.indexOf(amount) === index)
-      .slice(0, 10);
-
-    const coverageTypes = [
-      { pattern: /general liability/i, name: "General Liability" },
-      { pattern: /property (?:damage|coverage)/i, name: "Property Coverage" },
-      { pattern: /commercial auto/i, name: "Commercial Auto" },
-      { pattern: /workers.?compensation/i, name: "Workers' Compensation" },
-      { pattern: /professional liability/i, name: "Professional Liability" },
-      { pattern: /cyber liability/i, name: "Cyber Liability" },
-      { pattern: /umbrella/i, name: "Umbrella Coverage" },
-      { pattern: /business interruption/i, name: "Business Interruption" }
+  // Extract real coverage information
+  private extractRealCoverage(text: string) {
+    const coveragePatterns = [
+      /(?:Coverage|Limit|Amount)[:\s]*\$([0-9,]+)/gi,
+      /\$([0-9,]+)(?:\s*per|\/)?(?:\s*(?:occurrence|incident|claim|accident|person|year))?/gi,
+      /(?:Deductible)[:\s]*\$([0-9,]+)/gi
     ];
 
-    return {
-      amounts: dollarAmounts,
-      types: coverageTypes.filter(type => type.pattern.test(text)).map(type => type.name)
-    };
-  }
+    const coverageDetails = [];
+    const benefits = [];
 
-  private extractPolicyDates(text: string) {
-    const datePattern = /(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/g;
-    const dates = Array.from(text.matchAll(datePattern)).map(match => match[1]);
+    // Look for comprehensive coverage sections
+    const sections = text.split(/(?:\n\s*){2,}/);
     
-    return {
-      effective: dates[0] || "See policy documents",
-      expiration: dates[1] || "See policy documents",
-      renewal: dates[2] || "Annual renewal"
-    };
-  }
-
-  private extractFinancialInfo(text: string) {
-    const premiumPattern = /(?:Premium|Annual Premium|Total Premium)[:\s]*\$([0-9,]+)/i;
-    const deductiblePattern = /(?:Deductible)[:\s]*\$([0-9,]+)/i;
-    
-    return {
-      premium: this.extractMatch(text, premiumPattern) ? `$${this.extractMatch(text, premiumPattern)}` : "Contact agent for premium details",
-      deductible: this.extractMatch(text, deductiblePattern) ? `$${this.extractMatch(text, deductiblePattern)}` : "Varies by coverage"
-    };
-  }
-
-  private extractContactInformation(text: string) {
-    const phonePattern = /(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})/g;
-    const emailPattern = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
-    const agentPattern = /(?:Agent|Producer)[:\s]*([A-Z][a-zA-Z\s]+)/i;
-
-    return {
-      phones: Array.from(text.matchAll(phonePattern)).map(match => match[1]).slice(0, 3),
-      emails: Array.from(text.matchAll(emailPattern)).map(match => match[1]).slice(0, 2),
-      agent: this.extractMatch(text, agentPattern) || "Valley Trust Insurance Agent"
-    };
-  }
-
-  private analyzeRiskFactors(text: string) {
-    const highRiskKeywords = ['restaurant', 'construction', 'manufacturing', 'transportation', 'medical'];
-    const mediumRiskKeywords = ['retail', 'office', 'consulting', 'professional'];
-    
-    const textLower = text.toLowerCase();
-    const hasHighRisk = highRiskKeywords.some(keyword => textLower.includes(keyword));
-    const hasMediumRisk = mediumRiskKeywords.some(keyword => textLower.includes(keyword));
-    
-    return {
-      profile: hasHighRisk ? "High Risk" : hasMediumRisk ? "Medium Risk" : "Standard Risk",
-      factors: [
-        ...(textLower.includes('restaurant') ? ["Food service operations"] : []),
-        ...(textLower.includes('liability') ? ["General liability exposure"] : []),
-        ...(textLower.includes('property') ? ["Property damage risk"] : [])
-      ]
-    };
-  }
-
-  private determinePolicyType(analysis: any, text: string): string {
-    const businessName = analysis.businessInfo.name.toLowerCase();
-    const textLower = text.toLowerCase();
-    
-    if (textLower.includes('travel')) return "Comprehensive Travel Insurance Policy";
-    if (textLower.includes('commercial') || textLower.includes('business')) {
-      if (businessName.includes('grille') || businessName.includes('restaurant')) {
-        return `${analysis.insurer} Restaurant & Food Service Insurance Policy`;
-      }
-      return `${analysis.insurer} Commercial Business Insurance Policy`;
-    }
-    
-    return `${analysis.insurer} Insurance Policy`;
-  }
-
-  private generateAdvancedCoverageDetails(analysis: any, text: string) {
-    const coverage = analysis.coverage;
-    const isBusinessPolicy = text.toLowerCase().includes('business') || text.toLowerCase().includes('commercial');
-    
-    if (isBusinessPolicy) {
-      return [
-        {
-          type: "General Liability",
-          limit: coverage.amounts[0] || "$1,000,000 per occurrence",
-          deductible: analysis.financial.deductible || "$1,000",
-          description: "Protects against third-party bodily injury and property damage claims"
-        },
-        {
-          type: "Property Coverage",
-          limit: coverage.amounts[1] || "$500,000",
-          deductible: "$2,500",
-          description: "Covers building, equipment, inventory, and business personal property"
-        },
-        {
-          type: "Business Interruption",
-          limit: coverage.amounts[2] || "$250,000",
-          deductible: "72 hours",
-          description: "Covers lost income and extra expenses during covered property damage"
+    for (const section of sections) {
+      if (this.isLikelyCoverageSection(section)) {
+        const coverage = this.parseCoverageSection(section);
+        if (coverage) {
+          coverageDetails.push(coverage);
         }
-      ];
+      }
+    }
+
+    // Extract benefits
+    const benefitKeywords = ['benefit', 'coverage', 'protection', 'pays', 'covers', 'includes'];
+    for (const section of sections) {
+      if (benefitKeywords.some(keyword => section.toLowerCase().includes(keyword))) {
+        const benefit = this.extractBenefitFromSection(section);
+        if (benefit) {
+          benefits.push(benefit);
+        }
+      }
+    }
+
+    return {
+      details: coverageDetails.length > 0 ? coverageDetails : this.getDefaultCoverageDetails(),
+      benefits: benefits.length > 0 ? benefits : this.getDefaultBenefits()
+    };
+  }
+
+  private isLikelyCoverageSection(section: string): boolean {
+    const indicators = [
+      /\$[0-9,]+/,
+      /coverage|limit|deductible|premium/i,
+      /per\s+(?:occurrence|incident|claim|year)/i
+    ];
+    
+    return indicators.some(pattern => pattern.test(section));
+  }
+
+  private parseCoverageSection(section: string) {
+    const lines = section.split('\n').filter(line => line.trim());
+    
+    for (const line of lines) {
+      const amountMatch = line.match(/\$([0-9,]+)/);
+      if (amountMatch) {
+        const type = this.inferCoverageType(line);
+        const limit = amountMatch[0];
+        
+        return {
+          type,
+          limit,
+          description: line.trim(),
+          deductible: this.extractDeductible(section)
+        };
+      }
     }
     
+    return null;
+  }
+
+  private inferCoverageType(text: string): string {
+    const typeMap = {
+      'liability': ['liability', 'bodily injury', 'property damage'],
+      'comprehensive': ['comprehensive', 'other than collision'],
+      'collision': ['collision'],
+      'medical': ['medical', 'personal injury protection', 'pip'],
+      'uninsured': ['uninsured', 'underinsured'],
+      'property': ['property', 'dwelling', 'contents']
+    };
+
+    const lowerText = text.toLowerCase();
+    
+    for (const [type, keywords] of Object.entries(typeMap)) {
+      if (keywords.some(keyword => lowerText.includes(keyword))) {
+        return type.charAt(0).toUpperCase() + type.slice(1) + ' Coverage';
+      }
+    }
+    
+    return 'General Coverage';
+  }
+
+  private extractDeductible(text: string): string | undefined {
+    const deductibleMatch = text.match(/deductible[:\s]*\$([0-9,]+)/i);
+    return deductibleMatch ? `$${deductibleMatch[1]}` : undefined;
+  }
+
+  private extractBenefitFromSection(section: string) {
+    const sentences = section.split(/[.!?]+/).filter(s => s.trim().length > 10);
+    
+    for (const sentence of sentences) {
+      if (this.isBenefitSentence(sentence)) {
+        return {
+          benefit: this.extractBenefitTitle(sentence),
+          description: sentence.trim(),
+          importance: this.determineBenefitImportance(sentence)
+        };
+      }
+    }
+    
+    return null;
+  }
+
+  private isBenefitSentence(sentence: string): boolean {
+    const benefitIndicators = [
+      'covers', 'pays', 'provides', 'includes', 'protects',
+      'reimburses', 'benefits', 'entitled to'
+    ];
+    
+    const lowerSentence = sentence.toLowerCase();
+    return benefitIndicators.some(indicator => lowerSentence.includes(indicator));
+  }
+
+  private extractBenefitTitle(sentence: string): string {
+    // Extract the main benefit from the sentence
+    const words = sentence.trim().split(' ');
+    if (words.length > 8) {
+      return words.slice(0, 8).join(' ') + '...';
+    }
+    return sentence.trim();
+  }
+
+  private determineBenefitImportance(sentence: string): 'critical' | 'high' | 'medium' | 'low' {
+    const criticalWords = ['emergency', 'critical', 'essential', 'required', 'mandatory'];
+    const highWords = ['important', 'significant', 'major', 'primary'];
+    const mediumWords = ['additional', 'supplemental', 'extra'];
+    
+    const lowerSentence = sentence.toLowerCase();
+    
+    if (criticalWords.some(word => lowerSentence.includes(word))) return 'critical';
+    if (highWords.some(word => lowerSentence.includes(word))) return 'high';
+    if (mediumWords.some(word => lowerSentence.includes(word))) return 'medium';
+    return 'low';
+  }
+
+  // Detect policy type from document content
+  private detectPolicyType(text: string): string {
+    const typePatterns = {
+      'Travel Insurance': ['travel', 'trip', 'vacation', 'journey'],
+      'Health Insurance': ['health', 'medical', 'hospital', 'doctor'],
+      'Auto Insurance': ['auto', 'vehicle', 'car', 'automotive'],
+      'Home Insurance': ['home', 'property', 'dwelling', 'residence'],
+      'Life Insurance': ['life', 'death benefit', 'beneficiary'],
+      'Business Insurance': ['business', 'commercial', 'liability', 'professional']
+    };
+
+    const lowerText = text.toLowerCase();
+    
+    for (const [type, keywords] of Object.entries(typePatterns)) {
+      const matchCount = keywords.filter(keyword => lowerText.includes(keyword)).length;
+      if (matchCount >= 2) {
+        return type;
+      }
+    }
+    
+    // Fallback based on document structure
+    if (text.includes('Certificate') && text.includes('Travel')) {
+      return 'Travel Insurance';
+    }
+    
+    return 'General Insurance Policy';
+  }
+
+  // Find contact information
+  private findContactDetails(text: string) {
+    const phonePattern = /(?:Phone|Tel|Call)[:\s]*([0-9\-\(\)\s]{10,})/gi;
+    const emailPattern = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/gi;
+    const websitePattern = /(www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|https?:\/\/[a-zA-Z0-9.-]+)/gi;
+
+    const phones = [...text.matchAll(phonePattern)].map(match => match[1].trim());
+    const emails = [...text.matchAll(emailPattern)].map(match => match[1]);
+    const websites = [...text.matchAll(websitePattern)].map(match => match[1]);
+
     return [
-      {
-        type: "Primary Coverage",
-        limit: coverage.amounts[0] || "As specified in policy",
-        deductible: analysis.financial.deductible || "As specified in policy",
-        description: "Main policy coverage as detailed in your policy documents"
-      }
+      { type: 'Customer Service', phone: phones[0] || '1-800-555-0123', email: emails[0] || 'support@valleytrust.com' },
+      { type: 'Claims Department', phone: phones[1] || '1-800-555-0124', email: 'claims@valleytrust.com' }
     ];
   }
 
-  private generateIntelligentBenefits(analysis: any, text: string, policyType: string) {
-    const businessName = analysis.businessInfo.name.toLowerCase();
-    const isRestaurant = businessName.includes('grille') || businessName.includes('restaurant') || businessName.includes('food');
-    const isCommercial = text.toLowerCase().includes('commercial') || text.toLowerCase().includes('business');
+  // Extract eligibility requirements
+  private extractEligibilityRequirements(text: string): string[] {
+    const eligibilityKeywords = ['eligible', 'qualify', 'requirement', 'must', 'condition'];
+    const sentences = text.split(/[.!?]+/);
     
-    if (isRestaurant) {
-      return [
-        { 
-          benefit: "Comprehensive restaurant liability protection",
-          description: "Covers customer slip-and-fall accidents, food poisoning claims, and liquor liability",
-          importance: "critical" as const
-        },
-        {
-          benefit: "Kitchen equipment and property coverage",
-          description: "Protects expensive commercial kitchen equipment, furniture, and inventory",
-          importance: "high" as const
-        },
-        {
-          benefit: "Business interruption for restaurant operations",
-          description: "Covers lost income if kitchen equipment breaks down or property damage occurs",
-          importance: "high" as const
-        },
-        {
-          benefit: "Professional claims handling with restaurant expertise",
-          description: "Specialized claims team understands restaurant industry risks and challenges",
-          importance: "medium" as const
+    const requirements = [];
+    
+    for (const sentence of sentences) {
+      const lowerSentence = sentence.toLowerCase();
+      if (eligibilityKeywords.some(keyword => lowerSentence.includes(keyword))) {
+        const clean = sentence.trim();
+        if (clean.length > 10 && clean.length < 200) {
+          requirements.push(clean);
         }
-      ];
-    }
-    
-    if (isCommercial) {
-      return [
-        {
-          benefit: "Commercial general liability protection",
-          description: "Essential protection against customer injuries and property damage claims",
-          importance: "critical" as const
-        },
-        {
-          benefit: "Business property coverage",
-          description: "Protects your building, equipment, inventory, and business assets",
-          importance: "high" as const
-        },
-        {
-          benefit: "Professional liability protection",
-          description: "Covers errors and omissions in your professional services",
-          importance: "medium" as const
-        },
-        {
-          benefit: "24/7 claims handling and legal support",
-          description: "Expert assistance when you need it most, including legal defense",
-          importance: "medium" as const
-        }
-      ];
-    }
-    
-    return [
-      {
-        benefit: "Comprehensive insurance protection",
-        description: "Full coverage as specified in your policy documents",
-        importance: "high" as const
       }
+    }
+    
+    return requirements.length > 0 ? requirements.slice(0, 5) : [
+      'Must be a legal resident of the coverage area',
+      'Policy must be purchased before travel departure',
+      'All information provided must be accurate and complete'
     ];
   }
 
-  private generateAdvancedEligibility(analysis: any, text: string) {
-    const isBusinessPolicy = text.toLowerCase().includes('business') || text.toLowerCase().includes('commercial');
+  // Extract exclusions
+  private extractExclusions(text: string) {
+    const exclusionKeywords = ['exclude', 'not covered', 'exception', 'limitation', 'does not cover'];
+    const sentences = text.split(/[.!?]+/);
     
-    return {
-      ageLimit: "As specified in policy documents",
-      maxDuration: analysis.policyDetails.term || "12 months",
-      restrictions: [
-        "Must maintain valid business operations",
-        "Comply with all safety and regulatory requirements",
-        "Notify insurer of material changes to business operations",
-        ...(isBusinessPolicy ? ["Keep premises in good repair", "Follow all local business regulations"] : [])
+    const exclusions = [];
+    
+    for (const sentence of sentences) {
+      const lowerSentence = sentence.toLowerCase();
+      if (exclusionKeywords.some(keyword => lowerSentence.includes(keyword))) {
+        const clean = sentence.trim();
+        if (clean.length > 10) {
+          exclusions.push({
+            description: clean,
+            category: this.categorizeExclusion(clean),
+            impact: this.assessExclusionImpact(clean)
+          });
+        }
+      }
+    }
+    
+    return exclusions.length > 0 ? exclusions.slice(0, 8) : this.getDefaultExclusions();
+  }
+
+  private categorizeExclusion(exclusion: string): string {
+    const categories = {
+      'Pre-existing Conditions': ['pre-existing', 'medical condition', 'prior'],
+      'High-Risk Activities': ['dangerous', 'extreme', 'risky', 'hazardous'],
+      'Geographic Limitations': ['country', 'region', 'territory', 'location'],
+      'Policy Violations': ['fraud', 'misrepresentation', 'violation'],
+      'General Exclusions': []
+    };
+    
+    const lowerExclusion = exclusion.toLowerCase();
+    
+    for (const [category, keywords] of Object.entries(categories)) {
+      if (keywords.some(keyword => lowerExclusion.includes(keyword))) {
+        return category;
+      }
+    }
+    
+    return 'General Exclusions';
+  }
+
+  private assessExclusionImpact(exclusion: string): string {
+    const highImpactWords = ['all', 'any', 'complete', 'total', 'entirely'];
+    const mediumImpactWords = ['most', 'significant', 'major'];
+    
+    const lowerExclusion = exclusion.toLowerCase();
+    
+    if (highImpactWords.some(word => lowerExclusion.includes(word))) {
+      return 'High impact - significantly limits coverage';
+    }
+    if (mediumImpactWords.some(word => lowerExclusion.includes(word))) {
+      return 'Medium impact - may affect some claims';
+    }
+    return 'Low impact - limited scope exclusion';
+  }
+
+  // Generate contextual explanation
+  private generateContextualExplanation(policyType: string, coverageData: any, text: string): string {
+    const baseExplanations = {
+      'Travel Insurance': `This travel insurance policy provides essential protection for your trips, covering unexpected events that could disrupt your plans or create financial hardship. The coverage is designed to give you peace of mind while traveling, knowing that you're protected against common travel-related risks.`,
+      
+      'Health Insurance': `This health insurance policy helps cover medical expenses and provides access to healthcare services. It's designed to protect you from high medical costs and ensure you can get the care you need when health issues arise.`,
+      
+      'Auto Insurance': `This auto insurance policy provides financial protection against physical damage and bodily injury resulting from traffic accidents. It also provides liability coverage for damage and injuries you may cause to other people.`,
+      
+      'Home Insurance': `This home insurance policy protects your property and belongings against damage from covered perils. It also provides liability protection if someone is injured on your property.`
+    };
+    
+    return baseExplanations[policyType] || `This insurance policy provides financial protection and peace of mind by covering specific risks and situations outlined in your coverage details. Understanding your policy helps you make informed decisions about your coverage and know when to file claims.`;
+  }
+
+  // Identify risk factors
+  private identifyRiskFactors(text: string): string[] {
+    const riskIndicators = [
+      'age restrictions', 'pre-existing conditions', 'high-risk activities',
+      'geographic limitations', 'time limitations', 'coverage gaps'
+    ];
+    
+    const foundFactors = [];
+    const lowerText = text.toLowerCase();
+    
+    for (const factor of riskIndicators) {
+      if (lowerText.includes(factor.replace(' ', '')) || lowerText.includes(factor)) {
+        foundFactors.push(factor.charAt(0).toUpperCase() + factor.slice(1));
+      }
+    }
+    
+    return foundFactors.length > 0 ? foundFactors : [
+      'Policy exclusions may limit coverage',
+      'Time-sensitive claim filing requirements',
+      'Pre-authorization may be required for some services'
+    ];
+  }
+
+  // Generate smart recommendations
+  private generateSmartRecommendations(policyType: string, text: string): string[] {
+    const typeRecommendations = {
+      'Travel Insurance': [
+        'Review your policy before each trip to understand current coverage',
+        'Keep all receipts and documentation for potential claims',
+        'Contact the 24/7 assistance line for emergency situations while traveling'
       ],
-      eligibilityRequirements: [
-        "Valid business license required",
-        "No prior claims history issues",
-        "Acceptable risk profile for business type"
+      'Health Insurance': [
+        'Understand your network providers to minimize out-of-pocket costs',
+        'Keep your insurance card and ID with you at all times',
+        'Review your benefits annually during open enrollment'
+      ],
+      'Auto Insurance': [
+        'Keep proof of insurance in your vehicle at all times',
+        'Report accidents immediately to your insurance company',
+        'Review your coverage limits annually to ensure adequate protection'
       ]
     };
-  }
-
-  private generateDetailedExclusions(analysis: any, text: string, policyType: string) {
-    const isBusinessPolicy = text.toLowerCase().includes('business') || text.toLowerCase().includes('commercial');
-    const isRestaurant = analysis.businessInfo.name.toLowerCase().includes('grille') || analysis.businessInfo.name.toLowerCase().includes('restaurant');
     
-    const baseExclusions = [
-      {
-        category: "Intentional Acts",
-        description: "Intentional damage, fraud, or criminal acts by insured parties",
-        impact: "Complete exclusion from coverage"
-      },
-      {
-        category: "War & Terrorism",
-        description: "Acts of war, terrorism, or civil unrest (unless specifically covered)",
-        impact: "No coverage for related damages"
-      },
-      {
-        category: "Nuclear Events",
-        description: "Nuclear contamination, radiation, or nuclear facility incidents",
-        impact: "Complete exclusion"
-      },
-      {
-        category: "Regulatory Violations",
-        description: "Losses due to violation of laws, regulations, or permit requirements",
-        impact: "Coverage void for violations"
-      }
+    return typeRecommendations[policyType] || [
+      'Read your policy documents thoroughly to understand your coverage',
+      'Keep important contact information easily accessible',
+      'Report claims promptly to ensure proper processing'
     ];
-
-    if (isRestaurant) {
-      baseExclusions.push(
-        {
-          category: "Food Contamination",
-          description: "Gradual contamination or spoilage not caused by covered perils",
-          impact: "Limited coverage - sudden events only"
-        },
-        {
-          category: "Liquor Liability Limits",
-          description: "Serving alcohol to minors or visibly intoxicated persons",
-          impact: "Excluded unless specific endorsement"
-        }
-      );
-    }
-
-    if (isBusinessPolicy) {
-      baseExclusions.push(
-        {
-          category: "Professional Services",
-          description: "Errors in professional advice or services (requires separate coverage)",
-          impact: "Professional liability coverage needed"
-        },
-        {
-          category: "Employment Practices",
-          description: "Wrongful termination, discrimination, or harassment claims",
-          impact: "Employment practices coverage required"
-        }
-      );
-    }
-
-    return baseExclusions;
   }
 
-  private generateContactInformation(analysis: any) {
-    return {
-      insurer: analysis.insurer,
-      administrator: `${analysis.insurer} Claims Department`,
-      emergencyLine: analysis.contacts.phones[0] || "1-800-CONTACT-AGENT",
-      agent: analysis.contacts.agent,
-      policyNumber: analysis.policyDetails.number,
-      claimsEmail: analysis.contacts.emails[0] || "claims@insurancecompany.com"
+  // Create risk scenarios
+  private createRiskScenarios(policyType: string) {
+    const scenarios = {
+      'Travel Insurance': [
+        { scenario: 'Trip Cancellation', impact: 'Loss of non-refundable trip costs', mitigation: 'Coverage pays for covered cancellation reasons' },
+        { scenario: 'Medical Emergency Abroad', impact: 'High medical costs in foreign country', mitigation: 'Emergency medical coverage and evacuation benefits' }
+      ],
+      'Health Insurance': [
+        { scenario: 'Emergency Room Visit', impact: 'High out-of-pocket costs', mitigation: 'Coverage reduces your financial responsibility' },
+        { scenario: 'Prescription Medications', impact: 'Ongoing medication costs', mitigation: 'Prescription drug coverage helps manage costs' }
+      ]
     };
-  }
-
-  private generateAdvancedExplanation(analysis: any, policyType: string, text: string): string {
-    const businessName = analysis.businessInfo.name;
-    const isRestaurant = businessName.toLowerCase().includes('grille') || businessName.toLowerCase().includes('restaurant');
-    const isCommercial = text.toLowerCase().includes('commercial') || text.toLowerCase().includes('business');
     
-    if (isRestaurant) {
-      return `This ${policyType} provides comprehensive protection specifically designed for restaurant operations like ${businessName}. Restaurant businesses face unique risks including customer slip-and-fall accidents, food poisoning claims, kitchen equipment failures, and potential fire hazards from cooking operations. Without proper coverage, a single incident could result in devastating financial losses - liability claims can easily exceed $100,000, while kitchen equipment replacement and business interruption costs can force closure. This policy ensures your restaurant can continue operations even after covered incidents, protecting your investment, employees, and customers while maintaining your reputation in the community.`;
-    }
-    
-    if (isCommercial) {
-      return `This ${policyType} provides essential financial protection for ${businessName} against the wide range of risks that businesses face daily. Commercial operations expose you to liability claims from customers, property damage from fires or storms, business interruption from covered events, and potential professional liability issues. A single lawsuit or major property damage event could cost hundreds of thousands of dollars and potentially force business closure. This comprehensive coverage ensures your business can weather unexpected challenges, maintain operations during difficult times, and protect the investment you've built. Professional claims handling helps you focus on running your business while experts manage any covered incidents.`;
-    }
-    
-    return `This ${policyType} provides crucial financial protection designed to safeguard against unexpected events that could result in significant financial hardship. Insurance coverage serves as a safety net, ensuring you receive proper support and compensation when covered incidents occur, allowing you to focus on recovery rather than financial stress.`;
-  }
-
-  private generateRiskRecommendations(analysis: any, policyType: string): string[] {
-    const businessName = analysis.businessInfo.name.toLowerCase();
-    const isRestaurant = businessName.includes('grille') || businessName.includes('restaurant');
-    
-    const baseRecommendations = [
-      "Review coverage limits annually to ensure adequate protection",
-      "Maintain detailed records of all business assets and operations",
-      "Implement proper safety protocols and employee training programs"
+    return scenarios[policyType] || [
+      { scenario: 'Covered Loss Event', impact: 'Financial impact from unexpected event', mitigation: 'Policy provides financial protection per coverage terms' }
     ];
-    
-    if (isRestaurant) {
-      baseRecommendations.push(
-        "Install commercial-grade fire suppression systems in kitchen areas",
-        "Ensure all food handling staff receive proper food safety training",
-        "Consider liquor liability coverage if serving alcoholic beverages",
-        "Maintain slip-resistant flooring and proper lighting in customer areas"
-      );
-    }
-    
-    return baseRecommendations;
   }
 
-  private generateRiskScenarios(analysis: any, policyType: string) {
-    const businessName = analysis.businessInfo.name.toLowerCase();
-    const isRestaurant = businessName.includes('grille') || businessName.includes('restaurant');
-    
-    if (isRestaurant) {
-      return [
-        {
-          situation: "Customer slips on wet floor and sustains injury",
-          coverage: "General Liability Coverage applies",
-          outcome: "Medical expenses, legal defense, and potential settlement covered up to policy limits"
-        },
-        {
-          situation: "Kitchen fire damages equipment and forces temporary closure",
-          coverage: "Property Coverage and Business Interruption apply",
-          outcome: "Equipment replacement costs and lost income during repairs covered"
-        },
-        {
-          situation: "Food poisoning claim from multiple customers",
-          coverage: "General Liability and Product Liability Coverage",
-          outcome: "Legal defense, medical claims, and potential settlements covered"
-        }
-      ];
-    }
-    
+  // Generate client guidance
+  private generateClientGuidance(policyType: string, coverageData: any): string[] {
+    return [
+      'Keep your policy documents in a safe, accessible place',
+      'Review your coverage annually to ensure it meets your needs',
+      'Contact your agent with questions about your policy',
+      'Report claims promptly for faster processing',
+      'Understand your deductibles and coverage limits'
+    ];
+  }
+
+  // Default coverage details
+  private getDefaultCoverageDetails() {
     return [
       {
-        situation: "Third-party injury on business premises",
-        coverage: "General Liability Coverage applies",
-        outcome: "Medical expenses and legal costs covered up to policy limits"
-      },
-      {
-        situation: "Property damage from covered peril",
-        coverage: "Property Coverage applies",
-        outcome: "Repair or replacement costs covered minus deductible"
+        type: 'Primary Coverage',
+        limit: 'As specified in policy',
+        description: 'Main coverage benefit as outlined in your policy documents'
       }
     ];
   }
 
-  private generateClientRecommendations(analysis: any, policyType: string): string[] {
+  // Default benefits
+  private getDefaultBenefits() {
     return [
-      "Keep this policy summary easily accessible for quick reference",
-      "Contact your agent immediately if business operations change significantly",
-      "Review and update coverage annually or when business grows",
-      "Report any incidents or potential claims promptly to ensure coverage",
-      "Maintain detailed inventory records for property coverage claims"
+      {
+        benefit: 'Financial Protection',
+        description: 'Provides financial coverage for covered losses as specified in your policy',
+        importance: 'high' as const
+      }
     ];
   }
 
-  private extractMatch(text: string, pattern: RegExp): string | null {
-    const match = text.match(pattern);
-    return match ? match[1].trim() : null;
+  // Default exclusions
+  private getDefaultExclusions() {
+    return [
+      {
+        description: 'Losses not specifically covered under policy terms',
+        category: 'General Exclusions',
+        impact: 'Review policy for specific exclusions that may apply'
+      }
+    ];
   }
 }
 
