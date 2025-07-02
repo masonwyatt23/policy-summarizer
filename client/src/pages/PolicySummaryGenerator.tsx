@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileUpload } from '@/components/FileUpload';
-import { ProcessingOptions } from '@/components/ProcessingOptions';
+import { ProcessingControlPanel } from '@/components/ProcessingControlPanel';
 import { SummaryPreview } from '@/components/SummaryPreview';
 import { ExtractedData } from '@/components/ExtractedData';
 import { ExportOptions } from '@/components/ExportOptions';
@@ -14,11 +14,7 @@ import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
 
 export default function PolicySummaryGenerator() {
   const [currentDocumentId, setCurrentDocumentId] = useState<number | null>(null);
-  const [processingOptions, setProcessingOptions] = useState({
-    extractCoverage: true,
-    generateExplanations: true,
-    includeImportance: false,
-  });
+  const [processingConfig, setProcessingConfig] = useState<any>(null);
 
   const { data: document, isLoading, refetch } = useQuery<ProcessedDocument>({
     queryKey: [`/api/documents/${currentDocumentId}`],
@@ -70,12 +66,10 @@ export default function PolicySummaryGenerator() {
             <FileUpload onUploadSuccess={handleUploadSuccess} />
           </div>
           <div>
-            <Card>
-              <ProcessingOptions
-                options={processingOptions}
-                onChange={setProcessingOptions}
-              />
-            </Card>
+            <ProcessingControlPanel
+              onProcessingChange={setProcessingConfig}
+              currentDocument={document}
+            />
           </div>
         </div>
 
