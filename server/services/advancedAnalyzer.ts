@@ -385,6 +385,76 @@ export class AdvancedPolicyAnalyzer {
     return `This ${policyType} provides crucial financial protection designed to safeguard against unexpected events that could result in significant financial hardship. Insurance coverage serves as a safety net, ensuring you receive proper support and compensation when covered incidents occur, allowing you to focus on recovery rather than financial stress.`;
   }
 
+  private generateRiskRecommendations(analysis: any, policyType: string): string[] {
+    const businessName = analysis.businessInfo.name.toLowerCase();
+    const isRestaurant = businessName.includes('grille') || businessName.includes('restaurant');
+    
+    const baseRecommendations = [
+      "Review coverage limits annually to ensure adequate protection",
+      "Maintain detailed records of all business assets and operations",
+      "Implement proper safety protocols and employee training programs"
+    ];
+    
+    if (isRestaurant) {
+      baseRecommendations.push(
+        "Install commercial-grade fire suppression systems in kitchen areas",
+        "Ensure all food handling staff receive proper food safety training",
+        "Consider liquor liability coverage if serving alcoholic beverages",
+        "Maintain slip-resistant flooring and proper lighting in customer areas"
+      );
+    }
+    
+    return baseRecommendations;
+  }
+
+  private generateRiskScenarios(analysis: any, policyType: string) {
+    const businessName = analysis.businessInfo.name.toLowerCase();
+    const isRestaurant = businessName.includes('grille') || businessName.includes('restaurant');
+    
+    if (isRestaurant) {
+      return [
+        {
+          situation: "Customer slips on wet floor and sustains injury",
+          coverage: "General Liability Coverage applies",
+          outcome: "Medical expenses, legal defense, and potential settlement covered up to policy limits"
+        },
+        {
+          situation: "Kitchen fire damages equipment and forces temporary closure",
+          coverage: "Property Coverage and Business Interruption apply",
+          outcome: "Equipment replacement costs and lost income during repairs covered"
+        },
+        {
+          situation: "Food poisoning claim from multiple customers",
+          coverage: "General Liability and Product Liability Coverage",
+          outcome: "Legal defense, medical claims, and potential settlements covered"
+        }
+      ];
+    }
+    
+    return [
+      {
+        situation: "Third-party injury on business premises",
+        coverage: "General Liability Coverage applies",
+        outcome: "Medical expenses and legal costs covered up to policy limits"
+      },
+      {
+        situation: "Property damage from covered peril",
+        coverage: "Property Coverage applies",
+        outcome: "Repair or replacement costs covered minus deductible"
+      }
+    ];
+  }
+
+  private generateClientRecommendations(analysis: any, policyType: string): string[] {
+    return [
+      "Keep this policy summary easily accessible for quick reference",
+      "Contact your agent immediately if business operations change significantly",
+      "Review and update coverage annually or when business grows",
+      "Report any incidents or potential claims promptly to ensure coverage",
+      "Maintain detailed inventory records for property coverage claims"
+    ];
+  }
+
   private extractMatch(text: string, pattern: RegExp): string | null {
     const match = text.match(pattern);
     return match ? match[1].trim() : null;
