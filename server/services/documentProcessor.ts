@@ -140,7 +140,14 @@ ${policyData.coverageDetails.length > 0 ?
 
 **KEY PROTECTION BENEFITS**
 
-${policyData.keyBenefits.map(benefit => `• ${benefit}`).join('\n')}
+${policyData.keyBenefits.map(benefit => {
+  if (typeof benefit === 'string') {
+    return `• ${benefit}`;
+  } else if (benefit && benefit.benefit) {
+    return `• **${benefit.benefit}**${benefit.description ? `\n  → ${benefit.description}` : ''}${benefit.importance ? ` *(${benefit.importance} priority)*` : ''}`;
+  }
+  return `• ${benefit}`;
+}).join('\n\n')}
 
 **WHO IS ELIGIBLE**
 
@@ -150,11 +157,18 @@ ${policyData.eligibility.restrictions ? policyData.eligibility.restrictions.map(
 
 **WHAT'S NOT COVERED** *(Important Exclusions)*
 
-${policyData.exclusions.map(exclusion => `• ${exclusion}`).join('\n')}
+${policyData.exclusions.map(exclusion => {
+  if (typeof exclusion === 'string') {
+    return `• ${exclusion}`;
+  } else if (exclusion && exclusion.description) {
+    return `• **${exclusion.category || 'Exclusion'}**: ${exclusion.description}${exclusion.impact ? `\n  → Impact: ${exclusion.impact}` : ''}`;
+  }
+  return `• ${exclusion}`;
+}).join('\n\n')}
 
 **WHY THIS COVERAGE MATTERS**
 
-${policyData.whyItMatters}
+${policyData.whyItMatters || policyData.explanation || 'This policy provides essential protection against unexpected events that could result in significant financial hardship.'}
 
 **EMERGENCY CONTACTS** *(Keep This Information Handy)*
 
