@@ -16,7 +16,10 @@ import {
   Check,
   X,
   CheckSquare,
-  Square
+  Square,
+  ExternalLink,
+  FileDown,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +41,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SummaryHistoryDialog } from "./SummaryHistoryDialog";
+import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
 interface DocumentListItem {
@@ -62,8 +68,11 @@ export function DocumentDashboard() {
   const [viewMode, setViewMode] = useState("grid");
   const [selectedDocuments, setSelectedDocuments] = useState<number[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [selectedDocumentForHistory, setSelectedDocumentForHistory] = useState<number | null>(null);
   
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: documents = [], isLoading } = useQuery({
     queryKey: ['/api/documents'],
@@ -134,6 +143,65 @@ export function DocumentDashboard() {
       queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
     },
   });
+
+  // Export PDF mutation
+  const exportPDFMutation = useMutation({
+    mutationFn: async (documentId: number) => {
+      const response = await fetch(`/api/documents/${documentId}/export`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          includeBranding: true,
+          includeExplanations: true,
+          includeTechnicalDetails: false,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Export failed');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `policy-summary-${documentId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Export Successful",
+        description: "PDF has been downloaded successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Export Failed",
+        description: error instanceof Error ? error.message : "Failed to export PDF",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handler functions
+  const handleViewHistory = (documentId: number) => {
+    setSelectedDocumentForHistory(documentId);
+    setHistoryDialogOpen(true);
+  };
+
+  const handleExportPDF = (documentId: number) => {
+    exportPDFMutation.mutate(documentId);
+  };
+
+  const handleViewSummary = (documentId: number) => {
+    window.location.href = `/summary/${documentId}`;
+  };
 
   const filteredDocuments = documents.filter((doc: DocumentListItem) => {
     const matchesSearch = doc.originalName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -213,21 +281,31 @@ export function DocumentDashboard() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleViewSummary(document.id)}
+                disabled={!document.processed}
+              >
                 <Eye className="w-4 h-4 mr-2" />
                 View Summary
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleViewHistory(document.id)}
+                disabled={!document.processed}
+              >
                 <History className="w-4 h-4 mr-2" />
                 Version History
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleExportPDF(document.id)}
+                disabled={!document.processed || exportPDFMutation.isPending}
+              >
                 <Download className="w-4 h-4 mr-2" />
-                Export PDF
+                {exportPDFMutation.isPending ? 'Exporting...' : 'Export PDF'}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => toggleFavoriteMutation.mutate(document.id)}
+                disabled={toggleFavoriteMutation.isPending}
               >
                 <Heart className={`w-4 h-4 mr-2 ${document.isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
                 {document.isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
@@ -235,9 +313,10 @@ export function DocumentDashboard() {
               <DropdownMenuItem
                 className="text-red-600"
                 onClick={() => deleteDocumentMutation.mutate(document.id)}
+                disabled={deleteDocumentMutation.isPending}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Delete
+                {deleteDocumentMutation.isPending ? 'Deleting...' : 'Delete'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -492,6 +571,15 @@ export function DocumentDashboard() {
           ))
         )}
       </div>
+
+      {/* Summary History Dialog */}
+      {selectedDocumentForHistory && (
+        <SummaryHistoryDialog
+          documentId={selectedDocumentForHistory}
+          open={historyDialogOpen}
+          onOpenChange={setHistoryDialogOpen}
+        />
+      )}
     </div>
   );
 }
