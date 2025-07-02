@@ -6,7 +6,9 @@ import {
   BarChart3, 
   Menu, 
   X,
-  Upload
+  Upload,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -23,6 +25,7 @@ import { UserSettings } from "@/components/UserSettings";
 function Navigation() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const navigationItems = [
     { path: "/", label: "Upload & Process", icon: Upload },
