@@ -249,16 +249,25 @@ export function DocumentDashboard() {
   };
 
   const DocumentCard = ({ document }: { document: DocumentListItem }) => (
-    <Card className={`hover:shadow-md transition-shadow ${isSelectionMode && selectedDocuments.includes(document.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}>
+    <Card className={`hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer border-l-4 ${
+      document.processed 
+        ? document.processingError 
+          ? 'border-l-red-500 hover:border-l-red-600' 
+          : 'border-l-green-500 hover:border-l-green-600'
+        : 'border-l-yellow-500 hover:border-l-yellow-600'
+    } ${isSelectionMode && selectedDocuments.includes(document.id) ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3 flex-1 min-w-0">
             {isSelectionMode && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0"
-                onClick={() => toggleDocumentSelection(document.id)}
+                className="h-6 w-6 p-0 flex-shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleDocumentSelection(document.id);
+                }}
               >
                 {selectedDocuments.includes(document.id) ? (
                   <CheckSquare className="w-4 h-4 text-blue-600" />
@@ -267,14 +276,43 @@ export function DocumentDashboard() {
                 )}
               </Button>
             )}
-            <FileText className="w-4 h-4 text-blue-500" />
-            <CardTitle className="text-sm font-medium truncate">
-              {document.originalName}
-            </CardTitle>
+            <div className="flex items-center space-x-2 flex-1 min-w-0">
+              <FileText className={`w-5 h-5 flex-shrink-0 ${
+                document.processed 
+                  ? document.processingError 
+                    ? 'text-red-500' 
+                    : 'text-green-500'
+                  : 'text-yellow-500'
+              }`} />
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-sm font-medium truncate text-gray-900" title={document.originalName}>
+                  {document.originalName}
+                </CardTitle>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Badge variant={document.processed ? "default" : "secondary"} 
+                    className={`text-xs ${
+                      document.processed 
+                        ? document.processingError 
+                          ? 'bg-red-100 text-red-800 border-red-200' 
+                          : 'bg-green-100 text-green-800 border-green-200'
+                        : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                    }`}>
+                    {document.processed 
+                      ? document.processingError 
+                        ? "Error" 
+                        : "Ready"
+                      : "Processing"}
+                  </Badge>
+                  {document.isFavorite && (
+                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
                 <MoreVertical className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -373,6 +411,49 @@ export function DocumentDashboard() {
               <div>Last viewed: {formatDate(document.lastViewedAt)}</div>
             )}
           </div>
+
+          {/* Quick Action Buttons */}
+          {document.processed && !document.processingError && (
+            <div className="flex items-center justify-between pt-3 border-t space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 h-8 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleViewSummary(document.id);
+                }}
+              >
+                <Eye className="w-3 h-3 mr-1" />
+                View
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 h-8 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleViewHistory(document.id);
+                }}
+              >
+                <History className="w-3 h-3 mr-1" />
+                History
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 h-8 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleExportPDF(document.id);
+                }}
+                disabled={exportPDFMutation.isPending}
+              >
+                <Download className="w-3 h-3 mr-1" />
+                Export
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -573,13 +654,14 @@ export function DocumentDashboard() {
       </div>
 
       {/* Summary History Dialog */}
-      {selectedDocumentForHistory && (
-        <SummaryHistoryDialog
-          documentId={selectedDocumentForHistory}
-          open={historyDialogOpen}
-          onOpenChange={setHistoryDialogOpen}
-        />
-      )}
+      <SummaryHistoryDialog
+        documentId={selectedDocumentForHistory}
+        isOpen={historyDialogOpen}
+        onClose={() => {
+          setHistoryDialogOpen(false);
+          setSelectedDocumentForHistory(null);
+        }}
+      />
     </div>
   );
 }
