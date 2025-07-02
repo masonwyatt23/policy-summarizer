@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileUpload } from '@/components/FileUpload';
-import { ProcessingControlPanel } from '@/components/ProcessingControlPanel';
+import { SimpleProcessingOptions } from '@/components/SimpleProcessingOptions';
 import { SummaryPreview } from '@/components/SummaryPreview';
 import { ExtractedData } from '@/components/ExtractedData';
 import { ExportOptions } from '@/components/ExportOptions';
@@ -66,7 +66,7 @@ export default function PolicySummaryGenerator() {
             <FileUpload onUploadSuccess={handleUploadSuccess} />
           </div>
           <div>
-            <ProcessingControlPanel
+            <SimpleProcessingOptions
               onProcessingChange={setProcessingConfig}
               currentDocument={document}
             />
