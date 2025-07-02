@@ -104,12 +104,22 @@ RESPONSE FORMAT: Return a complete JSON object with this exact structure:
             },
             {
               role: 'user',
-              content: `Please analyze this insurance policy document and extract accurate information to create a comprehensive summary. Focus on finding real data from the document, not generic information.
+              content: `Please analyze this insurance policy document and create an INCREDIBLY comprehensive, detailed analysis with rich paragraph content. I need substantial, professional reporting with extensive detail in each section.
 
 DOCUMENT TEXT:
 ${documentText}
 
-Please read through this entire document carefully and extract the real policy information, coverage details, exclusions, and contact information. Generate a detailed, accurate analysis based on what's actually written in this specific policy document.`
+CRITICAL ANALYSIS REQUIREMENTS:
+• Read EVERY word of this document with extreme attention to detail
+• Extract ALL real information exactly as written
+• Create comprehensive, detailed paragraphs for each section - not bullet points or short statements
+• Write substantial, flowing text with thorough explanations
+• Provide extensive detail and context for every coverage type
+• Include specific examples and practical implications
+• Write in professional, comprehensive paragraphs that demonstrate deep understanding
+• Make each section rich with information and insights
+
+I need a detailed, professional report with substantial paragraph content that provides exceptional value and demonstrates comprehensive understanding of this specific policy.`
             }
           ],
           temperature: 0.1,
@@ -181,14 +191,39 @@ COMPREHENSIVE SUMMARY REQUIREMENTS:
 • Structure information logically and professionally
 • Focus on practical implications for the policyholder
 
-Create a comprehensive summary that includes:
-1. Executive overview of the policy and its primary purpose
-2. Detailed coverage breakdown with explanations
-3. Key benefits and special features
-4. Important limitations and exclusions with context
-5. Practical guidance for policyholders
-6. Contact information and next steps
-7. Professional recommendations based on the policy terms Create a comprehensive, easy-to-understand summary that explains the policy in plain language while highlighting the most important aspects.
+Create a comprehensive, richly detailed summary that includes:
+
+**EXECUTIVE OVERVIEW** (2-3 paragraphs):
+- Comprehensive introduction to the policy and insurance company
+- Primary purpose and scope of coverage
+- Overall value proposition for the policyholder
+
+**COVERAGE ANALYSIS** (detailed paragraphs for each coverage):
+- Thorough explanation of each coverage type with specific limits and deductibles
+- What each coverage protects against with real-world examples
+- How coverage limits and deductibles work in practice
+
+**BENEFITS & FEATURES** (comprehensive paragraphs):
+- Detailed explanation of key benefits and special features
+- Why each benefit matters to the policyholder
+- Unique aspects that set this policy apart
+
+**RISK MANAGEMENT** (detailed paragraphs):
+- Important exclusions with context and implications
+- Risk factors the policy addresses
+- Practical risk management recommendations
+
+**PRACTICAL GUIDANCE** (comprehensive paragraphs):
+- Step-by-step guidance for policyholders
+- How to maximize policy value
+- When and how to file claims
+
+**PROFESSIONAL RECOMMENDATIONS** (detailed analysis):
+- Expert insights based on policy terms
+- Coverage adequacy assessment
+- Strategic recommendations for the business
+
+Write in flowing, professional paragraphs with substantial detail. Each section should be comprehensive and informative.
 
 FORMAT REQUIREMENTS:
 - Use clear, professional language that clients can easily understand
@@ -196,14 +231,15 @@ FORMAT REQUIREMENTS:
 - Highlight key coverage amounts, deductibles, and important dates
 - Explain what the policy does and doesn't cover in practical terms
 - Include actionable next steps and recommendations
-- Use **bold text** for important information
-- Use bullet points (•) for lists
+- Use **bold text** for important headings
+- Write comprehensive paragraphs with substantial detail
+- Focus on paragraph-based content rather than bullet points
 
-The summary should be detailed but readable, approximately 300-500 words.`
+The summary should be extremely detailed and comprehensive, approximately 800-1200 words with rich paragraph content.`
             },
             {
               role: 'user',
-              content: `Create a comprehensive, client-friendly summary for this insurance policy:
+              content: `Create an INCREDIBLY comprehensive, detailed policy summary with extensive paragraph content. I need a professional report with substantial detail in every section.
 
 POLICY TYPE: ${policyData.policyType}
 INSURER: ${policyData.insurer}
@@ -216,7 +252,17 @@ ${policyData.keyBenefits?.map(b => `- ${typeof b === 'string' ? b : b.benefit}${
 
 ${clientContext ? `CLIENT CONTEXT: ${clientContext}` : ''}
 
-Please create a professional, comprehensive summary that explains this policy clearly and highlights what matters most to the client.`
+CRITICAL REQUIREMENTS FOR INCREDIBLE SUMMARY:
+• Write comprehensive, detailed paragraphs - not bullet points or short statements
+• Provide extensive explanations with substantial detail for each section
+• Include practical examples and real-world implications
+• Write in flowing, professional paragraphs that demonstrate deep understanding
+• Create 2-3 paragraphs per major section with thorough coverage
+• Focus on providing exceptional value through detailed analysis
+• Explain complex concepts thoroughly with context and examples
+• Include actionable insights and professional recommendations
+
+I need a detailed, professional summary with rich paragraph content that provides exceptional value and demonstrates comprehensive understanding of this policy.`
             }
           ],
           temperature: 0.3,
