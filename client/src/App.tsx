@@ -13,7 +13,7 @@ import {
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -84,12 +84,13 @@ function Navigation({
               variant="ghost"
               size="sm"
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className={`absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-md z-10 transition-colors`}
+              title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              className={`absolute ${isSidebarCollapsed ? 'right-1 top-2' : 'right-2 top-1/2 -translate-y-1/2'} h-6 w-6 p-0 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 border-0 rounded-full transition-all duration-300 opacity-70 hover:opacity-100 hover:scale-110`}
             >
               {isSidebarCollapsed ? (
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-3 h-3" />
               ) : (
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3 h-3" />
               )}
             </Button>
           </div>
