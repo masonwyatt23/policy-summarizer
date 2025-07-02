@@ -197,36 +197,24 @@ CLIENT-FOCUSED SUMMARY REQUIREMENTS:
 
 Create a comprehensive, value-focused summary that includes:
 
-**YOUR PROTECTION OVERVIEW** (1 concise paragraph):
-- Clearly explain what this policy means for their business in 3-4 sentences
-- Focus on the most essential protection it provides
+**COMPREHENSIVE PROTECTION SUMMARY** (dense, integrated format):
+Create a flowing, narrative-style summary that integrates all essential information into comprehensive, dense paragraphs. Pack maximum accurate detail into minimal space while maintaining readability.
 
-**KEY COVERAGE HIGHLIGHTS** (brief, focused explanations):
-- Cover the 4-5 most important coverage types with practical examples
-- Keep each coverage explanation to 2-3 sentences maximum
-- Focus on real-world protection rather than technical details
-
-**IMPORTANT BENEFITS** (concise value points):
-- Highlight 3-4 key benefits using bullet points or brief paragraphs
-- Emphasize practical protection for their specific business type
-- Keep descriptions clear and direct
-
-**COVERAGE BOUNDARIES** (essential exclusions only):
-- List only the most important exclusions clients should understand
-- Present as helpful boundaries, not limitations
-- Keep explanations brief and professional
-
-**NEXT STEPS** (actionable recommendations):
-- 2-3 clear recommendations for maximizing coverage value
-- Contact information for their Valley Trust Insurance agent
+**Structure as flowing narrative with these integrated elements:**
+- **Opening paragraph**: Explain the policy's comprehensive protection with specific coverage amounts and business relevance
+- **Core Coverage Integration**: Weave together general liability, liquor liability, employment practices, cyber protection, and property coverage in detailed paragraphs that show how they work together
+- **Business-Specific Value**: Dense paragraphs explaining how each coverage directly protects their restaurant/bar operations with real-world scenarios and verified limits
+- **Critical Exclusions & Boundaries**: Integrate key exclusions naturally within coverage explanations rather than separate lists
+- **Actionable Recommendations**: Conclude with specific steps for policy optimization and Valley Trust contact information
 
 FORMAT REQUIREMENTS:
-- Use professional, confident language that builds trust
-- Target 400-600 words total for digestible 2-4 page PDF
-- Focus on essential information rather than comprehensive detail
-- Use **bold text** for section headings
-- Maintain complete accuracy while being concise
-- Create clear, actionable content that clients can quickly understand`
+- Write in dense, information-rich paragraphs that flow naturally
+- Integrate multiple coverage types and benefits within single paragraphs
+- Pack comprehensive details into 400-600 words for 2-4 page output
+- Use **bold text** sparingly only for major section breaks
+- Maintain complete accuracy while maximizing information density
+- Create seamless narrative flow rather than separated bullet points
+- Focus on comprehensive, detailed explanations within compact format`
             },
             {
               role: 'user',
@@ -241,39 +229,39 @@ CLIENT CONTEXT:
 • Coverage Focus: Comprehensive business protection with specialized restaurant/bar coverages
 
 SUMMARY REQUIREMENTS:
-• CREATE a clear, focused summary that highlights essential protection (400-600 words total)
-• EXPLAIN the most important coverage types concisely with practical examples
-• EMPHASIZE key benefits without overwhelming detail
-• KEEP explanations brief and actionable for busy business owners
-• FOCUS on what matters most to their specific business type
+• CREATE a dense, comprehensive narrative that integrates all essential information (400-600 words total)
+• WEAVE coverage types together showing how they work as integrated protection
+• PACK maximum accurate detail into flowing, readable paragraphs
+• INTEGRATE exclusions and benefits naturally within coverage explanations
+• FOCUS on comprehensive understanding through narrative flow rather than lists
 
-TOP COVERAGE PRIORITIES TO HIGHLIGHT:
-• General Liability - Customer protection essentials
-• Liquor Liability - Critical for restaurant/bar operations  
-• Employment Practices - Workplace protection basics
-• Cyber Protection - Digital security fundamentals
-• Property & Income Protection - Business continuity
+INTEGRATION APPROACH:
+• Start with comprehensive overview including specific dollar amounts and policy scope
+• Flow into detailed coverage explanations that show interconnected protection
+• Integrate real-world examples within technical coverage details
+• Weave exclusions into coverage explanations where relevant
+• Conclude with specific recommendations and contact details
 
-Remember: Focus on clear value communication, not exhaustive detail. Help the client quickly understand their essential protection. Be professional, confident, and concise.
+Remember: Create dense, information-rich content that flows naturally. Pack comprehensive details into compact format. Be thorough and accurate while maintaining readability.
 
-CRITICAL: Keep the summary digestible and focused. Target 400-600 words total for 2-4 page PDF. Include all required sections but keep them brief and impactful.
+CRITICAL: Maximize information density while maintaining flow. Target 400-600 words of comprehensive, integrated content for 2-4 page PDF.
 
 KEY BENEFITS:
 ${policyData.keyBenefits?.map(b => `- ${typeof b === 'string' ? b : b.benefit}${b.description ? ': ' + b.description : ''}`).join('\n')}
 
 ${clientContext ? `CLIENT CONTEXT: ${clientContext}` : ''}
 
-CRITICAL REQUIREMENTS FOR CONCISE SUMMARY:
-• Write clear, focused paragraphs that get to the point quickly
-• Keep each section brief and essential - avoid unnecessary detail
-• Include practical examples without excessive explanation
-• Write professional content that busy business owners can quickly understand
-• Create 1-2 concise paragraphs per section maximum
-• Focus on key value points rather than comprehensive analysis
-• Explain important concepts clearly and directly
-• Include actionable insights and essential recommendations only
+CRITICAL REQUIREMENTS FOR DENSE INTEGRATION:
+• Write information-rich paragraphs that flow naturally together
+• Integrate multiple coverage types and benefits within single paragraphs
+• Pack comprehensive details with specific amounts, limits, and practical examples
+• Create seamless narrative flow rather than separated sections with headers
+• Weave exclusions and limitations naturally within coverage explanations
+• Include verified policy details with practical business applications
+• Maintain professional tone while maximizing information density
+• Conclude with specific recommendations and contact information
 
-Create a professional, concise summary that busy business owners can quickly read and understand - targeting 400-600 words total.`
+Create a comprehensive, dense narrative that delivers maximum accurate detail in 400-600 words - perfect for 2-4 page professional output.`
             }
           ],
           temperature: 0.3,
@@ -339,26 +327,9 @@ Create a professional, concise summary that busy business owners can quickly rea
   }
 
   private generateFallbackSummary(policyData: PolicyData): string {
-    return `**${policyData.policyType} Policy Summary**
+    return `Your ${policyData.policyType} policy from ${policyData.insurer} delivers comprehensive business protection combining ${policyData.coverageDetails?.slice(0, 3).map(c => `${c.type} (${c.limit})`).join(', ') || 'essential coverage types'} to safeguard your operations against customer injuries, property damage, employment disputes, and business interruption. This integrated coverage approach means your general liability protection works seamlessly with specialized coverages including ${policyData.coverageDetails?.find(c => c.type.toLowerCase().includes('liquor'))?.type || 'liquor liability'} for alcohol-related incidents and employment practices coverage for workplace disputes, creating a unified shield for your business assets and income.
 
-This ${policyData.policyType.toLowerCase()} policy from ${policyData.insurer} provides comprehensive coverage designed to protect you from financial loss.
-
-**Key Coverage:**
-${policyData.coverageDetails?.map(c => `• ${c.type}: ${c.limit}`).join('\n') || '• Coverage details as specified in your policy'}
-
-**Important Benefits:**
-${policyData.keyBenefits?.map(b => `• ${typeof b === 'string' ? b : b.benefit}`).join('\n') || '• Benefits as outlined in your policy documents'}
-
-**What This Means for You:**
-${policyData.whyItMatters || 'This policy provides financial protection and peace of mind for covered events.'}
-
-**Next Steps:**
-• Review your policy documents thoroughly
-• Keep important contact information accessible
-• Contact your agent with any questions
-• Report claims promptly when needed
-
-For specific coverage questions or to file a claim, contact your insurance provider using the information provided in your policy documents.`;
+The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0, 2).map(b => typeof b === 'string' ? b : b.benefit).join(' and ') || 'comprehensive business protection'}, with important coverage boundaries that help define your protection scope. ${policyData.whyItMatters || 'This comprehensive coverage provides financial protection and operational continuity for your business.'} For optimal protection and to clarify any coverage details, review your complete policy documentation with your Valley Trust Insurance agent at (540) 885-5531, ensuring all coverage limits align with your business needs and operational requirements.`;
   }
 }
 
