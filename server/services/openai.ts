@@ -136,6 +136,7 @@ Respond only with valid JSON that matches the exact structure specified above.
 function generateDemoAnalysis(documentText: string): PolicyData {
   console.log('Generating enhanced demo analysis from document content...');
   console.log(`Analyzing document with ${documentText.length} characters of text content`);
+  console.log('First 500 characters of extracted text:', documentText.substring(0, 500));
   
   // Advanced text analysis using multiple patterns and context clues
   const lowerText = documentText.toLowerCase();
