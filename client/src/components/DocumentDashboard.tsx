@@ -13,7 +13,11 @@ import {
   Eye,
   Download,
   History,
-  Settings
+  Settings,
+  Check,
+  X,
+  CheckSquare,
+  Square
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +61,8 @@ export function DocumentDashboard() {
   const [sortBy, setSortBy] = useState("uploadedAt");
   const [filterBy, setFilterBy] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
+  const [selectedDocuments, setSelectedDocuments] = useState<number[]>([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -85,6 +91,47 @@ export function DocumentDashboard() {
       queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
     },
   });
+
+  const batchDeleteMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      // Delete documents one by one since we don't have a batch endpoint
+      const promises = ids.map(id => 
+        apiRequest(`/api/documents/${id}`, {
+          method: 'DELETE',
+        })
+      );
+      return Promise.all(promises);
+    },
+    onSuccess: () => {
+      setSelectedDocuments([]);
+      setIsSelectionMode(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
+    },
+  });
+
+  // Selection helper functions
+  const toggleDocumentSelection = (id: number) => {
+    setSelectedDocuments(prev => 
+      prev.includes(id) 
+        ? prev.filter(docId => docId !== id)
+        : [...prev, id]
+    );
+  };
+
+  const selectAllDocuments = () => {
+    const allIds = filteredDocuments.map((doc: DocumentListItem) => doc.id);
+    setSelectedDocuments(allIds);
+  };
+
+  const deselectAllDocuments = () => {
+    setSelectedDocuments([]);
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedDocuments.length > 0 && confirm(`Are you sure you want to delete ${selectedDocuments.length} document(s)?`)) {
+      batchDeleteMutation.mutate(selectedDocuments);
+    }
+  };
 
   const updateTagsMutation = useMutation({
     mutationFn: async ({ id, tags }: { id: number; tags: string[] }) => {
@@ -144,10 +191,24 @@ export function DocumentDashboard() {
   };
 
   const DocumentCard = ({ document }: { document: DocumentListItem }) => (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className={`hover:shadow-md transition-shadow ${isSelectionMode && selectedDocuments.includes(document.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-2">
+            {isSelectionMode && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={() => toggleDocumentSelection(document.id)}
+              >
+                {selectedDocuments.includes(document.id) ? (
+                  <CheckSquare className="w-4 h-4 text-blue-600" />
+                ) : (
+                  <Square className="w-4 h-4 text-gray-400" />
+                )}
+              </Button>
+            )}
             <FileText className="w-4 h-4 text-blue-500" />
             <CardTitle className="text-sm font-medium truncate">
               {document.originalName}
@@ -298,7 +359,74 @@ export function DocumentDashboard() {
             <SelectItem value="size">File Size</SelectItem>
           </SelectContent>
         </Select>
+        
+        {/* Batch Selection Controls */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant={isSelectionMode ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setIsSelectionMode(!isSelectionMode);
+              if (!isSelectionMode) {
+                setSelectedDocuments([]);
+              }
+            }}
+          >
+            <CheckSquare className="w-4 h-4 mr-2" />
+            {isSelectionMode ? 'Exit Selection' : 'Select'}
+          </Button>
+        </div>
       </div>
+
+      {/* Batch Action Bar */}
+      {isSelectionMode && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={selectedDocuments.length === filteredDocuments.length ? deselectAllDocuments : selectAllDocuments}
+              >
+                {selectedDocuments.length === filteredDocuments.length ? (
+                  <Square className="w-4 h-4 mr-2" />
+                ) : (
+                  <CheckSquare className="w-4 h-4 mr-2" />
+                )}
+                {selectedDocuments.length === filteredDocuments.length ? 'Deselect All' : 'Select All'}
+              </Button>
+              
+              <span className="text-sm text-gray-600">
+                {selectedDocuments.length} of {filteredDocuments.length} selected
+              </span>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBatchDelete}
+              disabled={selectedDocuments.length === 0 || batchDeleteMutation.isPending}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              {batchDeleteMutation.isPending ? 'Deleting...' : `Delete ${selectedDocuments.length}`}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setIsSelectionMode(false);
+                setSelectedDocuments([]);
+              }}
+            >
+              <X className="w-4 h-4 mr-2" />
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
