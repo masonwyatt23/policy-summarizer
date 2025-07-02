@@ -149,6 +149,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Each paragraph targets 80-120 words of comprehensive, detailed content
   - Structured as: policy foundation, core liability, property/operational, coverage boundaries, recommendations
   - Designed for professional readability with seamless paragraph transitions
+- July 02, 2025: Made Export PDF button fully functional in PolicySummaryGenerator
+  - Added PDF export mutation with proper error handling and loading states
+  - Integrated toast notifications for success and error feedback
+  - Connected to existing professional PDF generator with branded output
+  - Button shows "Exporting..." during processing and auto-downloads completed PDF
+  - Uses enhanced PDF generator with A4 layout, professional typography, and Valley Trust branding
 
 ## Changelog
 - July 01, 2025. Initial setup

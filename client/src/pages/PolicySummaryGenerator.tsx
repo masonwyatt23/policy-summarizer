@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,6 +11,7 @@ import { ExportOptions } from '@/components/ExportOptions';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
 import { Clock, FileText, CheckCircle, User } from 'lucide-react';
 import { api, ProcessedDocument, DocumentListItem } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
 
 interface PolicySummaryGeneratorProps {
@@ -23,6 +24,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   );
   const [processingConfig, setProcessingConfig] = useState<any>(null);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   // Update currentDocumentId when documentId prop changes
   useEffect(() => {
@@ -44,8 +46,53 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
     queryKey: ['/api/documents'],
   });
 
+  // PDF Export mutation
+  const exportPDFMutation = useMutation({
+    mutationFn: async (documentId: number) => {
+      const options = {
+        clientName: '',
+        policyReference: '',
+        includeExplanations: true,
+        includeTechnicalDetails: false,
+        includeBranding: true,
+      };
+      
+      const blob = await api.exportPDF(documentId, options);
+      
+      // Download the PDF
+      const url = window.URL.createObjectURL(blob);
+      const link = window.document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.download = `policy-summary-${window.location.hostname}-${Date.now()}.pdf`;
+      window.document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      window.document.body.removeChild(link);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Export Successful",
+        description: "PDF has been downloaded successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Export Failed",
+        description: error instanceof Error ? error.message : "Failed to export PDF",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleUploadSuccess = (documentId: number) => {
     setCurrentDocumentId(documentId);
+  };
+
+  const handleExportPDF = () => {
+    if (currentDocumentId) {
+      exportPDFMutation.mutate(currentDocumentId);
+    }
   };
 
   const isDocumentReady = document?.processed && !document?.processingError && document?.extractedData;
@@ -168,10 +215,11 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
               </Button>
               <Button 
                 className="valley-secondary valley-secondary-hover"
-                disabled={!isDocumentReady}
+                disabled={!isDocumentReady || exportPDFMutation.isPending}
+                onClick={handleExportPDF}
               >
                 <FileText className="w-4 h-4 mr-2" />
-                Export PDF
+                {exportPDFMutation.isPending ? 'Exporting...' : 'Export PDF'}
               </Button>
               <Button variant="outline" onClick={() => setCurrentDocumentId(null)}>
                 <FileText className="w-4 h-4 mr-2" />
