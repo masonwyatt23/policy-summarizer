@@ -156,9 +156,23 @@ export const PolicyDataSchema = z.object({
   policyType: z.string(),
   insurer: z.string(),
   policyNumber: z.string().optional(),
+  policyPeriod: z.string().optional(),
+  insuredName: z.string().optional(),
   effectiveDate: z.string().optional(),
   expirationDate: z.string().optional(),
   premiumAmount: z.string().optional(),
+  
+  // Document verification fields
+  documentInconsistencies: z.array(z.object({
+    field: z.string(),
+    variations: z.array(z.string()),
+    recommendation: z.string(),
+  })).optional(),
+  
+  documentAccuracyNotes: z.string().optional(),
+  unverifiedInformation: z.array(z.string()).optional(),
+  missingInformation: z.array(z.string()).optional(),
+  recommendedVerifications: z.array(z.string()).optional(),
   coverageDetails: z.array(z.object({
     type: z.string(),
     limit: z.string(),
@@ -166,6 +180,14 @@ export const PolicyDataSchema = z.object({
     description: z.string().optional(),
     waitingPeriod: z.string().optional(),
   })),
+  
+  // Verification-specific coverage details
+  verifiedCoverageDetails: z.array(z.object({
+    type: z.string(),
+    formCode: z.string().optional(),
+    limit: z.string(),
+    deductible: z.string().optional(),
+  })).optional(),
   eligibility: z.object({
     ageLimit: z.string().optional(),
     maxDuration: z.string().optional(),
@@ -173,17 +195,15 @@ export const PolicyDataSchema = z.object({
     requirements: z.array(z.string()).optional(),
   }),
   exclusions: z.array(z.object({
-    category: z.string(),
+    category: z.string().optional(),
     description: z.string(),
     impact: z.string().optional(),
+    formCode: z.string().optional(),
   })),
-  importantContacts: z.object({
-    insurer: z.string().optional(),
-    administrator: z.string().optional(),
-    emergencyLine: z.string().optional(),
-    claimsLine: z.string().optional(),
-    website: z.string().optional(),
-  }),
+  importantContacts: z.array(z.object({
+    type: z.string(),
+    details: z.string(),
+  })).optional(),
   keyBenefits: z.array(z.object({
     benefit: z.string(),
     description: z.string().optional(),

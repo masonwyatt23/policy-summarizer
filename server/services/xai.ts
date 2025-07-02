@@ -27,99 +27,103 @@ export class XAIService {
           messages: [
             {
               role: 'system',
-              content: `You are an elite insurance expert who creates INCREDIBLE, comprehensive policy summaries for professional insurance agents. Your analysis must capture EVERY important detail and provide exceptional insights.
+              content: `You are a precise insurance document analyzer who creates accurate, conservative policy summaries for professional insurance agents. Your analysis must be completely factual and verifiable.
 
-MISSION: Create an outstanding analysis that thoroughly examines the entire document and provides the highest quality summary possible.
+CRITICAL ACCURACY REQUIREMENTS:
+• ONLY report information that is explicitly stated in the document
+• NEVER make assumptions or fill in missing details
+• ACKNOWLEDGE inconsistencies and discrepancies in the document
+• CLEARLY indicate when information is missing or unclear
+• INCLUDE ALL exclusions and limitations found in the document
+• IDENTIFY and NOTE any contradictory information
+• EXPLICITLY STATE when details cannot be verified from the provided text
 
-COMPREHENSIVE ANALYSIS REQUIREMENTS:
-• Read EVERY word of the document with extreme attention to detail
-• Extract ALL real information exactly as written - policy numbers, company names, phone numbers, coverage amounts, dates, terms, conditions
-• Identify the complete policy structure including all sections, endorsements, and special provisions
-• Find ALL coverage types with their specific limits, deductibles, waiting periods, and conditions
-• Extract ALL benefits, features, and special provisions with precise details
-• Capture ALL exclusions and limitations with their specific conditions and implications
-• Find ALL contact information - phone numbers, addresses, websites, email addresses, emergency lines
-• Identify ALL key personnel, agents, administrators, claim handlers, and their specific roles
-• Extract ALL eligibility requirements, age limits, geographic restrictions, and qualifying conditions
-• Note ALL claim procedures, reporting requirements, deadlines, and documentation needed
-• Capture ANY special terms, endorsements, riders, or additional coverages
-• Identify premium information, payment terms, renewal conditions
-• Extract policy effective dates, expiration dates, and any important deadlines
+DOCUMENT ANALYSIS APPROACH:
+• Extract ONLY what is explicitly written in the document
+• Note inconsistencies in names, numbers, dates, or terms
+• Include ALL exclusions and limitations mentioned
+• Identify coverage forms and endorsements by their exact codes
+• Report contact information ONLY if clearly stated
+• Acknowledge incomplete or unclear information
+• Do not assume standard policy terms or industry defaults
 
-INCREDIBLE QUALITY STANDARDS:
-• Use ONLY information that appears in the actual document
-• Be extremely precise with all numbers, dates, names, and terms
-• Provide comprehensive details for each section - don't summarize, be thorough
-• Focus on what matters most to insurance professionals and their clients
-• Create insights that demonstrate deep understanding of the policy
+ACCURACY STANDARDS:
+• Use ONLY information that appears verbatim in the document
+• Flag any inconsistencies or unclear information
+• Include exclusions as prominently as coverage details
+• Clearly distinguish between verified facts and unclear information
+• Never extrapolate beyond what is explicitly stated
 
 RESPONSE FORMAT: Return a complete JSON object with this exact structure:
 {
-  "policyType": "string - actual policy type found in document",
-  "insurer": "string - actual insurance company name",
-  "coverageDetails": [
+  "policyType": "string - actual policy type found in document or 'Not clearly specified'",
+  "insurer": "string - actual insurance company name as written",
+  "policyNumber": "string - policy number as written or 'Inconsistent - see documentInconsistencies'",
+  "policyPeriod": "string - policy dates as written or 'Inconsistent - see documentInconsistencies'",
+  "insuredName": "string - insured name as written or 'Inconsistent - see documentInconsistencies'",
+  "documentInconsistencies": [
     {
-      "type": "string - coverage type",
-      "limit": "string - coverage amount",
-      "description": "string - what this covers",
-      "deductible": "string - if mentioned"
+      "field": "string - field name (e.g., 'Policy Number', 'Insured Name')",
+      "variations": ["string - different values found in document"],
+      "recommendation": "string - what should be verified"
     }
   ],
-  "keyBenefits": [
+  "verifiedCoverageDetails": [
     {
-      "benefit": "string - benefit title",
-      "description": "string - detailed description",
-      "importance": "critical|high|medium|low"
+      "type": "string - coverage type from document",
+      "formCode": "string - actual form code if mentioned",
+      "limit": "string - coverage amount if explicitly stated or 'Not specified in excerpt'",
+      "deductible": "string - deductible if mentioned or 'Not specified in excerpt'"
     }
   ],
-  "eligibility": ["string - requirements from document"],
+  "unverifiedInformation": [
+    "string - information that cannot be confirmed from the provided document excerpt"
+  ],
   "exclusions": [
     {
-      "description": "string - actual exclusion from document",
-      "category": "string - type of exclusion",
-      "impact": "string - impact explanation"
+      "description": "string - actual exclusion text from document",
+      "formCode": "string - exclusion form code if mentioned"
     }
+  ],
+  "missingInformation": [
+    "string - critical information not found in the document excerpt"
   ],
   "importantContacts": [
     {
       "type": "string - contact type",
-      "phone": "string - actual phone from document",
-      "email": "string - actual email from document"
+      "details": "string - contact information exactly as written in document"
     }
   ],
-  "whyItMatters": "string - clear explanation of policy value",
-  "riskAssessment": {
-    "highRiskFactors": ["string - risk factors"],
-    "recommendations": ["string - actionable recommendations"],
-    "scenarios": [
-      {
-        "scenario": "string - situation",
-        "impact": "string - financial impact",
-        "mitigation": "string - how policy helps"
-      }
-    ]
-  },
-  "clientRecommendations": ["string - next steps for client"]
+  "documentAccuracyNotes": "string - overall assessment of document quality and any OCR or clarity issues",
+  "recommendedVerifications": ["string - items that should be verified with the complete policy"]
 }`
             },
             {
               role: 'user',
-              content: `Please analyze this insurance policy document and create an INCREDIBLY comprehensive, detailed analysis with rich paragraph content. I need substantial, professional reporting with extensive detail in each section.
+              content: `Please analyze this insurance policy document with extreme care for accuracy. I need a conservative, factual analysis that only reports verifiable information.
 
 DOCUMENT TEXT:
 ${documentText}
 
-CRITICAL ANALYSIS REQUIREMENTS:
-• Read EVERY word of this document with extreme attention to detail
-• Extract ALL real information exactly as written
-• Create comprehensive, detailed paragraphs for each section - not bullet points or short statements
-• Write substantial, flowing text with thorough explanations
-• Provide extensive detail and context for every coverage type
-• Include specific examples and practical implications
-• Write in professional, comprehensive paragraphs that demonstrate deep understanding
-• Make each section rich with information and insights
+CRITICAL ACCURACY REQUIREMENTS:
+• ONLY extract information that is explicitly written in the document
+• IDENTIFY and REPORT any inconsistencies you find (different policy numbers, names, dates, etc.)
+• INCLUDE ALL exclusions and limitations mentioned in the document
+• DO NOT assume or infer coverage limits, deductibles, or terms not explicitly stated
+• CLEARLY mark information as "Not specified in excerpt" when details are missing
+• ACKNOWLEDGE when the document appears to have OCR errors or unclear text
+• REPORT contradictory information instead of trying to resolve it
+• LIST all exclusion forms and endorsements by their exact codes
 
-I need a detailed, professional report with substantial paragraph content that provides exceptional value and demonstrates comprehensive understanding of this specific policy.`
+VERIFICATION FOCUS:
+• Extract the insured name exactly as written (note if it appears differently in different places)
+• Extract policy numbers exactly as written (note if they vary across pages)
+• Extract policy periods exactly as written (note if incomplete or inconsistent)
+• Only report coverage limits that are explicitly stated in the text
+• Include ALL exclusions found in the document
+• Note any missing critical information that would typically be in a complete policy
+
+Be extremely conservative - it's better to say "Not specified in excerpt" than to make assumptions based on industry standards.`
             }
           ],
           temperature: 0.1,
@@ -177,72 +181,72 @@ I need a detailed, professional report with substantial paragraph content that p
           messages: [
             {
               role: 'system',
-              content: `You are an elite insurance expert creating INCREDIBLE, comprehensive policy summaries that provide exceptional value to insurance professionals and their clients.
+              content: `You are a precise insurance document analyst creating accurate, conservative policy summaries for professional insurance agents and their clients.
 
-MISSION: Create an outstanding, detailed summary that captures the full scope and value of the insurance policy.
+MISSION: Create a factual summary that only reports verifiable information from the policy analysis.
 
-COMPREHENSIVE SUMMARY REQUIREMENTS:
-• Write in clear, professional language that both agents and clients can understand
-• Provide thorough explanations that demonstrate deep understanding of the policy
-• Include ALL important details without overwhelming the reader
-• Explain complex insurance terms in simple language
-• Highlight what makes this policy valuable and unique
-• Provide actionable insights and recommendations
-• Structure information logically and professionally
-• Focus on practical implications for the policyholder
+ACCURACY-FOCUSED SUMMARY REQUIREMENTS:
+• ONLY include information that was verified in the policy analysis
+• CLEARLY indicate when information is missing or unverified
+• ACKNOWLEDGE any inconsistencies or document quality issues
+• PROMINENTLY include exclusions and limitations
+• DO NOT make assumptions about standard policy terms
+• EXPLICITLY note missing critical information
+• USE professional, clear language while maintaining strict accuracy
+• HIGHLIGHT uncertainties and required verifications
 
-Create a comprehensive, richly detailed summary that includes:
+Create a conservative, factual summary that includes:
 
-**EXECUTIVE OVERVIEW** (2-3 paragraphs):
-- Comprehensive introduction to the policy and insurance company
-- Primary purpose and scope of coverage
-- Overall value proposition for the policyholder
+**DOCUMENT VERIFICATION STATUS**:
+- Report any inconsistencies found in the document
+- Note missing or unclear information that requires verification
+- Document quality assessment and OCR issues
 
-**COVERAGE ANALYSIS** (detailed paragraphs for each coverage):
-- Thorough explanation of each coverage type with specific limits and deductibles
-- What each coverage protects against with real-world examples
-- How coverage limits and deductibles work in practice
+**VERIFIED POLICY INFORMATION**:
+- Only include insurer, policy number, dates, and insured name as they appear in the document
+- Note any variations or inconsistencies in this information
+- Clearly state what information could not be verified
 
-**BENEFITS & FEATURES** (comprehensive paragraphs):
-- Detailed explanation of key benefits and special features
-- Why each benefit matters to the policyholder
-- Unique aspects that set this policy apart
+**CONFIRMED COVERAGE DETAILS**:
+- List only coverages that are explicitly mentioned in the document
+- Include form codes where available
+- Clearly state when limits or deductibles are "Not specified in excerpt"
+- Do not assume standard industry limits
 
-**RISK MANAGEMENT** (detailed paragraphs):
-- Important exclusions with context and implications
-- Risk factors the policy addresses
-- Practical risk management recommendations
+**DOCUMENTED EXCLUSIONS AND LIMITATIONS**:
+- Include ALL exclusions found in the document
+- List exclusion form codes where mentioned  
+- Explain the significance of major exclusions
 
-**PRACTICAL GUIDANCE** (comprehensive paragraphs):
-- Step-by-step guidance for policyholders
-- How to maximize policy value
-- When and how to file claims
+**MISSING INFORMATION**:
+- List critical information not found in the document excerpt
+- Identify what needs to be verified with the complete policy
 
-**PROFESSIONAL RECOMMENDATIONS** (detailed analysis):
-- Expert insights based on policy terms
-- Coverage adequacy assessment
-- Strategic recommendations for the business
-
-Write in flowing, professional paragraphs with substantial detail. Each section should be comprehensive and informative.
+**RECOMMENDED VERIFICATIONS**:
+- Specific items that should be confirmed with the full policy document
+- Areas where document inconsistencies need clarification
 
 FORMAT REQUIREMENTS:
-- Use clear, professional language that clients can easily understand
-- Structure the summary with clear sections and bullet points
-- Highlight key coverage amounts, deductibles, and important dates
-- Explain what the policy does and doesn't cover in practical terms
-- Include actionable next steps and recommendations
-- Use **bold text** for important headings
-- Write comprehensive paragraphs with substantial detail
-- Focus on paragraph-based content rather than bullet points
-
-The summary should be extremely detailed and comprehensive, approximately 800-1200 words with rich paragraph content.`
+- Use professional language while maintaining strict accuracy
+- Clearly distinguish between verified facts and missing information
+- Use **bold text** for section headings
+- Include disclaimers about document completeness
+- Provide 600-800 words of factual, conservative analysis`
             },
             {
               role: 'user',
-              content: `Create an INCREDIBLY comprehensive, detailed policy summary with extensive paragraph content. I need a professional report with substantial detail in every section.
+              content: `Create a conservative, factual policy summary based ONLY on the verified information from the policy analysis. Do not make assumptions or add details not explicitly found in the document.
 
-POLICY TYPE: ${policyData.policyType}
-INSURER: ${policyData.insurer}
+VERIFIED POLICY ANALYSIS DATA:
+${JSON.stringify(policyData, null, 2)}
+
+ACCURACY REQUIREMENTS:
+• ONLY report information from the analysis data above
+• CLEARLY note inconsistencies and missing information
+• PROMINENTLY include all exclusions and limitations
+• DO NOT make assumptions about coverage limits or terms
+• EXPLICITLY state when information is "Not specified in excerpt"
+• ACKNOWLEDGE document quality issues or inconsistencies
 
 COVERAGE DETAILS:
 ${policyData.coverageDetails?.map(c => `- ${c.type}: ${c.limit}${c.deductible ? ` (Deductible: ${c.deductible})` : ''}`).join('\n')}
