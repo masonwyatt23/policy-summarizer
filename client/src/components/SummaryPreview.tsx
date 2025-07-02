@@ -159,8 +159,8 @@ export function SummaryPreview({ document, isLoading }: SummaryPreviewProps) {
           <div className="border-l-4 border-valley-primary pl-4">
             <h4 className="font-semibold text-slate-900 mb-2">Key Benefits Explained</h4>
             <div className="space-y-2 text-sm text-slate-700">
-              {policyData.keyBenefits.map((benefit: string, index: number) => (
-                <p key={index}>• {benefit}</p>
+              {policyData.keyBenefits.map((benefit: any, index: number) => (
+                <p key={index}>• {typeof benefit === 'string' ? benefit : benefit.benefit}</p>
               ))}
             </div>
           </div>
