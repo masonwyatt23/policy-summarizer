@@ -212,7 +212,7 @@ export function DocumentDashboard() {
           )}
           
           <div className="flex items-center space-x-2">
-            <Badge variant={document.processed ? "success" : "secondary"}>
+            <Badge variant={document.processed ? "default" : "secondary"} className={document.processed ? "bg-green-100 text-green-800" : ""}>
               {document.processed ? "Processed" : "Processing..."}
             </Badge>
             {document.isFavorite && (
@@ -221,12 +221,12 @@ export function DocumentDashboard() {
                 Favorite
               </Badge>
             )}
-            {document.hasError && (
+            {document.processingError && (
               <Badge variant="destructive">Error</Badge>
             )}
           </div>
           
-          {document.tags.length > 0 && (
+          {document.tags && document.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {document.tags.map((tag, index) => (
                 <Badge key={index} variant="outline" className="text-xs">

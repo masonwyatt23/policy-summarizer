@@ -82,6 +82,11 @@ export class MemStorage implements IStorage {
       processed: insertDocument.processed || false,
       extractedData: insertDocument.extractedData || null,
       processingError: insertDocument.processingError || null,
+      tags: insertDocument.tags || [],
+      isFavorite: insertDocument.isFavorite || false,
+      lastViewedAt: null,
+      clientName: insertDocument.clientName || null,
+      policyReference: insertDocument.policyReference || null,
     };
     this.policyDocuments.set(id, document);
     return document;
