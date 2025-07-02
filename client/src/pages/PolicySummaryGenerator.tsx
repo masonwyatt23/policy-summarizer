@@ -90,9 +90,9 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
 
         {/* Summary Preview Section - Full Width */}
         <div className="w-full">
-          <Card className="shadow-sm border border-slate-200">
+          <Card className="shadow-sm border border-border bg-card">
             <Tabs defaultValue="summary" className="w-full">
-              <div className="border-b border-slate-200">
+              <div className="border-b border-border">
                 <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0">
                   <TabsTrigger 
                     value="summary" 
@@ -134,24 +134,24 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
         </div>
 
         {/* Quick Actions Bar */}
-        <div className="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div className="mt-8 bg-card rounded-xl shadow-sm border border-border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-slate-600">
-                <Clock className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <Clock className="w-4 h-4 text-muted-foreground" />
                 <span>
                   {document?.processed ? 'Processing completed' : 'Processing...'}
                 </span>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-slate-600">
-                <FileText className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <FileText className="w-4 h-4 text-muted-foreground" />
                 <span>
                   {documentsList?.length || 0} document(s) processed
                 </span>
               </div>
               {isDocumentReady && (
-                <div className="flex items-center space-x-2 text-sm text-green-600">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
+                  <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />
                   <span>Ready for export</span>
                 </div>
               )}

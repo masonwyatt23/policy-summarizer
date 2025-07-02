@@ -8,7 +8,10 @@ import {
   X,
   Upload,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Sun,
+  Moon,
+  Monitor
 } from "lucide-react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -21,7 +24,7 @@ import PolicySummaryGenerator from "@/pages/PolicySummaryGenerator";
 import NotFound from "@/pages/not-found";
 import { DocumentDashboard } from "@/components/DocumentDashboard";
 import { UserSettings } from "@/components/UserSettings";
-import { ThemeProvider } from "@/hooks/use-theme";
+import { ThemeProvider, useTheme } from "@/hooks/use-theme";
 
 function Navigation({ 
   isSidebarCollapsed, 
@@ -32,12 +35,28 @@ function Navigation({
 }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const navigationItems = [
     { path: "/", label: "Upload & Process", icon: Upload },
     { path: "/dashboard", label: "Document Dashboard", icon: BarChart3 },
     { path: "/settings", label: "Settings", icon: Settings },
   ];
+
+  const getThemeIcon = () => {
+    switch (theme) {
+      case "light": return Sun;
+      case "dark": return Moon;
+      default: return Monitor;
+    }
+  };
+
+  const toggleTheme = () => {
+    const themes = ["light", "dark", "system"] as const;
+    const currentIndex = themes.indexOf(theme);
+    const nextTheme = themes[(currentIndex + 1) % themes.length];
+    setTheme(nextTheme);
+  };
 
   const NavItem = ({ path, label, icon: Icon, isActive, isCollapsed }: { 
     path: string; 
@@ -52,8 +71,8 @@ function Navigation({
           isCollapsed ? 'justify-center' : 'space-x-2'
         } ${
           isActive 
-            ? "bg-blue-100 text-blue-700 font-medium" 
-            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            ? "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-medium" 
+            : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"
         }`}
         onClick={() => setIsMobileMenuOpen(false)}
         title={isCollapsed ? label : undefined}
@@ -70,12 +89,12 @@ function Navigation({
       <div className={`hidden md:flex md:flex-col md:fixed md:inset-y-0 transition-all duration-300 ${
         isSidebarCollapsed ? 'md:w-16' : 'md:w-64'
       }`}>
-        <div className={`flex flex-col flex-grow pt-5 border-r border-gray-200 overflow-y-auto ${isSidebarCollapsed ? 'bg-gray-50' : 'bg-white'}`}>
+        <div className={`flex flex-col flex-grow pt-5 border-r border-border bg-card text-card-foreground overflow-y-auto transition-colors duration-300`}>
           <div className={`flex items-center flex-shrink-0 relative ${isSidebarCollapsed ? 'px-2' : 'px-4'}`}>
-            <FileText className="w-8 h-8 text-blue-600" />
+            <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             {!isSidebarCollapsed && (
               <div className="ml-3">
-                <h1 className="text-lg font-semibold text-gray-900">Policy Processor</h1>
+                <h1 className="text-lg font-semibold text-foreground">Policy Processor</h1>
                 <Badge variant="outline" className="text-xs">Valley Trust Insurance</Badge>
               </div>
             )}
@@ -110,33 +129,67 @@ function Navigation({
               ))}
             </nav>
             
-            {!isSidebarCollapsed && (
-              <div className="px-4 pb-4">
-                <Separator className="mb-4" />
-                <div className="text-xs text-gray-500">
+            {/* Theme Toggle */}
+            <div className={`${isSidebarCollapsed ? 'px-2' : 'px-4'} pb-4 mt-auto`}>
+              <Separator className="mb-4" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleTheme}
+                    className={`w-full ${isSidebarCollapsed ? 'justify-center px-2' : 'justify-start space-x-2'} text-muted-foreground hover:text-foreground hover:bg-accent`}
+                  >
+                    {(() => {
+                      const ThemeIcon = getThemeIcon();
+                      return <ThemeIcon className="w-4 h-4" />;
+                    })()}
+                    {!isSidebarCollapsed && <span className="capitalize">{theme} Mode</span>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Switch to {theme === "light" ? "dark" : theme === "dark" ? "system" : "light"} mode</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              {!isSidebarCollapsed && (
+                <div className="text-xs text-muted-foreground mt-3">
                   <p>Intelligent document processing</p>
                   <p>powered by AI</p>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Mobile Header */}
-      <div className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+      <div className="md:hidden bg-card border-b border-border px-4 py-3 transition-colors duration-300">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <FileText className="w-6 h-6 text-blue-600" />
-            <span className="font-semibold text-gray-900">Policy Processor</span>
+            <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <span className="font-semibold text-foreground">Policy Processor</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className="w-8 h-8 p-0"
+            >
+              {(() => {
+                const ThemeIcon = getThemeIcon();
+                return <ThemeIcon className="w-4 h-4" />;
+              })()}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -184,7 +237,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="valley-trust-theme">
         <TooltipProvider>
-          <div className="min-h-screen bg-background text-foreground">
+          <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
           <Navigation 
             isSidebarCollapsed={isSidebarCollapsed}
             setIsSidebarCollapsed={setIsSidebarCollapsed}

@@ -476,15 +476,15 @@ export function DocumentDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Document Dashboard</h1>
-          <p className="text-gray-600">Manage your policy documents and summaries</p>
+          <h1 className="text-2xl font-bold text-foreground">Document Dashboard</h1>
+          <p className="text-muted-foreground">Manage your policy documents and summaries</p>
         </div>
       </div>
 
       {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             placeholder="Search documents, clients, or policy references..."
             value={searchQuery}
@@ -538,7 +538,7 @@ export function DocumentDashboard() {
 
       {/* Batch Action Bar */}
       {isSelectionMode && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Button
@@ -554,7 +554,7 @@ export function DocumentDashboard() {
                 {selectedDocuments.length === filteredDocuments.length ? 'Deselect All' : 'Select All'}
               </Button>
               
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-muted-foreground">
                 {selectedDocuments.length} of {filteredDocuments.length} selected
               </span>
             </div>
