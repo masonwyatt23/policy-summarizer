@@ -127,7 +127,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
             }
           ],
           temperature: 0.1,
-          max_tokens: 4000
+          max_tokens: 8000
         })
       });
 
@@ -270,6 +270,8 @@ KEY COVERAGE HIGHLIGHTS TO EXPLAIN:
 
 Remember: Focus on INCREDIBLE value explanation, not just listing coverages. Make the client truly understand why this policy is perfect for protecting their restaurant/bar business. Write with enthusiasm and expertise while maintaining accuracy.
 
+CRITICAL: Complete the ENTIRE summary within the token limit. Make sure to include ALL sections, especially the "NEXT STEPS AND RECOMMENDATIONS" section at the end. Do not leave any sections incomplete or cut off mid-sentence.
+
 KEY BENEFITS:
 ${policyData.keyBenefits?.map(b => `- ${typeof b === 'string' ? b : b.benefit}${b.description ? ': ' + b.description : ''}`).join('\n')}
 
@@ -289,7 +291,7 @@ I need a detailed, professional summary with rich paragraph content that provide
             }
           ],
           temperature: 0.3,
-          max_tokens: 1500
+          max_tokens: 6000
         })
       });
 
@@ -298,7 +300,51 @@ I need a detailed, professional summary with rich paragraph content that provide
       }
 
       const data = await response.json();
-      return data.choices[0]?.message?.content || 'Summary generation failed';
+      const content = data.choices[0]?.message?.content || 'Summary generation failed';
+      
+      // Check if response appears truncated (incomplete sentence or section)
+      const lastChar = content.trim().slice(-1);
+      const endsWithPunctuation = ['.', '!', '?', ':'].includes(lastChar);
+      const hasCompleteStructure = content.includes('**') && content.includes('NEXT STEPS');
+      
+      if (!endsWithPunctuation || !hasCompleteStructure) {
+        console.warn('Summary appears truncated, attempting to regenerate with lower token count...');
+        
+        // Try again with explicit instruction to complete the summary
+        const retryResponse = await fetch(`${this.baseUrl}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'grok-2-1212',
+            messages: [
+              {
+                role: 'system',
+                content: 'Complete the entire summary within the token limit. End with a complete NEXT STEPS section. Ensure proper conclusion.'
+              },
+              {
+                role: 'user',
+                content: `Create a complete, comprehensive policy summary (within token limits): ${JSON.stringify(policyData, null, 2)}`
+              }
+            ],
+            temperature: 0.3,
+            max_tokens: 5000
+          })
+        });
+        
+        if (retryResponse.ok) {
+          const retryData = await retryResponse.json();
+          const retryContent = retryData.choices[0]?.message?.content;
+          if (retryContent && retryContent.length > content.length) {
+            console.log('Successfully generated complete summary on retry');
+            return retryContent;
+          }
+        }
+      }
+      
+      return content;
 
     } catch (error) {
       console.error('xAI summary generation failed:', error);
