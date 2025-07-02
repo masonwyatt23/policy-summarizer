@@ -285,6 +285,43 @@ function generateDemoAnalysis(documentText: string): PolicyData {
       }
     });
     
+    // If no coverage details were extracted, provide default comprehensive coverage
+    if (coverageDetails.length === 0) {
+      if (isTravelPolicy || isComprehensivePolicy) {
+        coverageDetails.push(
+          {
+            type: "Emergency Medical Coverage",
+            limit: "Up to $5,000,000 CAD",
+            deductible: "$0"
+          },
+          {
+            type: "Trip Cancellation",
+            limit: "Up to $20,000 CAD",
+            deductible: "$0"
+          },
+          {
+            type: "Baggage Coverage",
+            limit: "Up to $1,000 CAD",
+            deductible: "$0"
+          },
+          {
+            type: "Trip Interruption",
+            limit: "Up to $20,000 CAD",
+            deductible: "$0"
+          }
+        );
+      } else {
+        // Generic comprehensive coverage
+        coverageDetails.push(
+          {
+            type: "Primary Coverage",
+            limit: "As specified in policy documents",
+            deductible: "As specified in policy documents"
+          }
+        );
+      }
+    }
+    
     return coverageDetails;
   };
   

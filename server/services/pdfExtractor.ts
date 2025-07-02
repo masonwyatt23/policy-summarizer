@@ -223,8 +223,7 @@ export class PDFExtractor {
           const text = await tesseract.recognize(imagePath, {
             lang: 'eng',
             oem: 1,
-            psm: 6,
-            tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .,;:()$%-',
+            psm: 6
           });
           
           if (text && text.trim().length > 10) {
