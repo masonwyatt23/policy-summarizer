@@ -197,24 +197,23 @@ CLIENT-FOCUSED SUMMARY REQUIREMENTS:
 
 Create a comprehensive, value-focused summary that includes:
 
-**COMPREHENSIVE PROTECTION SUMMARY** (dense, integrated format):
-Create a flowing, narrative-style summary that integrates all essential information into comprehensive, dense paragraphs. Pack maximum accurate detail into minimal space while maintaining readability.
+**5-PARAGRAPH COHESIVE SUMMARY** (detailed narrative format):
+Create a comprehensive 5-paragraph summary that flows like a professional business document. Each paragraph should be substantial (80-120 words), detailed, and explanatory, building upon the previous one to create a complete understanding.
 
-**Structure as flowing narrative with these integrated elements:**
-- **Opening paragraph**: Explain the policy's comprehensive protection with specific coverage amounts and business relevance
-- **Core Coverage Integration**: Weave together general liability, liquor liability, employment practices, cyber protection, and property coverage in detailed paragraphs that show how they work together
-- **Business-Specific Value**: Dense paragraphs explaining how each coverage directly protects their restaurant/bar operations with real-world scenarios and verified limits
-- **Critical Exclusions & Boundaries**: Integrate key exclusions naturally within coverage explanations rather than separate lists
-- **Actionable Recommendations**: Conclude with specific steps for policy optimization and Valley Trust contact information
+**Paragraph Structure:**
+1. **Policy Overview & Foundation**: Comprehensive introduction explaining the policy type, insurer, business being covered, and overall protection philosophy with specific amounts
+2. **Core Liability Protection**: Detailed explanation of general liability, liquor liability, and employment practices coverage with specific limits, deductibles, and real-world protection scenarios
+3. **Property & Operational Coverage**: Thorough coverage of business property protection, income protection, cyber coverage, and specialized endorsements with practical applications
+4. **Coverage Boundaries & Important Considerations**: Professional explanation of key exclusions, limitations, and coverage boundaries that define the policy scope, presented as helpful guidance
+5. **Professional Recommendations & Next Steps**: Specific recommendations for policy optimization, verification steps, and complete contact information for Valley Trust Insurance
 
 FORMAT REQUIREMENTS:
-- Write in dense, information-rich paragraphs that flow naturally
-- Integrate multiple coverage types and benefits within single paragraphs
-- Pack comprehensive details into 400-600 words for 2-4 page output
-- Use **bold text** sparingly only for major section breaks
-- Maintain complete accuracy while maximizing information density
-- Create seamless narrative flow rather than separated bullet points
-- Focus on comprehensive, detailed explanations within compact format`
+- Write 5 substantial, flowing paragraphs (400-600 words total)
+- Each paragraph should be comprehensive and detailed
+- NO section headers, bullet points, or bold formatting
+- Create seamless narrative flow between paragraphs
+- Pack maximum accurate detail into readable, explanatory content
+- Focus on comprehensive understanding through detailed exposition`
             },
             {
               role: 'user',
@@ -229,39 +228,39 @@ CLIENT CONTEXT:
 • Coverage Focus: Comprehensive business protection with specialized restaurant/bar coverages
 
 SUMMARY REQUIREMENTS:
-• CREATE a dense, comprehensive narrative that integrates all essential information (400-600 words total)
-• WEAVE coverage types together showing how they work as integrated protection
-• PACK maximum accurate detail into flowing, readable paragraphs
-• INTEGRATE exclusions and benefits naturally within coverage explanations
-• FOCUS on comprehensive understanding through narrative flow rather than lists
+• CREATE exactly 5 comprehensive paragraphs that flow seamlessly together (400-600 words total)
+• WRITE in professional business document style with substantial, detailed paragraphs
+• ELIMINATE all section headers, bullet points, and bold formatting
+• INTEGRATE all coverage details, limits, exclusions, and recommendations into flowing narrative
+• FOCUS on comprehensive explanations that build understanding progressively
 
-INTEGRATION APPROACH:
-• Start with comprehensive overview including specific dollar amounts and policy scope
-• Flow into detailed coverage explanations that show interconnected protection
-• Integrate real-world examples within technical coverage details
-• Weave exclusions into coverage explanations where relevant
-• Conclude with specific recommendations and contact details
+NARRATIVE APPROACH:
+• Paragraph 1: Policy foundation with insurer, coverage amounts, and business protection overview
+• Paragraph 2: Core liability coverages (general, liquor, employment) with specific limits and real-world applications
+• Paragraph 3: Property, income, and cyber protection with detailed coverage explanations and practical benefits
+• Paragraph 4: Coverage boundaries and exclusions woven naturally into comprehensive explanation
+• Paragraph 5: Professional recommendations and complete Valley Trust contact information
 
-Remember: Create dense, information-rich content that flows naturally. Pack comprehensive details into compact format. Be thorough and accurate while maintaining readability.
+Remember: Write like a professional business consultant explaining complex insurance in clear, flowing prose. Each paragraph should be substantial and informative.
 
-CRITICAL: Maximize information density while maintaining flow. Target 400-600 words of comprehensive, integrated content for 2-4 page PDF.
+CRITICAL: Create 5 cohesive paragraphs with NO formatting, headers, or bullets. Pure narrative flow that comprehensively explains the policy.
 
 KEY BENEFITS:
 ${policyData.keyBenefits?.map(b => `- ${typeof b === 'string' ? b : b.benefit}${b.description ? ': ' + b.description : ''}`).join('\n')}
 
 ${clientContext ? `CLIENT CONTEXT: ${clientContext}` : ''}
 
-CRITICAL REQUIREMENTS FOR DENSE INTEGRATION:
-• Write information-rich paragraphs that flow naturally together
-• Integrate multiple coverage types and benefits within single paragraphs
-• Pack comprehensive details with specific amounts, limits, and practical examples
-• Create seamless narrative flow rather than separated sections with headers
-• Weave exclusions and limitations naturally within coverage explanations
-• Include verified policy details with practical business applications
-• Maintain professional tone while maximizing information density
-• Conclude with specific recommendations and contact information
+CRITICAL REQUIREMENTS FOR 5-PARAGRAPH NARRATIVE:
+• Write exactly 5 substantial paragraphs with seamless flow between them
+• Each paragraph should be 80-120 words of comprehensive, detailed content
+• NO formatting whatsoever - no headers, bullets, bold text, or section breaks
+• Write in professional business prose that reads like a consultant's report
+• Integrate all technical details naturally within explanatory narrative
+• Build understanding progressively from foundation to specific recommendations
+• Maintain authoritative, confident tone while explaining complex coverage clearly
+• End with complete contact information integrated into final paragraph
 
-Create a comprehensive, dense narrative that delivers maximum accurate detail in 400-600 words - perfect for 2-4 page professional output.`
+Create a cohesive 5-paragraph business document that comprehensively explains the policy in flowing, professional prose - exactly 400-600 words total.`
             }
           ],
           temperature: 0.3,
@@ -279,7 +278,7 @@ Create a comprehensive, dense narrative that delivers maximum accurate detail in
       // Check if response appears truncated (incomplete sentence or section)
       const lastChar = content.trim().slice(-1);
       const endsWithPunctuation = ['.', '!', '?', ':'].includes(lastChar);
-      const hasCompleteStructure = content.includes('**') && content.includes('NEXT STEPS');
+      const hasCompleteStructure = content.split('\n\n').length >= 4; // Check for multiple paragraphs
       
       if (!endsWithPunctuation || !hasCompleteStructure) {
         console.warn('Summary appears truncated, attempting to regenerate with lower token count...');
@@ -296,11 +295,11 @@ Create a comprehensive, dense narrative that delivers maximum accurate detail in
             messages: [
               {
                 role: 'system',
-                content: 'Create a concise, complete summary within token limits. Target 400-600 words. End with NEXT STEPS section.'
+                content: 'Create a cohesive 5-paragraph narrative summary. No formatting, headers, or bullets. Target 400-600 words of flowing prose.'
               },
               {
                 role: 'user',
-                content: `Create a concise, professional policy summary (400-600 words): ${JSON.stringify(policyData, null, 2)}`
+                content: `Create a cohesive 5-paragraph professional summary (400-600 words, no formatting): ${JSON.stringify(policyData, null, 2)}`
               }
             ],
             temperature: 0.3,
