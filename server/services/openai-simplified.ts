@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { PolicyData } from "@shared/schema";
+import { advancedAnalyzer } from './advancedAnalyzer';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -43,8 +44,8 @@ ${documentText.substring(0, 8000)}
     return result;
   } catch (error) {
     console.log('OpenAI API error:', error);
-    console.log('API quota exceeded, providing demo analysis...');
-    return generateEnhancedAnalysis(documentText);
+    console.log('API quota exceeded, providing advanced analysis...');
+    return advancedAnalyzer.analyzePolicy(documentText);
   }
 }
 
