@@ -104,7 +104,7 @@ export default function PolicySummaryGenerator() {
               </div>
 
               <TabsContent value="summary" className="mt-0">
-                <SummaryPreview document={document} isLoading={isLoading} />
+                <CleanSummaryPreview document={document} isLoading={isLoading} />
               </TabsContent>
 
               <TabsContent value="extracted" className="mt-0">
