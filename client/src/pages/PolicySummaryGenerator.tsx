@@ -13,10 +13,23 @@ import { Clock, FileText, CheckCircle, User } from 'lucide-react';
 import { api, ProcessedDocument, DocumentListItem } from '@/lib/api';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
 
-export default function PolicySummaryGenerator() {
-  const [currentDocumentId, setCurrentDocumentId] = useState<number | null>(null);
+interface PolicySummaryGeneratorProps {
+  documentId?: string;
+}
+
+export default function PolicySummaryGenerator({ documentId }: PolicySummaryGeneratorProps = {}) {
+  const [currentDocumentId, setCurrentDocumentId] = useState<number | null>(
+    documentId ? parseInt(documentId, 10) : null
+  );
   const [processingConfig, setProcessingConfig] = useState<any>(null);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+
+  // Update currentDocumentId when documentId prop changes
+  useEffect(() => {
+    if (documentId) {
+      setCurrentDocumentId(parseInt(documentId, 10));
+    }
+  }, [documentId]);
 
   const { data: document, isLoading, refetch } = useQuery<ProcessedDocument>({
     queryKey: [`/api/documents/${currentDocumentId}`],

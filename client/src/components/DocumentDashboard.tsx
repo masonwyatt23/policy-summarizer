@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { 
   FileText, 
   Search, 
@@ -73,6 +74,7 @@ export function DocumentDashboard() {
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const { data: documents = [], isLoading } = useQuery({
     queryKey: ['/api/documents'],
@@ -190,6 +192,15 @@ export function DocumentDashboard() {
   });
 
   // Handler functions
+  const handleViewSummary = (documentId: number) => {
+    // Add loading feedback
+    toast({
+      title: "Loading Summary",
+      description: "Opening document summary...",
+    });
+    setLocation(`/summary/${documentId}`);
+  };
+
   const handleViewHistory = (documentId: number) => {
     setSelectedDocumentForHistory(documentId);
     setHistoryDialogOpen(true);
@@ -197,10 +208,6 @@ export function DocumentDashboard() {
 
   const handleExportPDF = (documentId: number) => {
     exportPDFMutation.mutate(documentId);
-  };
-
-  const handleViewSummary = (documentId: number) => {
-    window.location.href = `/summary/${documentId}`;
   };
 
   const filteredDocuments = documents.filter((doc: DocumentListItem) => {
@@ -416,21 +423,21 @@ export function DocumentDashboard() {
           {document.processed && !document.processingError && (
             <div className="flex items-center justify-between pt-3 border-t space-x-2">
               <Button
-                variant="outline"
+                variant="default"
                 size="sm"
-                className="flex-1 h-8 text-xs"
+                className="flex-1 h-9 text-xs bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleViewSummary(document.id);
                 }}
               >
-                <Eye className="w-3 h-3 mr-1" />
-                View
+                <Eye className="w-4 h-4 mr-1.5" />
+                View Summary
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 h-8 text-xs"
+                className="flex-1 h-8 text-xs border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleViewHistory(document.id);
@@ -442,7 +449,7 @@ export function DocumentDashboard() {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 h-8 text-xs"
+                className="flex-1 h-8 text-xs border-green-300 text-green-700 hover:border-green-400 hover:bg-green-50 transition-all duration-200"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleExportPDF(document.id);
@@ -450,7 +457,7 @@ export function DocumentDashboard() {
                 disabled={exportPDFMutation.isPending}
               >
                 <Download className="w-3 h-3 mr-1" />
-                Export
+                {exportPDFMutation.isPending ? 'Exporting...' : 'Export PDF'}
               </Button>
             </div>
           )}

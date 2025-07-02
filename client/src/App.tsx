@@ -160,10 +160,15 @@ function Navigation({
   );
 }
 
+function SummaryView(props: any) {
+  return <PolicySummaryGenerator documentId={props.params?.id} />;
+}
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={PolicySummaryGenerator} />
+      <Route path="/summary/:id" component={SummaryView} />
       <Route path="/dashboard" component={DocumentDashboard} />
       <Route path="/settings" component={UserSettings} />
       <Route component={NotFound} />
