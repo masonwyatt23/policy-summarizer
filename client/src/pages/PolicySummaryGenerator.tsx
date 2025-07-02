@@ -8,7 +8,7 @@ import { ProcessingOptions } from '@/components/ProcessingOptions';
 import { SummaryPreview } from '@/components/SummaryPreview';
 import { ExtractedData } from '@/components/ExtractedData';
 import { ExportOptions } from '@/components/ExportOptions';
-import { Clock, FileText, CheckCircle, Settings, User } from 'lucide-react';
+import { Clock, FileText, CheckCircle, User } from 'lucide-react';
 import { api, ProcessedDocument, DocumentListItem } from '@/lib/api';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
 
@@ -57,10 +57,6 @@ export default function PolicySummaryGenerator() {
                 <User className="w-5 h-5" />
                 <span>Agent Portal</span>
               </div>
-              <Button variant="outline" className="valley-primary-hover">
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </Button>
             </div>
           </div>
         </div>

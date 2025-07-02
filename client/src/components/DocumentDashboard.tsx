@@ -13,7 +13,6 @@ import {
   Eye,
   Download,
   History,
-  Settings,
   Check,
   X,
   CheckSquare,
@@ -308,10 +307,6 @@ export function DocumentDashboard() {
           <h1 className="text-2xl font-bold text-gray-900">Document Dashboard</h1>
           <p className="text-gray-600">Manage your policy documents and summaries</p>
         </div>
-        <Button>
-          <Settings className="w-4 h-4 mr-2" />
-          Settings
-        </Button>
       </div>
 
       {/* Search and Filters */}
