@@ -197,48 +197,36 @@ CLIENT-FOCUSED SUMMARY REQUIREMENTS:
 
 Create a comprehensive, value-focused summary that includes:
 
-**YOUR COMPREHENSIVE PROTECTION OVERVIEW** (2-3 substantial paragraphs):
-- Explain what this ErieSecure Business policy means for the client's business
-- Describe the comprehensive protection it provides for their specific industry
-- Highlight why this coverage is essential for their peace of mind
-- Use the actual insured name and business type from the document
+**YOUR PROTECTION OVERVIEW** (1 concise paragraph):
+- Clearly explain what this policy means for their business in 3-4 sentences
+- Focus on the most essential protection it provides
 
-**UNDERSTANDING YOUR COVERAGE** (detailed explanations for each major coverage):
-- Explain each coverage type in practical terms the client can understand
-- Use real-world examples relevant to their business (restaurant/bar)
-- Include verified limits where available, noting "coverage limits to be confirmed" where not specified
-- Focus on the protection each coverage provides rather than just listing numbers
+**KEY COVERAGE HIGHLIGHTS** (brief, focused explanations):
+- Cover the 4-5 most important coverage types with practical examples
+- Keep each coverage explanation to 2-3 sentences maximum
+- Focus on real-world protection rather than technical details
 
-**KEY BENEFITS THAT PROTECT YOUR BUSINESS** (engaging explanations):
-- Explain how liquor liability protects against alcohol-related incidents
-- Describe cyber protection in terms of data breach and customer trust
-- Detail employment practices coverage for workplace disputes
-- Present each benefit as valuable protection, not just a policy feature
+**IMPORTANT BENEFITS** (concise value points):
+- Highlight 3-4 key benefits using bullet points or brief paragraphs
+- Emphasize practical protection for their specific business type
+- Keep descriptions clear and direct
 
-**IMPORTANT COVERAGE CONSIDERATIONS** (professional but not alarming):
-- Present exclusions as standard boundaries that help define coverage
-- Explain what each major exclusion means in practical terms
-- Frame as "understanding your coverage boundaries" rather than limitations
+**COVERAGE BOUNDARIES** (essential exclusions only):
+- List only the most important exclusions clients should understand
+- Present as helpful boundaries, not limitations
+- Keep explanations brief and professional
 
-**WHY THIS POLICY IS RIGHT FOR YOUR BUSINESS** (compelling value proposition):
-- Connect specific coverages to their restaurant/bar operations
-- Explain how comprehensive coverage protects their investment
-- Emphasize peace of mind and business continuity
-- Include any special features that make this policy particularly valuable
-
-**NEXT STEPS AND RECOMMENDATIONS** (actionable guidance):
-- Professional recommendations for maximizing coverage value
-- Items to verify with complete policy documentation if needed
-- How to work with their Valley Trust Insurance agent
+**NEXT STEPS** (actionable recommendations):
+- 2-3 clear recommendations for maximizing coverage value
+- Contact information for their Valley Trust Insurance agent
 
 FORMAT REQUIREMENTS:
-- Use warm, professional language that builds client confidence
-- Write in flowing paragraphs with rich detail (800-1200 words total)
-- Focus on value and protection rather than technical details
+- Use professional, confident language that builds trust
+- Target 400-600 words total for digestible 2-4 page PDF
+- Focus on essential information rather than comprehensive detail
 - Use **bold text** for section headings
-- Maintain complete accuracy while emphasizing benefits
-- Create an engaging narrative that explains why this coverage matters
-- Each section should contain substantial, detailed paragraphs`
+- Maintain complete accuracy while being concise
+- Create clear, actionable content that clients can quickly understand`
             },
             {
               role: 'user',
@@ -253,45 +241,43 @@ CLIENT CONTEXT:
 • Coverage Focus: Comprehensive business protection with specialized restaurant/bar coverages
 
 SUMMARY REQUIREMENTS:
-• CREATE a compelling narrative that explains why this coverage is perfect for their business
-• EXPLAIN each coverage type using real-world scenarios they can relate to
-• EMPHASIZE the peace of mind and business protection this policy provides
-• USE the verified information while focusing on value rather than technicalities
-• TRANSFORM coverage details into benefits that matter to the business owner
-• INCLUDE specific examples of how each coverage protects their operations
+• CREATE a clear, focused summary that highlights essential protection (400-600 words total)
+• EXPLAIN the most important coverage types concisely with practical examples
+• EMPHASIZE key benefits without overwhelming detail
+• KEEP explanations brief and actionable for busy business owners
+• FOCUS on what matters most to their specific business type
 
-KEY COVERAGE HIGHLIGHTS TO EXPLAIN:
-• $1M+ General Liability - Customer injuries, property damage protection
-• $1M+ Liquor Liability - Critical for bar/restaurant operations  
-• $250K Employment Practices - Workplace dispute protection
-• $50K Cyber Protection - Data breach and digital security
-• Business Property Protection - Equipment, inventory coverage
-• Income Protection - Business interruption coverage
+TOP COVERAGE PRIORITIES TO HIGHLIGHT:
+• General Liability - Customer protection essentials
+• Liquor Liability - Critical for restaurant/bar operations  
+• Employment Practices - Workplace protection basics
+• Cyber Protection - Digital security fundamentals
+• Property & Income Protection - Business continuity
 
-Remember: Focus on INCREDIBLE value explanation, not just listing coverages. Make the client truly understand why this policy is perfect for protecting their restaurant/bar business. Write with enthusiasm and expertise while maintaining accuracy.
+Remember: Focus on clear value communication, not exhaustive detail. Help the client quickly understand their essential protection. Be professional, confident, and concise.
 
-CRITICAL: Complete the ENTIRE summary within the token limit. Make sure to include ALL sections, especially the "NEXT STEPS AND RECOMMENDATIONS" section at the end. Do not leave any sections incomplete or cut off mid-sentence.
+CRITICAL: Keep the summary digestible and focused. Target 400-600 words total for 2-4 page PDF. Include all required sections but keep them brief and impactful.
 
 KEY BENEFITS:
 ${policyData.keyBenefits?.map(b => `- ${typeof b === 'string' ? b : b.benefit}${b.description ? ': ' + b.description : ''}`).join('\n')}
 
 ${clientContext ? `CLIENT CONTEXT: ${clientContext}` : ''}
 
-CRITICAL REQUIREMENTS FOR INCREDIBLE SUMMARY:
-• Write comprehensive, detailed paragraphs - not bullet points or short statements
-• Provide extensive explanations with substantial detail for each section
-• Include practical examples and real-world implications
-• Write in flowing, professional paragraphs that demonstrate deep understanding
-• Create 2-3 paragraphs per major section with thorough coverage
-• Focus on providing exceptional value through detailed analysis
-• Explain complex concepts thoroughly with context and examples
-• Include actionable insights and professional recommendations
+CRITICAL REQUIREMENTS FOR CONCISE SUMMARY:
+• Write clear, focused paragraphs that get to the point quickly
+• Keep each section brief and essential - avoid unnecessary detail
+• Include practical examples without excessive explanation
+• Write professional content that busy business owners can quickly understand
+• Create 1-2 concise paragraphs per section maximum
+• Focus on key value points rather than comprehensive analysis
+• Explain important concepts clearly and directly
+• Include actionable insights and essential recommendations only
 
-I need a detailed, professional summary with rich paragraph content that provides exceptional value and demonstrates comprehensive understanding of this policy.`
+Create a professional, concise summary that busy business owners can quickly read and understand - targeting 400-600 words total.`
             }
           ],
           temperature: 0.3,
-          max_tokens: 6000
+          max_tokens: 3000
         })
       });
 
@@ -322,15 +308,15 @@ I need a detailed, professional summary with rich paragraph content that provide
             messages: [
               {
                 role: 'system',
-                content: 'Complete the entire summary within the token limit. End with a complete NEXT STEPS section. Ensure proper conclusion.'
+                content: 'Create a concise, complete summary within token limits. Target 400-600 words. End with NEXT STEPS section.'
               },
               {
                 role: 'user',
-                content: `Create a complete, comprehensive policy summary (within token limits): ${JSON.stringify(policyData, null, 2)}`
+                content: `Create a concise, professional policy summary (400-600 words): ${JSON.stringify(policyData, null, 2)}`
               }
             ],
             temperature: 0.3,
-            max_tokens: 5000
+            max_tokens: 3000
           })
         });
         

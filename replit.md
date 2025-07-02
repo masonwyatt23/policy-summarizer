@@ -131,6 +131,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added A4-optimized layout with proper print margins and page breaks
   - Created professional footer with Valley Trust contact information
   - Integrated comprehensive summary formatting that matches screen preview quality
+- July 02, 2025: Optimized summary length for digestibility and readability
+  - Reduced AI summary target from 800-1200 words to 400-600 words for 2-4 page PDFs
+  - Modified prompts to focus on essential information rather than comprehensive detail
+  - Updated token limits from 6000 to 3000 tokens for more concise output
+  - Restructured summary sections to prioritize key coverage highlights
+  - Enhanced readability for busy business owners who need quick understanding
 
 ## Changelog
 - July 01, 2025. Initial setup
