@@ -121,6 +121,16 @@ This is a full-stack policy document processing application built for Valley Tru
   - Created engaging, narrative-style summaries that explain coverage value
   - Added business context detection for restaurant/bar operations
   - Fixed remaining dark mode issues in CleanSummaryPreview component
+  - Enhanced AI token limits (analysis: 4000→8000, summaries: 1500→6000) with auto-retry logic
+  - Implemented response validation to prevent truncated summaries
+- July 02, 2025: Complete PDF export overhaul for professional-grade output
+  - Redesigned PDF generator with sophisticated typography and layout
+  - Added proper markdown parsing for bold headings, bullet points, and paragraphs
+  - Implemented professional styling with gradients, shadows, and branded colors
+  - Enhanced client information display with customizable headers and signatures
+  - Added A4-optimized layout with proper print margins and page breaks
+  - Created professional footer with Valley Trust contact information
+  - Integrated comprehensive summary formatting that matches screen preview quality
 
 ## Changelog
 - July 01, 2025. Initial setup
