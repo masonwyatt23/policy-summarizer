@@ -23,7 +23,7 @@ export class XAIService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'grok-beta',
+          model: 'grok-2-1212',
           messages: [
             {
               role: 'system',
@@ -147,7 +147,7 @@ Please read through this entire document carefully and extract the real policy i
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'grok-beta',
+          model: 'grok-2-1212',
           messages: [
             {
               role: 'system',

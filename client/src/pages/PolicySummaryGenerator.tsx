@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileUpload } from '@/components/FileUpload';
 import { SimpleProcessingOptions } from '@/components/SimpleProcessingOptions';
-import { SummaryPreview } from '@/components/SummaryPreview';
+import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { ExtractedData } from '@/components/ExtractedData';
 import { ExportOptions } from '@/components/ExportOptions';
 import { Clock, FileText, CheckCircle, User } from 'lucide-react';

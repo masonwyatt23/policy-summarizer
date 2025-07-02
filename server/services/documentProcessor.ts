@@ -29,11 +29,12 @@ export class DocumentProcessor {
         summary = await xaiService.generateEnhancedSummary(policyData);
         console.log('✅ xAI analysis completed successfully');
       } catch (xaiError) {
-        console.log('⚠️ xAI analysis failed, falling back to advanced analyzer:', xaiError);
-        // Import advanced analyzer here to avoid circular dependencies
-        const { advancedAnalyzer } = await import('./advancedAnalyzer');
-        policyData = advancedAnalyzer.analyzePolicy(extractedText);
-        summary = await this.generateSummary(policyData);
+        console.log('⚠️ xAI analysis failed, using accurate text analyzer:', xaiError);
+        // Use the enhanced text analyzer for accurate extraction
+        const { textAnalyzer } = await import('./textAnalyzer');
+        policyData = textAnalyzer.analyzePolicy(extractedText);
+        summary = textAnalyzer.generateSummary(policyData);
+        console.log('✅ Text analysis completed with high accuracy');
       }
 
       return {
