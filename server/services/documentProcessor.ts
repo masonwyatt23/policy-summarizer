@@ -1,6 +1,6 @@
 import mammoth from 'mammoth';
 import { PolicyData, PolicyDataSchema } from '@shared/schema';
-import { extractPolicyData } from './openai';
+import { extractPolicyData } from './openai-simplified';
 import { pdfExtractor } from './pdfExtractor';
 
 export class DocumentProcessor {
