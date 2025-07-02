@@ -141,6 +141,80 @@ function generateDemoAnalysis(documentText: string): PolicyData {
   // Advanced text analysis using multiple patterns and context clues
   const lowerText = documentText.toLowerCase();
   
+  // Extract real information from the actual document text
+  const extractRealPolicyInformation = () => {
+    const results = {
+      actualPolicyName: '',
+      realCoverageAmounts: [] as string[],
+      actualInsurer: '',
+      realBenefits: [] as string[],
+      realContacts: [] as string[],
+      realEligibility: [] as string[]
+    };
+    
+    // Find actual policy names/titles in the document
+    const titlePatterns = [
+      /([A-Z][A-Za-z\s&]+(?:INSURANCE|POLICY|COVERAGE|PROTECTION|PLAN)[A-Za-z\s]*)/gi,
+      /([A-Za-z\s]+(?:Travel|Medical|Health|Life|Auto|Home)[A-Za-z\s]*(?:Insurance|Policy|Coverage))/gi,
+      /(CERTIFICATE OF INSURANCE[A-Za-z\s]*)/gi
+    ];
+    
+    for (const pattern of titlePatterns) {
+      const matches = documentText.match(pattern);
+      if (matches && matches[0] && matches[0].trim().length > 10) {
+        results.actualPolicyName = matches[0].trim();
+        break;
+      }
+    }
+    
+    // Extract real dollar amounts and coverage limits
+    const amountPatterns = [
+      /\$[\d,]+(?:\.\d{2})?(?:\s*(?:million|M|CAD|Canadian|USD|per|each|maximum|limit))?/gi,
+      /Up to \$[\d,]+(?:\.\d{2})?/gi,
+      /Maximum of \$[\d,]+(?:\.\d{2})?/gi
+    ];
+    
+    for (const pattern of amountPatterns) {
+      const matches = documentText.match(pattern);
+      if (matches) {
+        results.realCoverageAmounts.push(...matches.slice(0, 8)); // Limit to avoid clutter
+      }
+    }
+    
+    // Find actual insurer names
+    const insurerPatterns = [
+      /(?:Insurer|Underwritten by|Administered by|Company):\s*([A-Za-z\s&,]+)/gi,
+      /(Allianz|CUMIS|Valley Trust|Manulife|Sun Life|Great West|Intact|Aviva)[A-Za-z\s]*/gi
+    ];
+    
+    for (const pattern of insurerPatterns) {
+      const matches = documentText.match(pattern);
+      if (matches && matches[0]) {
+        results.actualInsurer = matches[0].trim();
+        break;
+      }
+    }
+    
+    // Extract real benefits from text
+    const benefitLines = documentText
+      .split(/\n|\.|\r/)
+      .filter(line => line.trim().length > 15)
+      .filter(line => /coverage|benefit|protection|reimburse|emergency|medical|travel|trip|baggage/i.test(line))
+      .slice(0, 10);
+    
+    results.realBenefits = benefitLines.map(line => line.trim());
+    
+    // Find contact information
+    const phoneMatches = documentText.match(/1-\d{3}-\d{3}-\d{4}|\(\d{3}\)\s*\d{3}-\d{4}/g);
+    if (phoneMatches) {
+      results.realContacts.push(...phoneMatches.slice(0, 3));
+    }
+    
+    return results;
+  };
+  
+  const realPolicyInfo = extractRealPolicyInformation();
+  
   // Detect policy type with more sophisticated pattern matching
   const policyTypePatterns = {
     travel: /travel|trip|vacation|journey|tourism|international|overseas/gi,
@@ -191,7 +265,7 @@ function generateDemoAnalysis(documentText: string): PolicyData {
     return policyInfo;
   };
   
-  const realPolicyInfo = findActualPolicyInfo();
+
   
   // Advanced coverage extraction with multiple currency formats
   const extractCoverageDetails = () => {
@@ -416,20 +490,60 @@ function generateDemoAnalysis(documentText: string): PolicyData {
   const eligibility = extractEligibility();
   const keyBenefits = generateKeyBenefits();
   
-  // Determine policy type and insurer
-  let policyType = "Travel Insurance Policy";
-  let insurer = "Valley Trust Insurance Company";
-  
-  if (isAllianzPolicy) {
-    if (isComprehensivePolicy) {
-      policyType = "Allianz Comprehensive Travel Coverage";
-    } else {
-      policyType = "Allianz Travel Insurance";
+  // Determine policy type and insurer using real extracted information
+  const determinePolicyType = () => {
+    if (realPolicyInfo.actualPolicyName && realPolicyInfo.actualPolicyName.length > 5) {
+      return realPolicyInfo.actualPolicyName;
     }
-    insurer = "CUMIS General Insurance Company (administered by Allianz Global Assistance)";
-  } else if (isComprehensivePolicy) {
-    policyType = "Comprehensive Travel Insurance Policy";
-  }
+    
+    // Extract actual policy type from document text
+    if (documentText.includes('Business Policy') || documentText.includes('Commercial')) {
+      return "Commercial Business Insurance Policy";
+    }
+    if (documentText.includes('Auto') || documentText.includes('Vehicle')) {
+      return "Automobile Insurance Policy";
+    }
+    if (documentText.includes('Property') || documentText.includes('Building')) {
+      return "Property Insurance Policy";
+    }
+    if (documentText.includes('General Liability')) {
+      return "General Liability Insurance Policy";
+    }
+    
+    // Fallback to travel insurance patterns
+    if (isAllianzPolicy) {
+      return isComprehensivePolicy ? "Allianz Comprehensive Travel Coverage" : "Allianz Travel Insurance";
+    } else if (isComprehensivePolicy) {
+      return "Comprehensive Travel Insurance Policy";
+    }
+    
+    return "Insurance Policy";
+  };
+  
+  const determineInsurer = () => {
+    if (realPolicyInfo.actualInsurer && realPolicyInfo.actualInsurer.length > 5) {
+      return realPolicyInfo.actualInsurer;
+    }
+    
+    // Check for specific insurers in text
+    if (documentText.includes('Erie Insurance')) {
+      return "Erie Insurance Company";
+    }
+    if (documentText.includes('Allianz') || documentText.includes('CUMIS')) {
+      return "CUMIS General Insurance Company (administered by Allianz Global Assistance)";
+    }
+    if (documentText.includes('State Farm')) {
+      return "State Farm Insurance";
+    }
+    if (documentText.includes('Allstate')) {
+      return "Allstate Insurance Company";
+    }
+    
+    return "Valley Trust Insurance Company";
+  };
+  
+  const policyType = determinePolicyType();
+  const insurer = determineInsurer();
   
   return {
     policyType,
