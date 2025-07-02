@@ -69,8 +69,8 @@ function Navigation({
       <div className={`hidden md:flex md:flex-col md:fixed md:inset-y-0 transition-all duration-300 ${
         isSidebarCollapsed ? 'md:w-16' : 'md:w-64'
       }`}>
-        <div className="flex flex-col flex-grow pt-5 bg-white border-r border-gray-200 overflow-y-auto">
-          <div className="flex items-center flex-shrink-0 px-4 relative">
+        <div className={`flex flex-col flex-grow pt-5 border-r border-gray-200 overflow-y-auto ${isSidebarCollapsed ? 'bg-gray-50' : 'bg-white'}`}>
+          <div className={`flex items-center flex-shrink-0 relative ${isSidebarCollapsed ? 'px-2' : 'px-4'}`}>
             <FileText className="w-8 h-8 text-blue-600" />
             {!isSidebarCollapsed && (
               <div className="ml-3">
@@ -84,7 +84,7 @@ function Navigation({
               variant="ghost"
               size="sm"
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className={`absolute ${isSidebarCollapsed ? 'right-2' : '-right-12'} top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-white border border-gray-200 shadow-sm hover:bg-gray-50`}
+              className={`absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-md z-10 transition-colors`}
             >
               {isSidebarCollapsed ? (
                 <ChevronRight className="w-4 h-4" />
@@ -95,7 +95,7 @@ function Navigation({
           </div>
           
           <div className="mt-8 flex-grow flex flex-col">
-            <nav className="flex-1 px-4 space-y-2">
+            <nav className={`flex-1 space-y-2 ${isSidebarCollapsed ? 'px-2' : 'px-4'}`}>
               {navigationItems.map((item) => (
                 <NavItem
                   key={item.path}
