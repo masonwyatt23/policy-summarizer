@@ -215,6 +215,14 @@ This is a full-stack policy document processing application built for Valley Tru
   - Fixed TypeScript errors in user creation by using correct schema fields
   - Enhanced frontend error handling with detailed console logging for debugging
   - Settings now properly save to database and display success/error feedback
+- July 03, 2025: Enhanced PDF exports with agent profile integration
+  - Updated PDF generator to include agent profile information from user settings
+  - Added agent signature section to PDF exports with professional styling
+  - Modified PDF export route to fetch and pass agent settings to PDF generator
+  - Created dynamic footer that uses agent profile data instead of hardcoded values
+  - Added agent details section with name, title, license, and contact information
+  - Implemented conditional rendering based on "Include Agent Signature" setting
+  - Enhanced PDF template with proper styling for agent signature and profile sections
 
 ## Changelog
 - July 01, 2025. Initial setup

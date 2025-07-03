@@ -9,6 +9,19 @@ export interface PDFOptions {
   includeExplanations: boolean;
   includeTechnicalDetails: boolean;
   includeBranding: boolean;
+  includeAgentSignature?: boolean;
+  agentProfile?: {
+    name: string;
+    title: string;
+    phone: string;
+    email: string;
+    license: string;
+    signature: string;
+    firmName: string;
+    firmAddress: string;
+    firmPhone: string;
+    firmWebsite: string;
+  };
 }
 
 export class PDFGenerator {
@@ -348,6 +361,45 @@ export class PDFGenerator {
             font-weight: 600;
         }
         
+        .agent-signature {
+            margin-top: 40px;
+            padding: 25px;
+            background: #f8fafc;
+            border-top: 2px solid #e2e8f0;
+            text-align: left;
+        }
+        
+        .agent-signature h3 {
+            color: #1e3a8a;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .agent-signature .signature-content {
+            white-space: pre-line;
+            font-size: 14px;
+            color: #1e293b;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .agent-signature .agent-details {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .agent-signature .agent-details p {
+            margin: 4px 0;
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .agent-signature .agent-details strong {
+            color: #1e3a8a;
+        }
+        
         @media print {
             body { 
                 font-size: 11px; 
@@ -424,11 +476,24 @@ export class PDFGenerator {
 
         ${options.includeBranding ? `
         <div class="footer">
-            <p><strong>Valley Trust Insurance Group</strong></p>
-            <p>829 Greenville Ave, Staunton, VA 24401 | (540) 885-5531</p>
-            <p>jake@valleytrustinsurance.com | www.valleytrustinsurance.com</p>
+            <p><strong>${options.agentProfile?.firmName || 'Valley Trust Insurance Group'}</strong></p>
+            <p>${options.agentProfile?.firmAddress || '829 Greenville Ave, Staunton, VA 24401'} | ${options.agentProfile?.firmPhone || '(540) 885-5531'}</p>
+            <p>${options.agentProfile?.email || 'jake@valleytrustinsurance.com'} | ${options.agentProfile?.firmWebsite || 'www.valleytrustinsurance.com'}</p>
             <div class="signature">
                 <p>Professional Insurance Analysis & Consultation</p>
+            </div>
+        </div>
+        ` : ''}
+        
+        ${options.includeAgentSignature && options.agentProfile ? `
+        <div class="agent-signature">
+            <h3>Your Insurance Agent</h3>
+            <div class="signature-content">${options.agentProfile.signature}</div>
+            <div class="agent-details">
+                <p><strong>Agent:</strong> ${options.agentProfile.name}, ${options.agentProfile.title}</p>
+                <p><strong>License:</strong> ${options.agentProfile.license}</p>
+                <p><strong>Direct Contact:</strong> ${options.agentProfile.phone} | ${options.agentProfile.email}</p>
+                <p><strong>Firm:</strong> ${options.agentProfile.firmName}</p>
             </div>
         </div>
         ` : ''}

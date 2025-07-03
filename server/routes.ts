@@ -169,12 +169,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Document not processed or no data available" });
       }
 
-      const options = {
-        clientName: req.body.clientName || '',
-        policyReference: req.body.policyReference || '',
+      // Get user settings for agent profile information
+      const userId = 1; // Using default user ID for now
+      
+      // Ensure user exists first
+      let user = await storage.getUser(userId);
+      if (!user) {
+        user = await storage.createUser({
+          username: 'agent',
+          password: 'temp_password'
+        });
+      }
+      
+      let settings = await storage.getUserSettings(user.id);
+      if (!settings) {
+        settings = await storage.createDefaultSettings(user.id);
+      }
+
+      // Type-safe access to settings with proper casting
+      const exportPrefs = settings.exportPreferences as { 
+        defaultClientName?: string; 
+        defaultPolicyReference?: string; 
+        includeAgentSignature?: boolean; 
+      };
+      const agentProfile = settings.agentProfile as { 
+        name?: string; 
+        title?: string; 
+        phone?: string; 
+        email?: string; 
+        license?: string; 
+        signature?: string; 
+        firmName?: string; 
+        firmAddress?: string; 
+        firmPhone?: string; 
+        firmWebsite?: string; 
+      };
+      
+      const options: any = {
+        clientName: req.body.clientName || exportPrefs?.defaultClientName || '',
+        policyReference: req.body.policyReference || exportPrefs?.defaultPolicyReference || '',
         includeExplanations: req.body.includeExplanations !== false,
         includeTechnicalDetails: req.body.includeTechnicalDetails === true,
         includeBranding: req.body.includeBranding !== false,
+        includeAgentSignature: exportPrefs?.includeAgentSignature || false,
+        agentProfile: agentProfile && agentProfile.name ? {
+          name: agentProfile.name || '',
+          title: agentProfile.title || '',
+          phone: agentProfile.phone || '',
+          email: agentProfile.email || '',
+          license: agentProfile.license || '',
+          signature: agentProfile.signature || '',
+          firmName: agentProfile.firmName || '',
+          firmAddress: agentProfile.firmAddress || '',
+          firmPhone: agentProfile.firmPhone || '',
+          firmWebsite: agentProfile.firmWebsite || '',
+        } : undefined,
       };
 
       const policyData = document.extractedData as any;
