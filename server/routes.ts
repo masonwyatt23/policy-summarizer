@@ -287,6 +287,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Settings routes
+  app.get("/api/settings", async (req, res) => {
+    try {
+      // For now, use a mock user ID of 1. In a real app, this would come from authentication
+      const userId = 1;
+      
+      // Ensure user exists first
+      let user = await storage.getUser(userId);
+      if (!user) {
+        user = await storage.createUser({
+          username: 'agent',
+          password: 'temp_password'
+        });
+      }
+      
+      let settings = await storage.getUserSettings(user.id);
+      if (!settings) {
+        settings = await storage.createDefaultSettings(user.id);
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      console.error("Get settings error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Get settings failed' });
+    }
+  });
+
+  app.put("/api/settings", async (req, res) => {
+    try {
+      // For now, use a mock user ID of 1. In a real app, this would come from authentication
+      const userId = 1;
+      
+      // Ensure user exists first
+      let user = await storage.getUser(userId);
+      if (!user) {
+        user = await storage.createUser({
+          username: 'agent',
+          password: 'temp_password'
+        });
+      }
+      
+      const settingsData = req.body;
+      const updatedSettings = await storage.updateUserSettings(user.id, settingsData);
+      
+      res.json(updatedSettings);
+    } catch (error) {
+      console.error("Update settings error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Update settings failed' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

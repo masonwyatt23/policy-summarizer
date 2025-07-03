@@ -115,25 +115,40 @@ export function UserSettings() {
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: AgentProfileFormData) => {
+      console.log('Saving settings:', data);
+      
       const response = await fetch("/api/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error("Failed to update settings");
-      return response.json();
+      
+      console.log('Settings response status:', response.status);
+      console.log('Settings response OK:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Settings save error response:', errorText);
+        throw new Error(`Failed to update settings: ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log('Settings save result:', result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Settings saved successfully:', data);
       toast({
         title: "Settings saved",
         description: "Your agent profile and preferences have been updated successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Settings save error:', error);
       toast({
         title: "Error",
-        description: "Failed to save settings. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to save settings. Please try again.",
         variant: "destructive",
       });
     },
