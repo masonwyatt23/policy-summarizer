@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileUpload } from '@/components/FileUpload';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { SummaryEditor } from '@/components/SummaryEditor';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
-import { Clock, FileText, CheckCircle, User } from 'lucide-react';
+import { Clock, FileText, CheckCircle, User, Eye, Edit3 } from 'lucide-react';
 import { api, type ProcessedDocument, type DocumentListItem } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
@@ -22,6 +23,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const [processingConfig, setProcessingConfig] = useState<any>(null);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [editedSummary, setEditedSummary] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>("preview");
   const { toast } = useToast();
 
   // Update currentDocumentId when documentId prop changes
@@ -128,31 +130,42 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
           <FileUpload onUploadSuccess={handleUploadSuccess} />
         </div>
 
-        {/* Summary Preview and Edit Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Summary Preview */}
-          <div className="w-full">
-            <Card className="shadow-sm border border-border bg-card h-full">
-              <div className="border-b border-border p-4">
-                <div className="flex items-center space-x-2">
-                  <FileText className="w-5 h-5 text-valley-primary" />
-                  <h2 className="text-lg font-semibold text-foreground">Policy Summary Preview</h2>
+        {/* Summary Tabs Section */}
+        <div className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="preview" className="flex items-center space-x-2">
+                <Eye className="w-4 h-4" />
+                <span>Summary Preview</span>
+              </TabsTrigger>
+              <TabsTrigger value="edit" className="flex items-center space-x-2">
+                <Edit3 className="w-4 h-4" />
+                <span>Edit Summary</span>
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="preview" className="mt-4">
+              <Card className="shadow-sm border border-border bg-card">
+                <div className="border-b border-border p-4">
+                  <div className="flex items-center space-x-2">
+                    <FileText className="w-5 h-5 text-valley-primary" />
+                    <h2 className="text-lg font-semibold text-foreground">Policy Summary Preview</h2>
+                  </div>
                 </div>
-              </div>
-              <div className="p-0">
-                <CleanSummaryPreview document={document as any || null} isLoading={isLoading} />
-              </div>
-            </Card>
-          </div>
+                <div className="p-0">
+                  <CleanSummaryPreview document={document as any || null} isLoading={isLoading} />
+                </div>
+              </Card>
+            </TabsContent>
 
-          {/* Summary Editor */}
-          <div className="w-full">
-            <SummaryEditor 
-              document={document as any || null} 
-              onSummaryUpdate={handleSummaryUpdate}
-              isLoading={isLoading}
-            />
-          </div>
+            <TabsContent value="edit" className="mt-4">
+              <SummaryEditor 
+                document={document as any || null} 
+                onSummaryUpdate={handleSummaryUpdate}
+                isLoading={isLoading}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Quick Actions Bar */}
@@ -162,7 +175,14 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Clock className="w-4 h-4 text-muted-foreground" />
                 <span>
-                  {document?.processed ? 'Processing completed' : 'Processing...'}
+                  {!currentDocumentId 
+                    ? 'No document selected'
+                    : isLoading 
+                      ? 'Processing document...'
+                      : document?.processed 
+                        ? 'Processing completed' 
+                        : 'Ready to process'
+                  }
                 </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
