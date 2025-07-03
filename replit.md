@@ -182,6 +182,19 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced bullet point formatting with improved spacing and visual hierarchy
   - Upgraded policy header with gradient backgrounds and enhanced visual effects
   - Improved overall document structure with better spacing and professional layout
+- July 03, 2025: Simplified PDF formatting for cleaner, stronger output
+  - Removed complex gradients, shadows, and rounded corners for simpler, professional appearance
+  - Streamlined section headers to use clean border-bottom style instead of gradient boxes
+  - Simplified bullet point styling with cleaner spacing and minimal decoration
+  - Made policy header clean and strong with solid background instead of gradients
+  - Reduced padding and margins for more efficient space utilization
+  - Focused on typography and clear hierarchy over decorative elements
+- July 03, 2025: Implemented real-time preview updates between edit and preview tabs
+  - Modified SummaryEditor to update preview in real-time as user types
+  - Enhanced CleanSummaryPreview to accept and display edited summary content
+  - Connected edit and preview tabs for seamless workflow without manual save requirement
+  - Maintained save functionality for explicit confirmation but enabled live preview
+  - PDF export automatically uses edited summary when available
 
 ## Changelog
 - July 01, 2025. Initial setup

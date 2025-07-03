@@ -146,51 +146,30 @@ export class PDFGenerator {
         
         .policy-header {
             text-align: center;
-            margin: 45px 0;
-            padding: 35px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            margin: 30px 0;
+            padding: 25px;
+            background: #1e3a8a;
             color: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(30, 58, 138, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .policy-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at top right, rgba(255,255,255,0.1) 0%, transparent 50%);
-            pointer-events: none;
+            border-radius: 8px;
         }
         
         .policy-header h1 {
-            font-size: 38px;
-            margin-bottom: 12px;
+            font-size: 28px;
+            margin-bottom: 8px;
             font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 1;
         }
         
         .policy-header p {
-            font-size: 19px;
-            opacity: 0.95;
+            font-size: 16px;
+            opacity: 0.9;
             font-style: italic;
-            position: relative;
-            z-index: 1;
         }
         
         .summary-content {
-            padding: 40px;
+            padding: 30px;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             border: 1px solid #e2e8f0;
-            margin: 30px 0;
+            margin: 20px 0;
         }
         
         .summary-wrapper {
@@ -198,47 +177,36 @@ export class PDFGenerator {
         }
         
         .section-block {
-            margin-bottom: 35px;
+            margin-bottom: 30px;
             page-break-inside: avoid;
-            background: #fafbfc;
-            border-radius: 10px;
-            padding: 25px;
-            border-left: 5px solid #1e3a8a;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
         .section-header {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .subheader {
-            font-size: 18px;
+            font-size: 16px;
             color: #1e3a8a;
-            margin: 0;
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            color: white;
-            border-radius: 8px;
+            margin: 0 0 12px 0;
+            padding: 8px 0;
+            border-bottom: 2px solid #1e3a8a;
             font-weight: 700;
-            letter-spacing: 0.5px;
             text-transform: uppercase;
-            font-size: 14px;
-            box-shadow: 0 2px 4px rgba(30, 58, 138, 0.3);
+            letter-spacing: 0.5px;
         }
         
         .section-content {
-            margin-top: 15px;
+            margin-top: 0;
         }
         
         .section-paragraph {
-            font-size: 15px;
-            line-height: 1.9;
+            font-size: 14px;
+            line-height: 1.7;
             color: #1e293b;
-            margin: 0;
+            margin: 0 0 16px 0;
             text-align: justify;
             hyphens: auto;
-            text-indent: 0;
-            padding: 0;
         }
         
         .main-heading {
@@ -269,26 +237,23 @@ export class PDFGenerator {
         .bullet-point {
             display: flex;
             align-items: flex-start;
-            margin: 15px 0;
-            padding: 12px 20px;
-            background: #f8fafc;
-            border-radius: 8px;
-            border-left: 3px solid #f59e0b;
+            margin: 8px 0;
+            padding-left: 20px;
         }
         
         .bullet-icon {
             color: #1e3a8a;
             font-weight: bold;
-            margin-right: 15px;
+            margin-right: 12px;
             margin-top: 2px;
-            font-size: 16px;
-            min-width: 20px;
+            font-size: 14px;
+            min-width: 16px;
         }
         
         .bullet-content {
             flex: 1;
             font-size: 14px;
-            line-height: 1.8;
+            line-height: 1.6;
             color: #1e293b;
             text-align: justify;
         }
@@ -301,11 +266,10 @@ export class PDFGenerator {
         }
         
         .coverage-box {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            padding: 25px;
-            border-radius: 12px;
-            border-left: 5px solid #1e3a8a;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: #f8fafc;
+            padding: 20px;
+            border-left: 3px solid #1e3a8a;
+            margin-bottom: 20px;
         }
         
         .coverage-box h3 {
@@ -338,10 +302,9 @@ export class PDFGenerator {
         }
         
         .contact-section {
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            padding: 30px;
-            border-radius: 12px;
-            margin: 30px 0;
+            background: #f8fafc;
+            padding: 20px;
+            margin: 20px 0;
             border: 1px solid #cbd5e1;
         }
         

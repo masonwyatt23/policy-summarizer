@@ -153,7 +153,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
                   </div>
                 </div>
                 <div className="p-0">
-                  <CleanSummaryPreview document={document as any || null} isLoading={isLoading} />
+                  <CleanSummaryPreview document={document as any || null} isLoading={isLoading} editedSummary={editedSummary} />
                 </div>
               </Card>
             </TabsContent>

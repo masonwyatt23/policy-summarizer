@@ -3,9 +3,10 @@ import { ProcessedDocument } from '@/lib/api';
 interface CleanSummaryPreviewProps {
   document: ProcessedDocument | null;
   isLoading: boolean;
+  editedSummary?: string;
 }
 
-export function CleanSummaryPreview({ document, isLoading }: CleanSummaryPreviewProps) {
+export function CleanSummaryPreview({ document, isLoading, editedSummary }: CleanSummaryPreviewProps) {
   if (isLoading) {
     return (
       <div className="bg-card rounded-lg shadow-sm border border-border p-8">
@@ -22,7 +23,9 @@ export function CleanSummaryPreview({ document, isLoading }: CleanSummaryPreview
     );
   }
 
-  if (!document || !document.summary) {
+  const summaryToDisplay = editedSummary || document?.summary || '';
+  
+  if (!document || !summaryToDisplay) {
     return (
       <div className="bg-muted/50 rounded-lg border border-border p-8 text-center">
         <p className="text-muted-foreground">No summary available. Upload and process a document to see the analysis.</p>
@@ -42,7 +45,7 @@ export function CleanSummaryPreview({ document, isLoading }: CleanSummaryPreview
       <div className="px-8 py-6">
         <div className="prose prose-slate dark:prose-invert max-w-none">
           <div className="text-foreground leading-relaxed space-y-4">
-            {document.summary.split('\n').map((paragraph, index) => {
+            {summaryToDisplay.split('\n').map((paragraph, index) => {
               // Skip empty lines
               if (paragraph.trim() === '') {
                 return <div key={index} className="h-2"></div>;

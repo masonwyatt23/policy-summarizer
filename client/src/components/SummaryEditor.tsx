@@ -28,6 +28,8 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
   const handleSummaryChange = (value: string) => {
     setEditedSummary(value);
     setHasChanges(value !== document?.summary);
+    // Update preview in real-time
+    onSummaryUpdate(value);
   };
 
   const handleSave = () => {
