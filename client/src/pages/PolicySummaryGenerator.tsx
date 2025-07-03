@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUpload } from '@/components/FileUpload';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
+import { SummaryEditor } from '@/components/SummaryEditor';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
 import { Clock, FileText, CheckCircle, User } from 'lucide-react';
 import { api, type ProcessedDocument, type DocumentListItem } from '@/lib/api';
@@ -20,6 +21,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   );
   const [processingConfig, setProcessingConfig] = useState<any>(null);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const [editedSummary, setEditedSummary] = useState<string>('');
   const { toast } = useToast();
 
   // Update currentDocumentId when documentId prop changes
@@ -48,6 +50,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
         includeExplanations: true,
         includeTechnicalDetails: false,
         includeBranding: true,
+        customSummary: editedSummary || undefined, // Use edited summary if available
       };
       
       const blob = await api.exportPDF(documentId, options);
@@ -88,6 +91,11 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
     }
   };
 
+  const handleSummaryUpdate = (updatedSummary: string) => {
+    setEditedSummary(updatedSummary);
+    // You can also trigger a backend update here if needed
+  };
+
   const isDocumentReady = document?.processed && document?.extractedData;
 
   return (
@@ -120,19 +128,31 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
           <FileUpload onUploadSuccess={handleUploadSuccess} />
         </div>
 
-        {/* Summary Preview Section */}
-        <div className="w-full">
-          <Card className="shadow-sm border border-border bg-card">
-            <div className="border-b border-border p-4">
-              <div className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-valley-primary" />
-                <h2 className="text-lg font-semibold text-foreground">Policy Summary</h2>
+        {/* Summary Preview and Edit Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Summary Preview */}
+          <div className="w-full">
+            <Card className="shadow-sm border border-border bg-card h-full">
+              <div className="border-b border-border p-4">
+                <div className="flex items-center space-x-2">
+                  <FileText className="w-5 h-5 text-valley-primary" />
+                  <h2 className="text-lg font-semibold text-foreground">Policy Summary Preview</h2>
+                </div>
               </div>
-            </div>
-            <div className="p-0">
-              <CleanSummaryPreview document={document as any || null} isLoading={isLoading} />
-            </div>
-          </Card>
+              <div className="p-0">
+                <CleanSummaryPreview document={document as any || null} isLoading={isLoading} />
+              </div>
+            </Card>
+          </div>
+
+          {/* Summary Editor */}
+          <div className="w-full">
+            <SummaryEditor 
+              document={document as any || null} 
+              onSummaryUpdate={handleSummaryUpdate}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
 
         {/* Quick Actions Bar */}

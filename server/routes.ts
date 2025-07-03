@@ -144,7 +144,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       const policyData = document.extractedData as any;
-      const summary = document.summary || '';
+      // Use custom summary if provided, otherwise use document summary
+      const summary = req.body.customSummary || document.summary || '';
 
       const pdfBuffer = await pdfGenerator.generatePolicyPDF(policyData, summary, options);
 

@@ -161,6 +161,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Eliminated complex tabbed interface in favor of clean single-page workflow
   - Maintained all core functionality while reducing UI complexity
   - Created focused, simplified workflow that emphasizes the three key actions users need
+- July 03, 2025: Enhanced summary format with subheaders and added edit functionality
+  - Modified xAI prompts to generate descriptive subheaders in brackets [like this] for each paragraph
+  - Updated CleanSummaryPreview component to parse and display subheaders as styled section headers
+  - Created new SummaryEditor component for agents to edit summaries before PDF export
+  - Implemented side-by-side layout with summary preview and edit sections
+  - Added save/reset functionality with visual feedback for unsaved changes
+  - Integrated edit capabilities directly into the PolicySummaryGenerator workflow
 
 ## Changelog
 - July 01, 2025. Initial setup

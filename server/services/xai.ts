@@ -210,7 +210,8 @@ Create a comprehensive 5-paragraph summary that flows like a professional busine
 FORMAT REQUIREMENTS:
 - Write 5 substantial, flowing paragraphs (400-600 words total)
 - Each paragraph should be comprehensive and detailed
-- NO section headers, bullet points, or bold formatting
+- START each paragraph with a descriptive subheader enclosed in brackets [like this]
+- NO other section headers, bullet points, or bold formatting besides the subheaders
 - Create seamless narrative flow between paragraphs
 - Pack maximum accurate detail into readable, explanatory content
 - Focus on comprehensive understanding through detailed exposition`
@@ -230,20 +231,21 @@ CLIENT CONTEXT:
 SUMMARY REQUIREMENTS:
 • CREATE exactly 5 comprehensive paragraphs that flow seamlessly together (400-600 words total)
 • WRITE in professional business document style with substantial, detailed paragraphs
-• ELIMINATE all section headers, bullet points, and bold formatting
+• START each paragraph with a descriptive subheader enclosed in brackets [like this]
+• ELIMINATE all other section headers, bullet points, and bold formatting
 • INTEGRATE all coverage details, limits, exclusions, and recommendations into flowing narrative
 • FOCUS on comprehensive explanations that build understanding progressively
 
 NARRATIVE APPROACH:
-• Paragraph 1: Policy foundation with insurer, coverage amounts, and business protection overview
-• Paragraph 2: Core liability coverages (general, liquor, employment) with specific limits and real-world applications
-• Paragraph 3: Property, income, and cyber protection with detailed coverage explanations and practical benefits
-• Paragraph 4: Coverage boundaries and exclusions woven naturally into comprehensive explanation
-• Paragraph 5: Professional recommendations and complete Valley Trust contact information
+• Paragraph 1: [Policy Foundation] - Policy foundation with insurer, coverage amounts, and business protection overview
+• Paragraph 2: [Core Liability Protection] - Core liability coverages (general, liquor, employment) with specific limits and real-world applications
+• Paragraph 3: [Property & Operational Coverage] - Property, income, and cyber protection with detailed coverage explanations and practical benefits
+• Paragraph 4: [Coverage Boundaries & Exclusions] - Coverage boundaries and exclusions woven naturally into comprehensive explanation
+• Paragraph 5: [Recommendations & Contact Information] - Professional recommendations and complete Valley Trust contact information
 
 Remember: Write like a professional business consultant explaining complex insurance in clear, flowing prose. Each paragraph should be substantial and informative.
 
-CRITICAL: Create 5 cohesive paragraphs with NO formatting, headers, or bullets. Pure narrative flow that comprehensively explains the policy.
+CRITICAL: Create 5 cohesive paragraphs with descriptive subheaders in brackets at the start of each paragraph. Pure narrative flow that comprehensively explains the policy.
 
 KEY BENEFITS:
 ${policyData.keyBenefits?.map(b => `- ${typeof b === 'string' ? b : b.benefit}${b.description ? ': ' + b.description : ''}`).join('\n')}

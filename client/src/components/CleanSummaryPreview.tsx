@@ -48,6 +48,23 @@ export function CleanSummaryPreview({ document, isLoading }: CleanSummaryPreview
                 return <div key={index} className="h-2"></div>;
               }
 
+              // Check if paragraph starts with a subheader [like this]
+              const subheaderMatch = paragraph.match(/^\[([^\]]+)\]\s*(.*)/);
+              
+              if (subheaderMatch) {
+                const [, subheader, content] = subheaderMatch;
+                return (
+                  <div key={index} className="space-y-3">
+                    <h3 className="text-lg font-semibold text-foreground border-l-4 border-primary pl-3 py-1 bg-primary/5 rounded-r-lg">
+                      {subheader}
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {content.trim()}
+                    </p>
+                  </div>
+                );
+              }
+
               // Handle bold headings (**text**)
               if (paragraph.includes('**')) {
                 const parts = paragraph.split('**');

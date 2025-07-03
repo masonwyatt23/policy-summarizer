@@ -39,6 +39,7 @@ export interface ExportOptions {
   includeExplanations?: boolean;
   includeTechnicalDetails?: boolean;
   includeBranding?: boolean;
+  customSummary?: string;
 }
 
 export const api = {
