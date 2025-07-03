@@ -2,15 +2,11 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileUpload } from '@/components/FileUpload';
-import { SimpleProcessingOptions } from '@/components/SimpleProcessingOptions';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
-import { ExtractedData } from '@/components/ExtractedData';
-import { ExportOptions } from '@/components/ExportOptions';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
 import { Clock, FileText, CheckCircle, User } from 'lucide-react';
-import { api, ProcessedDocument, DocumentListItem } from '@/lib/api';
+import { api, type ProcessedDocument, type DocumentListItem } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
 
@@ -36,10 +32,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const { data: document, isLoading, refetch } = useQuery<ProcessedDocument>({
     queryKey: [`/api/documents/${currentDocumentId}`],
     enabled: !!currentDocumentId,
-    refetchInterval: (data) => {
-      // Keep polling if document is still being processed
-      return data?.processed === false ? 5000 : false;
-    },
+    refetchInterval: 5000, // Poll every 5 seconds
   });
 
   const { data: documentsList } = useQuery<DocumentListItem[]>({
@@ -95,7 +88,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
     }
   };
 
-  const isDocumentReady = document?.processed && !document?.processingError && document?.extractedData;
+  const isDocumentReady = document?.processed && document?.extractedData;
 
   return (
     <div className="min-h-screen bg-background">
@@ -122,61 +115,23 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Upload and Processing Options Section - Top */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div>
-            <FileUpload onUploadSuccess={handleUploadSuccess} />
-          </div>
-          <div>
-            <SimpleProcessingOptions
-              onProcessingChange={setProcessingConfig}
-              currentDocument={document}
-            />
-          </div>
+        {/* Upload Section */}
+        <div className="mb-8">
+          <FileUpload onUploadSuccess={handleUploadSuccess} />
         </div>
 
-        {/* Summary Preview Section - Full Width */}
+        {/* Summary Preview Section */}
         <div className="w-full">
           <Card className="shadow-sm border border-border bg-card">
-            <Tabs defaultValue="summary" className="w-full">
-              <div className="border-b border-border">
-                <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0">
-                  <TabsTrigger 
-                    value="summary" 
-                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-valley-primary data-[state=active]:text-valley-primary rounded-none py-4"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Summary Preview
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="extracted"
-                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-valley-primary data-[state=active]:text-valley-primary rounded-none py-4"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Extracted Data
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="export"
-                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-valley-primary data-[state=active]:text-valley-primary rounded-none py-4"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Export Options
-                  </TabsTrigger>
-                </TabsList>
+            <div className="border-b border-border p-4">
+              <div className="flex items-center space-x-2">
+                <FileText className="w-5 h-5 text-valley-primary" />
+                <h2 className="text-lg font-semibold text-foreground">Policy Summary</h2>
               </div>
-
-              <TabsContent value="summary" className="mt-0">
-                <CleanSummaryPreview document={document} isLoading={isLoading} />
-              </TabsContent>
-
-              <TabsContent value="extracted" className="mt-0">
-                <ExtractedData document={document} isLoading={isLoading} />
-              </TabsContent>
-
-              <TabsContent value="export" className="mt-0">
-                <ExportOptions documentId={currentDocumentId} isReady={!!isDocumentReady} />
-              </TabsContent>
-            </Tabs>
+            </div>
+            <div className="p-0">
+              <CleanSummaryPreview document={document as any || null} isLoading={isLoading} />
+            </div>
           </Card>
         </div>
 

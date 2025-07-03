@@ -1,8 +1,4 @@
-import { PolicyDocument } from '@shared/schema';
-
-interface ProcessedDocument extends PolicyDocument {
-  extractedData: any;
-}
+import { ProcessedDocument } from '@/lib/api';
 
 interface CleanSummaryPreviewProps {
   document: ProcessedDocument | null;

@@ -155,6 +155,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Connected to existing professional PDF generator with branded output
   - Button shows "Exporting..." during processing and auto-downloads completed PDF
   - Uses enhanced PDF generator with A4 layout, professional typography, and Valley Trust branding
+- July 02, 2025: Simplified PolicySummaryGenerator workflow for cleaner user experience
+  - Removed "Extracted Data", "Export Options", and "Processing Options" tabs/components
+  - Streamlined to essential features: document upload, summary preview, and PDF export
+  - Eliminated complex tabbed interface in favor of clean single-page workflow
+  - Maintained all core functionality while reducing UI complexity
+  - Created focused, simplified workflow that emphasizes the three key actions users need
 
 ## Changelog
 - July 01, 2025. Initial setup
