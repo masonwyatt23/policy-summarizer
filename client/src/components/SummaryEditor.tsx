@@ -22,10 +22,18 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
   // Mutation for saving summary changes
   const saveSummaryMutation = useMutation({
     mutationFn: async (summary: string) => {
-      if (!document?.id) throw new Error('No document ID available');
+      if (!document?.id) {
+        throw new Error('No document ID available for saving');
+      }
+      
+      console.log('Saving summary for document ID:', document.id);
+      console.log('Summary length:', summary.length);
+      
       return api.updateDocumentSummary(document.id, summary);
     },
     onSuccess: (updatedDocument) => {
+      console.log('Summary saved successfully:', updatedDocument.id);
+      
       // Update the query cache with the new document data
       queryClient.setQueryData([`/api/documents/${document?.id}`], updatedDocument);
       // Invalidate the query to ensure fresh data
@@ -38,9 +46,22 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
       });
     },
     onError: (error) => {
+      console.error('Save error:', error);
+      
+      let errorMessage = "Failed to save summary changes";
+      if (error instanceof Error) {
+        if (error.message.includes('404')) {
+          errorMessage = "Document not found. Please reload the page and try again.";
+        } else if (error.message.includes('400')) {
+          errorMessage = "Invalid summary data. Please check your content and try again.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       toast({
         title: "Save Failed",
-        description: error instanceof Error ? error.message : "Failed to save summary changes",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -62,9 +83,33 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
   };
 
   const handleSave = () => {
-    if (editedSummary.trim() && hasChanges && document?.id) {
-      saveSummaryMutation.mutate(editedSummary);
+    if (!document?.id) {
+      toast({
+        title: "Save Failed",
+        description: "No document selected to save changes to.",
+        variant: "destructive",
+      });
+      return;
     }
+    
+    if (!editedSummary.trim()) {
+      toast({
+        title: "Save Failed", 
+        description: "Summary cannot be empty.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!hasChanges) {
+      toast({
+        title: "No Changes",
+        description: "No changes to save.",
+      });
+      return;
+    }
+    
+    saveSummaryMutation.mutate(editedSummary);
   };
 
   const handleReset = () => {
@@ -130,7 +175,7 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
             <Button
               size="sm"
               onClick={handleSave}
-              disabled={!hasChanges || saveSummaryMutation.isPending}
+              disabled={!hasChanges || !document?.id || saveSummaryMutation.isPending}
             >
               <Save className="h-4 w-4 mr-2" />
               {saveSummaryMutation.isPending ? 'Saving...' : 'Save Changes'}
