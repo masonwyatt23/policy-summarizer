@@ -78,10 +78,13 @@ export class PDFGenerator {
         
         body {
             font-family: 'Georgia', 'Times New Roman', serif;
-            line-height: 1.7;
+            line-height: 1.8;
             color: #1e293b;
             background: white;
-            font-size: 12px;
+            font-size: 13px;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .page {
@@ -143,29 +146,46 @@ export class PDFGenerator {
         
         .policy-header {
             text-align: center;
-            margin: 40px 0;
-            padding: 30px;
+            margin: 45px 0;
+            padding: 35px;
             background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
             color: white;
             border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(30, 58, 138, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .policy-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
         }
         
         .policy-header h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
+            font-size: 38px;
+            margin-bottom: 12px;
             font-weight: 700;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
         }
         
         .policy-header p {
-            font-size: 18px;
-            opacity: 0.9;
+            font-size: 19px;
+            opacity: 0.95;
             font-style: italic;
+            position: relative;
+            z-index: 1;
         }
         
         .summary-content {
-            padding: 35px;
+            padding: 40px;
             background: white;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
@@ -173,53 +193,103 @@ export class PDFGenerator {
             margin: 30px 0;
         }
         
-        .summary-content h2 {
-            font-size: 24px;
+        .summary-wrapper {
+            max-width: 100%;
+        }
+        
+        .section-block {
+            margin-bottom: 35px;
+            page-break-inside: avoid;
+            background: #fafbfc;
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 5px solid #1e3a8a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .section-header {
+            margin-bottom: 15px;
+        }
+        
+        .subheader {
+            font-size: 18px;
             color: #1e3a8a;
-            margin: 35px 0 20px 0;
+            margin: 0;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(30, 58, 138, 0.3);
+        }
+        
+        .section-content {
+            margin-top: 15px;
+        }
+        
+        .section-paragraph {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #1e293b;
+            margin: 0;
+            text-align: justify;
+            hyphens: auto;
+            text-indent: 0;
+            padding: 0;
+        }
+        
+        .main-heading {
+            font-size: 26px;
+            color: #1e3a8a;
+            margin: 40px 0 25px 0;
             padding-bottom: 12px;
             border-bottom: 3px solid #f59e0b;
             font-weight: 700;
             letter-spacing: -0.025em;
+            text-align: center;
         }
         
-        .summary-content h3 {
-            font-size: 20px;
-            color: #1e40af;
-            margin: 28px 0 16px 0;
-            font-weight: 600;
-            line-height: 1.3;
-        }
-        
-        .summary-content p {
-            font-size: 14px;
-            line-height: 1.8;
-            color: #374151;
-            margin-bottom: 18px;
+        .regular-paragraph {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #1e293b;
+            margin-bottom: 20px;
             text-align: justify;
             hyphens: auto;
+            text-indent: 0;
+        }
+        
+        .paragraph-break {
+            height: 20px;
         }
         
         .bullet-point {
             display: flex;
             align-items: flex-start;
-            margin: 12px 0;
-            padding-left: 10px;
+            margin: 15px 0;
+            padding: 12px 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #f59e0b;
         }
         
-        .bullet-point .bullet {
-            color: #f59e0b;
+        .bullet-icon {
+            color: #1e3a8a;
             font-weight: bold;
-            font-size: 16px;
-            margin-right: 12px;
+            margin-right: 15px;
             margin-top: 2px;
+            font-size: 16px;
+            min-width: 20px;
         }
         
-        .bullet-point .content {
+        .bullet-content {
             flex: 1;
             font-size: 14px;
-            line-height: 1.7;
-            color: #374151;
+            line-height: 1.8;
+            color: #1e293b;
             text-align: justify;
         }
         
@@ -407,14 +477,29 @@ export class PDFGenerator {
 
   private parseAndFormatSummary(summary: string): string {
     const lines = summary.split('\n');
-    let formattedHtml = '';
+    let formattedHtml = '<div class="summary-wrapper">';
     
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
       
       // Skip empty lines
       if (line === '') {
-        formattedHtml += '<div style="height: 12px;"></div>';
+        formattedHtml += '<div class="paragraph-break"></div>';
+        continue;
+      }
+      
+      // Handle subheaders in brackets [like this]
+      const subheaderMatch = line.match(/^\[([^\]]+)\]\s*(.*)/);
+      if (subheaderMatch) {
+        const [, subheader, content] = subheaderMatch;
+        formattedHtml += `
+          <div class="section-block">
+            <div class="section-header">
+              <h3 class="subheader">${subheader}</h3>
+            </div>
+            ${content.trim() ? `<div class="section-content"><p class="section-paragraph">${content.trim()}</p></div>` : ''}
+          </div>
+        `;
         continue;
       }
       
@@ -425,11 +510,11 @@ export class PDFGenerator {
         
         for (let j = 0; j < parts.length; j++) {
           if (j % 2 === 1) {
-            // Bold text - make it a heading
-            processedLine += `<h2>${parts[j]}</h2>`;
+            // Bold text - make it a main heading
+            processedLine += `<h2 class="main-heading">${parts[j]}</h2>`;
           } else if (parts[j].trim()) {
             // Regular text around the bold
-            processedLine += `<p>${parts[j].trim()}</p>`;
+            processedLine += `<p class="regular-paragraph">${parts[j].trim()}</p>`;
           }
         }
         formattedHtml += processedLine;
@@ -441,8 +526,8 @@ export class PDFGenerator {
         const bulletContent = line.substring(1).trim();
         formattedHtml += `
           <div class="bullet-point">
-            <span class="bullet">•</span>
-            <div class="content">${bulletContent}</div>
+            <span class="bullet-icon">•</span>
+            <div class="bullet-content">${bulletContent}</div>
           </div>
         `;
         continue;
@@ -450,10 +535,11 @@ export class PDFGenerator {
       
       // Handle regular paragraphs
       if (line.length > 0) {
-        formattedHtml += `<p>${line}</p>`;
+        formattedHtml += `<p class="regular-paragraph">${line}</p>`;
       }
     }
     
+    formattedHtml += '</div>';
     return formattedHtml;
   }
 
