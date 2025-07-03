@@ -95,4 +95,11 @@ export const api = {
   async deleteDocument(id: number): Promise<void> {
     await apiRequest('DELETE', `/api/documents/${id}`);
   },
+
+  async updateDocumentSummary(id: number, summary: string): Promise<ProcessedDocument> {
+    const response = await apiRequest('PATCH', `/api/documents/${id}/summary`, {
+      summary
+    });
+    return response.json();
+  },
 };

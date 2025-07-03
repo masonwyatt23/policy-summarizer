@@ -195,6 +195,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Connected edit and preview tabs for seamless workflow without manual save requirement
   - Maintained save functionality for explicit confirmation but enabled live preview
   - PDF export automatically uses edited summary when available
+- July 03, 2025: Fixed and enhanced save functionality for summary editing
+  - Added backend PATCH endpoint `/api/documents/:id/summary` for persisting summary changes
+  - Created proper mutation in SummaryEditor with loading states and error handling
+  - Implemented cache invalidation to ensure saved changes reflect immediately in UI
+  - Added save button loading state ("Saving...") and proper success/error feedback
+  - Clear edited summary state when switching between documents to prevent confusion
+  - Reset function properly clears preview and reverts to original document summary
 
 ## Changelog
 - July 01, 2025. Initial setup

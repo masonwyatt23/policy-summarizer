@@ -33,6 +33,11 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
     }
   }, [documentId]);
 
+  // Clear edited summary when document changes
+  useEffect(() => {
+    setEditedSummary('');
+  }, [currentDocumentId]);
+
   const { data: document, isLoading, refetch } = useQuery<ProcessedDocument>({
     queryKey: [`/api/documents/${currentDocumentId}`],
     enabled: !!currentDocumentId,
@@ -52,7 +57,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
         includeExplanations: true,
         includeTechnicalDetails: false,
         includeBranding: true,
-        customSummary: editedSummary || undefined, // Use edited summary if available
+        customSummary: editedSummary || undefined, // Use edited summary if available for preview
       };
       
       const blob = await api.exportPDF(documentId, options);

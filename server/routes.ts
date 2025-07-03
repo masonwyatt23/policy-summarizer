@@ -121,6 +121,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update document summary
+  app.patch("/api/documents/:id/summary", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { summary } = req.body;
+      
+      if (!summary || typeof summary !== 'string') {
+        return res.status(400).json({ error: "Summary is required and must be a string" });
+      }
+      
+      const document = await storage.getPolicyDocument(id);
+      if (!document) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+      
+      const updatedDocument = await storage.updatePolicyDocument(id, { summary });
+      if (!updatedDocument) {
+        return res.status(500).json({ error: "Failed to update document summary" });
+      }
+      
+      res.json({
+        id: updatedDocument.id,
+        originalName: updatedDocument.originalName,
+        extractedData: updatedDocument.extractedData,
+        summary: updatedDocument.summary,
+        processed: updatedDocument.processed,
+        uploadedAt: updatedDocument.uploadedAt,
+      });
+    } catch (error) {
+      console.error("Update summary error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Update summary failed' });
+    }
+  });
+
   // Generate PDF export
   app.post("/api/documents/:id/export", async (req, res) => {
     try {

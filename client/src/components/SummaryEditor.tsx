@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { ProcessedDocument } from '@/lib/api';
+import { ProcessedDocument, api } from '@/lib/api';
 
 interface SummaryEditorProps {
   document: ProcessedDocument | null;
@@ -16,6 +17,34 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
   const [editedSummary, setEditedSummary] = useState('');
   const [hasChanges, setHasChanges] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Mutation for saving summary changes
+  const saveSummaryMutation = useMutation({
+    mutationFn: async (summary: string) => {
+      if (!document?.id) throw new Error('No document ID available');
+      return api.updateDocumentSummary(document.id, summary);
+    },
+    onSuccess: (updatedDocument) => {
+      // Update the query cache with the new document data
+      queryClient.setQueryData([`/api/documents/${document?.id}`], updatedDocument);
+      // Invalidate the query to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: [`/api/documents/${document?.id}`] });
+      
+      setHasChanges(false);
+      toast({
+        title: "Summary Saved",
+        description: "Your changes have been saved successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Save Failed",
+        description: error instanceof Error ? error.message : "Failed to save summary changes",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Update edited summary when document changes
   useEffect(() => {
@@ -33,13 +62,8 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
   };
 
   const handleSave = () => {
-    if (editedSummary.trim() && hasChanges) {
-      onSummaryUpdate(editedSummary);
-      setHasChanges(false);
-      toast({
-        title: "Summary Updated",
-        description: "Your changes have been saved successfully.",
-      });
+    if (editedSummary.trim() && hasChanges && document?.id) {
+      saveSummaryMutation.mutate(editedSummary);
     }
   };
 
@@ -47,6 +71,8 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
     if (document?.summary) {
       setEditedSummary(document.summary);
       setHasChanges(false);
+      // Reset the preview to show the original summary
+      onSummaryUpdate('');
       toast({
         title: "Changes Reverted",
         description: "Summary has been reset to the original version.",
@@ -104,10 +130,10 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
             <Button
               size="sm"
               onClick={handleSave}
-              disabled={!hasChanges}
+              disabled={!hasChanges || saveSummaryMutation.isPending}
             >
               <Save className="h-4 w-4 mr-2" />
-              Save Changes
+              {saveSummaryMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </div>
