@@ -109,12 +109,11 @@ export class PDFGenerator {
         .header {
             display: flex;
             align-items: center;
-            padding: 25px 0;
-            border-bottom: 3px solid #1e3a8a;
+            padding: 25px 20px;
+            border-bottom: 4px solid #000000;
             margin-bottom: 35px;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            padding-left: 20px;
-            padding-right: 20px;
+            background: #ffffff;
+            border-top: 2px solid #000000;
         }
         
         .logo {
@@ -124,58 +123,63 @@ export class PDFGenerator {
         
         .header-text h1 {
             font-size: 32px;
-            color: #1e3a8a;
+            color: #000000;
             margin-bottom: 8px;
             font-weight: 700;
             letter-spacing: -0.025em;
+            text-transform: uppercase;
         }
         
         .header-text p {
-            color: #64748b;
+            color: #333333;
             font-size: 16px;
             font-style: italic;
+            font-weight: 500;
         }
         
         .client-info {
             text-align: right;
             margin-bottom: 30px;
             padding: 20px;
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: #ffffff;
+            border: 3px solid #000000;
+            border-radius: 0;
         }
         
         .client-info div {
             margin-bottom: 8px;
             font-size: 14px;
-            color: #475569;
+            color: #000000;
         }
         
         .client-info strong {
-            color: #1e3a8a;
-            font-weight: 600;
+            color: #000000;
+            font-weight: 700;
+            text-transform: uppercase;
         }
         
         .policy-header {
             text-align: center;
             margin: 30px 0;
             padding: 25px;
-            background: #1e3a8a;
+            background: #000000;
             color: white;
-            border-radius: 8px;
+            border: 4px solid #000000;
+            border-radius: 0;
         }
         
         .policy-header h1 {
             font-size: 28px;
             margin-bottom: 8px;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .policy-header p {
             font-size: 16px;
-            opacity: 0.9;
             font-style: italic;
+            font-weight: 500;
         }
         
         .summary-content {
@@ -200,13 +204,14 @@ export class PDFGenerator {
         
         .subheader {
             font-size: 16px;
-            color: #1e3a8a;
+            color: #000000;
             margin: 0 0 12px 0;
             padding: 8px 0;
-            border-bottom: 2px solid #1e3a8a;
+            border-bottom: 3px solid #000000;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            background: #ffffff;
         }
         
         .section-content {
@@ -224,13 +229,14 @@ export class PDFGenerator {
         
         .main-heading {
             font-size: 26px;
-            color: #1e3a8a;
+            color: #000000;
             margin: 40px 0 25px 0;
             padding-bottom: 12px;
-            border-bottom: 3px solid #f59e0b;
+            border-bottom: 4px solid #000000;
             font-weight: 700;
             letter-spacing: -0.025em;
             text-align: center;
+            text-transform: uppercase;
         }
         
         .regular-paragraph {
@@ -255,7 +261,7 @@ export class PDFGenerator {
         }
         
         .bullet-icon {
-            color: #1e3a8a;
+            color: #000000;
             font-weight: bold;
             margin-right: 12px;
             margin-top: 2px;
@@ -267,7 +273,7 @@ export class PDFGenerator {
             flex: 1;
             font-size: 14px;
             line-height: 1.6;
-            color: #1e293b;
+            color: #000000;
             text-align: justify;
         }
         
@@ -279,17 +285,18 @@ export class PDFGenerator {
         }
         
         .coverage-box {
-            background: #f8fafc;
+            background: #ffffff;
             padding: 20px;
-            border-left: 3px solid #1e3a8a;
+            border: 2px solid #000000;
             margin-bottom: 20px;
         }
         
         .coverage-box h3 {
-            color: #1e3a8a;
+            color: #000000;
             margin-bottom: 18px;
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
         }
         
         .coverage-box ul {
@@ -298,7 +305,7 @@ export class PDFGenerator {
         
         .coverage-box li {
             margin: 10px 0;
-            color: #1e40af;
+            color: #000000;
             font-size: 13px;
             line-height: 1.6;
             display: flex;
@@ -306,8 +313,8 @@ export class PDFGenerator {
         }
         
         .coverage-box li::before {
-            content: "•";
-            color: #f59e0b;
+            content: "■";
+            color: #000000;
             font-weight: bold;
             margin-right: 10px;
             font-size: 14px;
@@ -315,57 +322,62 @@ export class PDFGenerator {
         }
         
         .contact-section {
-            background: #f8fafc;
+            background: #ffffff;
             padding: 20px;
             margin: 20px 0;
-            border: 1px solid #cbd5e1;
+            border: 3px solid #000000;
         }
         
         .contact-section h2 {
-            color: #1e3a8a;
+            color: #000000;
             margin-bottom: 20px;
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 8px;
         }
         
         .contact-section p {
             margin: 8px 0;
             font-size: 14px;
-            color: #475569;
+            color: #000000;
         }
         
         .contact-section strong {
-            color: #1e3a8a;
-            font-weight: 600;
+            color: #000000;
+            font-weight: 700;
         }
         
         .footer {
             margin-top: 50px;
             padding: 25px 0;
-            border-top: 2px solid #e2e8f0;
+            border-top: 3px solid #000000;
             text-align: center;
-            background: #f8fafc;
+            background: #ffffff;
         }
         
         .footer p {
-            color: #64748b;
+            color: #000000;
             font-size: 12px;
             margin: 8px 0;
             line-height: 1.6;
+            font-weight: 500;
         }
         
         .footer .signature {
             margin-top: 20px;
             font-style: italic;
-            color: #1e3a8a;
-            font-weight: 600;
+            color: #000000;
+            font-weight: 700;
         }
         
         .agent-signature {
             margin-top: 40px;
             padding: 25px;
-            background: #f8fafc;
-            border-top: 2px solid #e2e8f0;
+            background: #ffffff;
+            border-top: 3px solid #000000;
+            border-bottom: 3px solid #000000;
             text-align: left;
         }
         

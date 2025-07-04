@@ -45,18 +45,17 @@ export function CleanSummaryPreview({ document, isLoading, editedSummary }: Clea
       <div className="px-8 py-6">
         <div className="prose prose-slate dark:prose-invert max-w-none">
           <div className="text-foreground leading-relaxed space-y-4">
-            {summaryToDisplay.split('\n').map((paragraph, index) => {
+            {summaryToDisplay.split('\n\n').map((paragraph, index) => {
               // Skip empty lines
               if (paragraph.trim() === '') {
                 return <div key={index} className="h-2"></div>;
               }
 
               // Check if paragraph starts with a subheader [like this]
-              const subheaderMatch = paragraph.match(/^\[([^\]]+)\]\s*(.*)/);
+              const subheaderMatch = paragraph.match(/^\[([^\]]+)\]\s*([\s\S]*)/);
               
               if (subheaderMatch) {
                 const [, subheader, content] = subheaderMatch;
-                console.log('Parsed header:', subheader, 'Content:', content); // Debug logging
                 return (
                   <div key={index} className="space-y-3">
                     <h3 className="text-lg font-semibold text-foreground border-b-2 border-valley-primary pb-2 mb-3 text-valley-primary">
