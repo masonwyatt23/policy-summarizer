@@ -278,8 +278,8 @@ This is a full-stack policy document processing application built for Valley Tru
   - Updated PDF generator regex to handle both [Header] and **[Header]** formats like CleanSummaryPreview
   - Fixed bracket headers in PDF exports - headers now display as styled sections without brackets
   - Improved PDF filename generation to be meaningful instead of random strings
-  - PDF filenames now follow format: policy-summary-[type]-[insured-name]-[date].pdf
-  - Added filename sanitization to remove special characters and limit length for compatibility
+  - PDF filenames now follow simple format: policy-summary-YYYYMMDD-HHMM.pdf
+  - Simplified filename generation for shorter, cleaner file names
 
 ## Changelog
 - July 01, 2025. Initial setup

@@ -232,19 +232,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const pdfBuffer = await pdfGenerator.generatePolicyPDF(policyData, summary, options);
 
-      // Create a meaningful filename based on policy information
-      const cleanString = (str: string) => str.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').toLowerCase();
-      const dateStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      // Create a simple, short filename
+      const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD format
+      const timeStr = new Date().toISOString().split('T')[1].substring(0, 5).replace(':', ''); // HHMM format
       
-      let filename = 'policy-summary';
-      if (policyData?.policyType) {
-        filename += `-${cleanString(policyData.policyType)}`;
-      }
-      if (policyData?.insuredName) {
-        const insuredName = cleanString(policyData.insuredName).substring(0, 20); // Limit length
-        filename += `-${insuredName}`;
-      }
-      filename += `-${dateStr}.pdf`;
+      const filename = `policy-summary-${dateStr}-${timeStr}.pdf`;
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
