@@ -312,6 +312,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Updated PDF generator to include client logo (max 60px height, 200px width) when provided
   - Enhanced workflow: agents can now add client-specific branding for each document export
   - Client information appears between summary preview/edit tabs and export button for optimal workflow
+- July 04, 2025: Enhanced client information box formatting in PDF exports
+  - Redesigned client info section from right-aligned text to professional flex layout
+  - Increased client logo size from 60px to 80px height with better styling (border, padding, background)
+  - Created side-by-side layout when logo is present: logo on left, details on right
+  - Improved space utilization with proper flex containers instead of cramped right-aligned text
+  - Added descriptive text "Professional Insurance Policy Analysis" for context
+  - Better responsive layout that works well with or without client logo present
 
 ## Changelog
 - July 01, 2025. Initial setup
