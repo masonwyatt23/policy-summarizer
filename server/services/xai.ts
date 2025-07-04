@@ -241,8 +241,8 @@ BUSINESS VALUE NARRATIVE APPROACH:
 • Paragraph 1: [Strategic Protection Platform] - Executive overview emphasizing insurer strength, coverage sophistication, total protection value, and business growth enablement
 • Paragraph 2: [Comprehensive Liability Shield] - Liability protection with specific amounts, real scenarios, customer confidence benefits, and operational freedom this enables
 • Paragraph 3: [Asset Protection & Business Continuity] - Property, income, and cyber protection with cash flow impact, recovery capabilities, and reputation preservation
-• Paragraph 4: [Strategic Coverage Intelligence] - Coverage boundaries presented as valuable operational intelligence, risk management insights, and optimization opportunities  
-• Paragraph 5: [Partnership Value & Expert Guidance] - Actionable recommendations, immediate next steps, optimization strategies, and complete Valley Trust partnership benefits
+• Paragraph 4: [Strategic Risk Management & Opportunity Identification] - Transform coverage boundaries into actionable business intelligence with specific operational improvements, revenue opportunities, cost-saving strategies, and competitive advantages
+• Paragraph 5: [Immediate Action Plan & Partnership Excellence] - Specific, time-bound action items, measurable optimization opportunities, direct Valley Trust contact benefits, and exclusive partnership advantages that drive immediate business results
 
 EXCEPTIONAL CLIENT VALUE FEATURES:
 • Demonstrate how this policy enables business confidence and growth
@@ -265,7 +265,37 @@ EXCEPTIONAL BUSINESS INTELLIGENCE REQUIREMENTS:
 • Build confidence through expert analysis and actionable recommendations
 • End with immediate next steps and complete partnership value proposition
 
-Create a transformative 5-paragraph business intelligence summary that positions this policy as a strategic business asset enabling confident growth and operational excellence.`
+CRITICAL FOCUS FOR FINAL TWO PARAGRAPHS:
+
+**Paragraph 4 [Strategic Risk Management & Opportunity Identification] MUST INCLUDE:**
+- Specific operational improvements this coverage enables
+- Revenue opportunities created by having this protection
+- Cost-saving strategies and efficiency gains
+- Competitive advantages over uninsured or underinsured competitors
+- Specific business growth opportunities this coverage unlocks
+- Transform any exclusions into actionable business intelligence and opportunity identification
+
+**Paragraph 5 [Immediate Action Plan & Partnership Excellence] MUST INCLUDE:**
+- 3-5 specific, time-bound action items the client can complete immediately
+- Measurable optimization opportunities with potential ROI
+- Exclusive Valley Trust partnership benefits and direct access advantages
+- Specific contact information and next steps with timeline
+- Immediate value the client will receive from Valley Trust partnership
+- Clear call-to-action that drives client engagement and business results
+
+ENHANCED PARAGRAPH 4 EXAMPLES OF VALUE TO INCLUDE:
+• "This coverage enables you to confidently pursue larger contracts that require proof of insurance..."
+• "With this protection, you can expand customer-facing operations without fear of liability exposure..."
+• "The cyber coverage allows you to offer online services and digital payments with confidence..."
+• "Understanding these coverage boundaries helps optimize your operational procedures to maximize protection..."
+
+ENHANCED PARAGRAPH 5 EXAMPLES OF ACTIONABLE ITEMS:
+• "Schedule a 30-minute policy optimization review with Jake Schindler within 10 days..."
+• "Immediately verify your business classification to ensure maximum premium efficiency..."
+• "Review and update your coverage limits annually to maintain pace with business growth..."
+• "Contact Valley Trust at (540) 885-5531 to discuss additional coverage opportunities..."
+
+Create a transformative 5-paragraph business intelligence summary where the final two paragraphs deliver exceptional client value with actionable insights and immediate business benefits that drive real operational improvements and partnership engagement.`
             }
           ],
           temperature: 0.3,
