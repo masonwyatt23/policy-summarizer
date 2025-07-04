@@ -298,6 +298,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Replaced "Professional Insurance Analysis & Consultation" with Valley Trust slogan
   - New footer includes: "Anchoring You Through Life's Tough Storms" and "There is no insurance solution we cannot solve, and no customer we cannot help."
   - Streamlined agent signature section with reduced padding and removed border lines
+- July 03, 2025: Optimized PDF layout for better page fitting and black/white printing
+  - Made coverage analysis boxes smaller with lighter background (#f8f9fa) and subtle borders
+  - Enhanced agent signature section for professional black/white appearance with proper borders
+  - Improved footer formatting with better spacing and clear section separation
+  - Optimized PDF margins (15mm top/bottom, 12mm left/right) for better page utilization
+  - Added page-break controls to prevent awkward content splitting across pages
+  - Reduced font sizes and spacing in coverage boxes for more compact presentation
 
 ## Changelog
 - July 01, 2025. Initial setup

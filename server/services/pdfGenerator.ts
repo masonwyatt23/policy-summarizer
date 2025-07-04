@@ -56,11 +56,12 @@ export class PDFGenerator {
         format: 'A4',
         printBackground: true,
         margin: {
-          top: '20mm',
-          right: '15mm',
-          bottom: '20mm',
-          left: '15mm',
+          top: '15mm',
+          right: '12mm',
+          bottom: '15mm',
+          left: '12mm',
         },
+        preferCSSPageSize: true,
       });
 
       return Buffer.from(pdfBuffer);
@@ -279,22 +280,23 @@ export class PDFGenerator {
         .coverage-highlights {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin: 35px 0;
+            gap: 20px;
+            margin: 25px 0;
         }
         
         .coverage-box {
-            background: #ffffff;
-            padding: 20px;
-            border: 2px solid #000000;
-            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 15px;
+            border-radius: 4px;
         }
         
         .coverage-box h3 {
             color: #000000;
-            margin-bottom: 18px;
-            font-size: 18px;
-            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
             text-transform: uppercase;
         }
         
@@ -303,20 +305,20 @@ export class PDFGenerator {
         }
         
         .coverage-box li {
-            margin: 10px 0;
+            margin: 6px 0;
             color: #000000;
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 12px;
+            line-height: 1.5;
             display: flex;
             align-items: flex-start;
         }
         
         .coverage-box li::before {
-            content: "■";
+            content: "•";
             color: #000000;
             font-weight: bold;
-            margin-right: 10px;
-            font-size: 14px;
+            margin-right: 8px;
+            font-size: 12px;
             margin-top: 2px;
         }
         
@@ -349,62 +351,78 @@ export class PDFGenerator {
         }
         
         .footer {
-            margin-top: 40px;
-            padding: 20px 0;
+            margin-top: 50px;
+            padding: 25px 0 15px 0;
             text-align: center;
             background: #ffffff;
+            border-top: 2px solid #000000;
+            page-break-inside: avoid;
         }
         
         .footer p {
             color: #000000;
-            font-size: 12px;
-            margin: 8px 0;
-            line-height: 1.6;
+            font-size: 13px;
+            margin: 6px 0;
+            line-height: 1.5;
             font-weight: 500;
         }
         
         .footer .signature {
-            margin-top: 20px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #000000;
+        }
+        
+        .footer .signature p {
             font-style: italic;
             color: #000000;
-            font-weight: 700;
+            font-weight: 600;
+            font-size: 12px;
+            margin: 4px 0;
+            line-height: 1.4;
         }
         
         .agent-signature {
-            margin-top: 30px;
+            margin-top: 40px;
             padding: 20px 0;
             background: #ffffff;
             text-align: left;
+            border-top: 2px solid #000000;
         }
         
         .agent-signature h3 {
-            color: #1e3a8a;
-            font-size: 16px;
+            color: #000000;
+            font-size: 18px;
             margin-bottom: 15px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
         }
         
         .agent-signature .signature-content {
             white-space: pre-line;
             font-size: 14px;
-            color: #1e293b;
+            color: #000000;
             line-height: 1.6;
             margin-bottom: 15px;
+            font-style: italic;
         }
         
         .agent-signature .agent-details {
-            padding-top: 10px;
-            margin-top: 10px;
+            padding-top: 15px;
+            margin-top: 15px;
+            border-top: 1px solid #000000;
         }
         
         .agent-signature .agent-details p {
-            margin: 4px 0;
-            font-size: 12px;
-            color: #64748b;
+            margin: 6px 0;
+            font-size: 13px;
+            color: #000000;
+            font-weight: 500;
         }
         
         .agent-signature .agent-details strong {
-            color: #1e3a8a;
+            color: #000000;
+            font-weight: 700;
         }
         
         @media print {
@@ -418,8 +436,17 @@ export class PDFGenerator {
         }
         
         @page {
-            margin: 20mm;
+            margin: 15mm 12mm;
             size: A4;
+        }
+        
+        .page-break-avoid {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        
+        .section-block {
+            page-break-inside: avoid;
         }
     </style>
 </head>
