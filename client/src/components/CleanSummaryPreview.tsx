@@ -51,8 +51,8 @@ export function CleanSummaryPreview({ document, isLoading, editedSummary }: Clea
                 return <div key={index} className="h-2"></div>;
               }
 
-              // Check if paragraph starts with a subheader [like this]
-              const subheaderMatch = paragraph.match(/^\[([^\]]+)\]\s*([\s\S]*)/);
+              // Check if paragraph starts with a subheader [like this] or **[like this]**
+              const subheaderMatch = paragraph.match(/^(?:\*\*)?\[([^\]]+)\](?:\*\*)?\s*([\s\S]*)/);
               
               if (subheaderMatch) {
                 const [, subheader, content] = subheaderMatch;

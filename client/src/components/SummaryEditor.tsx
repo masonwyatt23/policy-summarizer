@@ -67,10 +67,16 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
     },
   });
 
+  // Clean up summary text for editing (remove ** around brackets)
+  const cleanSummaryForEditing = (summary: string): string => {
+    return summary.replace(/\*\*\[([^\]]+)\]\*\*/g, '[$1]');
+  };
+
   // Update edited summary when document changes
   useEffect(() => {
     if (document?.summary) {
-      setEditedSummary(document.summary);
+      const cleanedSummary = cleanSummaryForEditing(document.summary);
+      setEditedSummary(cleanedSummary);
       setHasChanges(false);
     }
   }, [document?.summary]);
@@ -114,7 +120,8 @@ export function SummaryEditor({ document, onSummaryUpdate, isLoading }: SummaryE
 
   const handleReset = () => {
     if (document?.summary) {
-      setEditedSummary(document.summary);
+      const cleanedSummary = cleanSummaryForEditing(document.summary);
+      setEditedSummary(cleanedSummary);
       setHasChanges(false);
       // Reset the preview to show the original summary
       onSummaryUpdate('');

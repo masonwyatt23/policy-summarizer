@@ -268,6 +268,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced CleanSummaryPreview component to properly handle bracket subheaders
   - Improved PDF parseAndFormatSummary function to handle multi-line paragraphs with brackets
   - Corrected variable references in PDF generator for consistent paragraph processing
+- July 03, 2025: Fixed bracket header display issues across all components
+  - Enhanced CleanSummaryPreview regex to handle both [Header] and **[Header]** formats
+  - Added header cleaning function in SummaryEditor to remove asterisks around brackets
+  - Fixed bracket header parsing to properly extract and display subheaders as styled sections
+  - Updated reset function to use cleaned summary text without formatting artifacts
+  - Headers now display as proper styled subheaders instead of raw bracket text
 
 ## Changelog
 - July 01, 2025. Initial setup
