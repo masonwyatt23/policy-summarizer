@@ -200,28 +200,25 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
         {/* File Upload Area */}
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+          className={`border-2 border-dashed rounded-lg p-2 text-center cursor-pointer transition-colors ${
             isDragActive 
               ? 'border-valley-primary bg-blue-50 dark:bg-blue-950/30' 
               : 'border-border hover:border-valley-primary'
           }`}
         >
           <input {...getInputProps()} />
-          <div className="space-y-2">
-            <div className="mx-auto w-10 h-10 bg-valley-primary/10 rounded-full flex items-center justify-center">
-              <FileText className="w-5 h-5 text-valley-primary" />
+          <div className="flex items-center justify-center space-x-3">
+            <div className="w-8 h-8 bg-valley-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <FileText className="w-4 h-4 text-valley-primary" />
             </div>
-            <div>
-              <p className="text-base font-medium text-foreground">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">
                 {isDragActive ? 'Drop files here' : 'Drop files here or click to browse'}
               </p>
-              <p className="text-sm text-muted-foreground">
-                Supports PDF and DOCX files up to 10MB
+              <p className="text-xs text-muted-foreground">
+                PDF and DOCX files up to 10MB
               </p>
             </div>
-            <Button variant="outline" size="sm" className="valley-primary-hover">
-              Choose Files
-            </Button>
           </div>
         </div>
 
