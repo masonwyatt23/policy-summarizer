@@ -56,6 +56,7 @@ export function CleanSummaryPreview({ document, isLoading, editedSummary }: Clea
               
               if (subheaderMatch) {
                 const [, subheader, content] = subheaderMatch;
+                console.log('Parsed header:', subheader, 'Content:', content); // Debug logging
                 return (
                   <div key={index} className="space-y-3">
                     <h3 className="text-lg font-semibold text-foreground border-b-2 border-valley-primary pb-2 mb-3 text-valley-primary">

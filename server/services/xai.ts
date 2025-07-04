@@ -284,6 +284,13 @@ CRITICAL FOCUS FOR FINAL TWO PARAGRAPHS:
 - Mention of being welcome to visit the office for personalized assistance
 - Professional closing that reinforces the partnership and available support
 
+**CRITICAL: PARAGRAPH 5 MUST AVOID:**
+- Do NOT suggest scheduling follow-up meetings or policy reviews
+- Do NOT request immediate action items or appointments
+- Do NOT ask them to verify business information or policy details
+- Do NOT mention policy optimization reviews or coverage assessments
+- Focus ONLY on reassurance, support availability, and contact information
+
 ENHANCED PARAGRAPH 4 EXAMPLES OF VALUE TO INCLUDE:
 • "This coverage enables you to confidently pursue larger contracts that require proof of insurance..."
 • "With this protection, you can expand customer-facing operations without fear of liability exposure..."
@@ -291,11 +298,11 @@ ENHANCED PARAGRAPH 4 EXAMPLES OF VALUE TO INCLUDE:
 • "Understanding these coverage boundaries helps optimize your operational procedures to maximize protection..."
 
 ENHANCED PARAGRAPH 5 EXAMPLES OF SUPPORT MESSAGING:
-• "Your new ErieSecure Business policy provides comprehensive protection perfectly tailored to your operations..."
-• "Valley Trust Insurance Group remains committed to your ongoing success and peace of mind..."
-• "For any questions about your coverage, claims assistance, or policy guidance, contact us at (540) 885-5531..."
-• "Jake Schindler and our team are always available via phone, email at jake@valleytrustinsurance.com, or visit our office..."
-• "We encourage you to reach out anytime - you're always welcome at our Staunton office for personalized assistance..."
+• "Your new ErieSecure Business policy provides comprehensive protection perfectly tailored to your operations, giving you the confidence to focus on what you do best..."
+• "Valley Trust Insurance Group remains committed to your ongoing success and peace of mind, standing ready to support you whenever questions arise..."
+• "Should you have any questions about your coverage, need claims assistance, or simply want policy guidance, we're here to help at (540) 885-5531..."
+• "Jake Schindler and our team are always available via phone, email at jake@valleytrustinsurance.com, or you're welcome to visit our office at 829 Greenville Ave in Staunton..."
+• "We encourage you to reach out anytime with questions or concerns - you're always welcome for personalized assistance and expert guidance..."
 
 Create a transformative 5-paragraph business intelligence summary where the final two paragraphs deliver exceptional client value with actionable insights and immediate business benefits that drive real operational improvements and partnership engagement.`
             }

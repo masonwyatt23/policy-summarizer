@@ -247,6 +247,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Improved header formatting with cleaner underline style using Valley Trust primary color
   - Removed background colors from headers for more professional appearance
   - Made upload box vertically thinner by reducing padding and spacing
+- July 03, 2025: Fixed policy summary generation issues
+  - Strengthened xAI prompts to explicitly avoid scheduling follow-up meetings or policy reviews
+  - Enhanced paragraph 5 to focus only on reassurance, support availability, and contact information
+  - Added critical restrictions to prevent requesting immediate action items or appointments
+  - Updated examples to emphasize support messaging instead of scheduling requirements
+  - Added debug logging for header parsing to troubleshoot bracket display issues
 
 ## Changelog
 - July 01, 2025. Initial setup
