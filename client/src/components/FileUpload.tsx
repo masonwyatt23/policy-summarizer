@@ -200,22 +200,22 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
         {/* File Upload Area */}
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+          className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
             isDragActive 
               ? 'border-valley-primary bg-blue-50 dark:bg-blue-950/30' 
               : 'border-border hover:border-valley-primary'
           }`}
         >
           <input {...getInputProps()} />
-          <div className="space-y-4">
-            <div className="mx-auto w-12 h-12 bg-valley-primary/10 rounded-full flex items-center justify-center">
-              <FileText className="w-6 h-6 text-valley-primary" />
+          <div className="space-y-2">
+            <div className="mx-auto w-10 h-10 bg-valley-primary/10 rounded-full flex items-center justify-center">
+              <FileText className="w-5 h-5 text-valley-primary" />
             </div>
             <div>
               <p className="text-base font-medium text-foreground">
                 {isDragActive ? 'Drop files here' : 'Drop files here or click to browse'}
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground">
                 Supports PDF and DOCX files up to 10MB
               </p>
             </div>
