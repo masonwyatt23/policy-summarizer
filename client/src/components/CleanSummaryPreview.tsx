@@ -58,7 +58,7 @@ export function CleanSummaryPreview({ document, isLoading, editedSummary }: Clea
                 const [, subheader, content] = subheaderMatch;
                 return (
                   <div key={index} className="space-y-3">
-                    <h3 className="text-lg font-semibold text-foreground border-l-4 border-primary pl-3 py-1 bg-primary/5 rounded-r-lg">
+                    <h3 className="text-lg font-semibold text-foreground border-b-2 border-valley-primary pb-2 mb-3 text-valley-primary">
                       {subheader}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed">

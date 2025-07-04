@@ -242,7 +242,7 @@ BUSINESS VALUE NARRATIVE APPROACH:
 • Paragraph 2: [Comprehensive Liability Shield] - Liability protection with specific amounts, real scenarios, customer confidence benefits, and operational freedom this enables
 • Paragraph 3: [Asset Protection & Business Continuity] - Property, income, and cyber protection with cash flow impact, recovery capabilities, and reputation preservation
 • Paragraph 4: [Strategic Risk Management & Opportunity Identification] - Transform coverage boundaries into actionable business intelligence with specific operational improvements, revenue opportunities, cost-saving strategies, and competitive advantages
-• Paragraph 5: [Immediate Action Plan & Partnership Excellence] - Specific, time-bound action items, measurable optimization opportunities, direct Valley Trust contact benefits, and exclusive partnership advantages that drive immediate business results
+• Paragraph 5: [Your Valley Trust Partnership & Support] - Reassurance about excellent protection, ongoing support commitment, clear contact information, and professional closing that reinforces partnership
 
 EXCEPTIONAL CLIENT VALUE FEATURES:
 • Demonstrate how this policy enables business confidence and growth
@@ -259,11 +259,12 @@ ${clientContext ? `ADDITIONAL CLIENT CONTEXT: ${clientContext}` : ''}
 
 EXCEPTIONAL BUSINESS INTELLIGENCE REQUIREMENTS:
 • Write 5 substantial paragraphs with executive-level business insights (80-120 words each)
+• Start each paragraph with a descriptive subheader in bracket format [like this]
 • Demonstrate tangible business value and competitive advantages throughout
 • Include specific financial protection amounts and practical business scenarios
 • Present coverage as strategic business intelligence that drives operational success
 • Build confidence through expert analysis and actionable recommendations
-• End with immediate next steps and complete partnership value proposition
+• End with supportive contact information and partnership reassurance
 
 CRITICAL FOCUS FOR FINAL TWO PARAGRAPHS:
 
@@ -275,13 +276,13 @@ CRITICAL FOCUS FOR FINAL TWO PARAGRAPHS:
 - Specific business growth opportunities this coverage unlocks
 - Transform any exclusions into actionable business intelligence and opportunity identification
 
-**Paragraph 5 [Immediate Action Plan & Partnership Excellence] MUST INCLUDE:**
-- 3-5 specific, time-bound action items the client can complete immediately
-- Measurable optimization opportunities with potential ROI
-- Exclusive Valley Trust partnership benefits and direct access advantages
-- Specific contact information and next steps with timeline
-- Immediate value the client will receive from Valley Trust partnership
-- Clear call-to-action that drives client engagement and business results
+**Paragraph 5 [Your Valley Trust Partnership & Support] MUST INCLUDE:**
+- Reassurance that their new policy provides excellent protection for their business
+- Emphasis on Valley Trust's commitment to ongoing support and service
+- Clear contact information for questions, claims, or guidance (phone, email, office visits)
+- Invitation to reach out anytime with questions or concerns
+- Mention of being welcome to visit the office for personalized assistance
+- Professional closing that reinforces the partnership and available support
 
 ENHANCED PARAGRAPH 4 EXAMPLES OF VALUE TO INCLUDE:
 • "This coverage enables you to confidently pursue larger contracts that require proof of insurance..."
@@ -289,11 +290,12 @@ ENHANCED PARAGRAPH 4 EXAMPLES OF VALUE TO INCLUDE:
 • "The cyber coverage allows you to offer online services and digital payments with confidence..."
 • "Understanding these coverage boundaries helps optimize your operational procedures to maximize protection..."
 
-ENHANCED PARAGRAPH 5 EXAMPLES OF ACTIONABLE ITEMS:
-• "Schedule a 30-minute policy optimization review with Jake Schindler within 10 days..."
-• "Immediately verify your business classification to ensure maximum premium efficiency..."
-• "Review and update your coverage limits annually to maintain pace with business growth..."
-• "Contact Valley Trust at (540) 885-5531 to discuss additional coverage opportunities..."
+ENHANCED PARAGRAPH 5 EXAMPLES OF SUPPORT MESSAGING:
+• "Your new ErieSecure Business policy provides comprehensive protection perfectly tailored to your operations..."
+• "Valley Trust Insurance Group remains committed to your ongoing success and peace of mind..."
+• "For any questions about your coverage, claims assistance, or policy guidance, contact us at (540) 885-5531..."
+• "Jake Schindler and our team are always available via phone, email at jake@valleytrustinsurance.com, or visit our office..."
+• "We encourage you to reach out anytime - you're always welcome at our Staunton office for personalized assistance..."
 
 Create a transformative 5-paragraph business intelligence summary where the final two paragraphs deliver exceptional client value with actionable insights and immediate business benefits that drive real operational improvements and partnership engagement.`
             }
