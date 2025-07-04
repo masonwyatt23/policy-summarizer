@@ -262,6 +262,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced contact sections and footer with strong black borders and white backgrounds
   - Added uppercase text styling for better readability when printed
   - Removed all color-dependent elements and replaced with structural design elements
+- July 03, 2025: Fixed header parsing and PDF footer positioning issues
+  - Updated PDF generator to parse bracket headers [like this] correctly using paragraph-based splitting
+  - Fixed footer positioning so agent signature appears before footer in PDF output
+  - Enhanced CleanSummaryPreview component to properly handle bracket subheaders
+  - Improved PDF parseAndFormatSummary function to handle multi-line paragraphs with brackets
+  - Corrected variable references in PDF generator for consistent paragraph processing
 
 ## Changelog
 - July 01, 2025. Initial setup

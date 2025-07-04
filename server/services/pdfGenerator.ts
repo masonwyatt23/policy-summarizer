@@ -486,17 +486,6 @@ export class PDFGenerator {
             ${formattedSummary}
         </div>
 
-        ${options.includeBranding ? `
-        <div class="footer">
-            <p><strong>${options.agentProfile?.firmName || 'Valley Trust Insurance Group'}</strong></p>
-            <p>${options.agentProfile?.firmAddress || '829 Greenville Ave, Staunton, VA 24401'} | ${options.agentProfile?.firmPhone || '(540) 885-5531'}</p>
-            <p>${options.agentProfile?.email || 'jake@valleytrustinsurance.com'} | ${options.agentProfile?.firmWebsite || 'www.valleytrustinsurance.com'}</p>
-            <div class="signature">
-                <p>Professional Insurance Analysis & Consultation</p>
-            </div>
-        </div>
-        ` : ''}
-        
         ${options.includeAgentSignature && options.agentProfile ? `
         <div class="agent-signature">
             <h3>Your Insurance Agent</h3>
@@ -509,6 +498,17 @@ export class PDFGenerator {
             </div>
         </div>
         ` : ''}
+
+        ${options.includeBranding ? `
+        <div class="footer">
+            <p><strong>${options.agentProfile?.firmName || 'Valley Trust Insurance Group'}</strong></p>
+            <p>${options.agentProfile?.firmAddress || '829 Greenville Ave, Staunton, VA 24401'} | ${options.agentProfile?.firmPhone || '(540) 885-5531'}</p>
+            <p>${options.agentProfile?.email || 'jake@valleytrustinsurance.com'} | ${options.agentProfile?.firmWebsite || 'www.valleytrustinsurance.com'}</p>
+            <div class="signature">
+                <p>Professional Insurance Analysis & Consultation</p>
+            </div>
+        </div>
+        ` : ''}
     </div>
 </body>
 </html>
@@ -516,20 +516,20 @@ export class PDFGenerator {
   }
 
   private parseAndFormatSummary(summary: string): string {
-    const lines = summary.split('\n');
+    const paragraphs = summary.split('\n\n');
     let formattedHtml = '<div class="summary-wrapper">';
     
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+    for (let i = 0; i < paragraphs.length; i++) {
+      const paragraph = paragraphs[i].trim();
       
-      // Skip empty lines
-      if (line === '') {
+      // Skip empty paragraphs
+      if (paragraph === '') {
         formattedHtml += '<div class="paragraph-break"></div>';
         continue;
       }
       
       // Handle subheaders in brackets [like this]
-      const subheaderMatch = line.match(/^\[([^\]]+)\]\s*(.*)/);
+      const subheaderMatch = paragraph.match(/^\[([^\]]+)\]\s*([\s\S]*)/);
       if (subheaderMatch) {
         const [, subheader, content] = subheaderMatch;
         formattedHtml += `
@@ -544,8 +544,8 @@ export class PDFGenerator {
       }
       
       // Handle bold headings (**text**)
-      if (line.includes('**')) {
-        const parts = line.split('**');
+      if (paragraph.includes('**')) {
+        const parts = paragraph.split('**');
         let processedLine = '';
         
         for (let j = 0; j < parts.length; j++) {
@@ -562,8 +562,8 @@ export class PDFGenerator {
       }
       
       // Handle bullet points
-      if (line.startsWith('•')) {
-        const bulletContent = line.substring(1).trim();
+      if (paragraph.startsWith('•')) {
+        const bulletContent = paragraph.substring(1).trim();
         formattedHtml += `
           <div class="bullet-point">
             <span class="bullet-icon">•</span>
@@ -574,8 +574,8 @@ export class PDFGenerator {
       }
       
       // Handle regular paragraphs
-      if (line.length > 0) {
-        formattedHtml += `<p class="regular-paragraph">${line}</p>`;
+      if (paragraph.length > 0) {
+        formattedHtml += `<p class="regular-paragraph">${paragraph}</p>`;
       }
     }
     
