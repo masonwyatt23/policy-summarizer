@@ -183,9 +183,8 @@ export class PDFGenerator {
         }
         
         .summary-content {
-            padding: 30px;
+            padding: 20px 0;
             background: white;
-            border: 1px solid #e2e8f0;
             margin: 20px 0;
         }
         
@@ -350,9 +349,8 @@ export class PDFGenerator {
         }
         
         .footer {
-            margin-top: 50px;
-            padding: 25px 0;
-            border-top: 3px solid #000000;
+            margin-top: 40px;
+            padding: 20px 0;
             text-align: center;
             background: #ffffff;
         }
@@ -373,11 +371,9 @@ export class PDFGenerator {
         }
         
         .agent-signature {
-            margin-top: 40px;
-            padding: 25px;
+            margin-top: 30px;
+            padding: 20px 0;
             background: #ffffff;
-            border-top: 3px solid #000000;
-            border-bottom: 3px solid #000000;
             text-align: left;
         }
         
@@ -397,9 +393,8 @@ export class PDFGenerator {
         }
         
         .agent-signature .agent-details {
-            border-top: 1px solid #e2e8f0;
-            padding-top: 15px;
-            margin-top: 15px;
+            padding-top: 10px;
+            margin-top: 10px;
         }
         
         .agent-signature .agent-details p {
@@ -503,9 +498,10 @@ export class PDFGenerator {
         <div class="footer">
             <p><strong>${options.agentProfile?.firmName || 'Valley Trust Insurance Group'}</strong></p>
             <p>${options.agentProfile?.firmAddress || '829 Greenville Ave, Staunton, VA 24401'} | ${options.agentProfile?.firmPhone || '(540) 885-5531'}</p>
-            <p>${options.agentProfile?.email || 'jake@valleytrustinsurance.com'} | ${options.agentProfile?.firmWebsite || 'www.valleytrustinsurance.com'}</p>
+            <p>${options.agentProfile?.firmWebsite || 'https://valleytrustinsurance.com'}</p>
             <div class="signature">
-                <p>Professional Insurance Analysis & Consultation</p>
+                <p>Anchoring You Through Life's Tough Storms</p>
+                <p>There is no insurance solution we cannot solve, and no customer we cannot help.</p>
             </div>
         </div>
         ` : ''}

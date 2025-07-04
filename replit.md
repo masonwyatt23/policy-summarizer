@@ -291,6 +291,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added proper filename validation and automatic .pdf extension handling
   - Enhanced user experience with clear export workflow and loading states
   - Default filename generates timestamp format (policy-summary-YYYYMMDD-HHMM) for convenience
+- July 03, 2025: Enhanced PDF formatting for professional report appearance
+  - Removed boxed content formatting to create standard report layout
+  - Eliminated unnecessary horizontal lines and borders for cleaner appearance
+  - Updated footer to remove duplicate email address (now only in agent signature)
+  - Replaced "Professional Insurance Analysis & Consultation" with Valley Trust slogan
+  - New footer includes: "Anchoring You Through Life's Tough Storms" and "There is no insurance solution we cannot solve, and no customer we cannot help."
+  - Streamlined agent signature section with reduced padding and removed border lines
 
 ## Changelog
 - July 01, 2025. Initial setup
