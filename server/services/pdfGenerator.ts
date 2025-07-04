@@ -6,6 +6,7 @@ import { PolicyData } from '@shared/schema';
 export interface PDFOptions {
   clientName?: string;
   policyReference?: string;
+  clientLogo?: string; // Base64 encoded image
   includeExplanations: boolean;
   includeTechnicalDetails: boolean;
   includeBranding: boolean;
@@ -161,24 +162,24 @@ export class PDFGenerator {
         
         .policy-header {
             text-align: center;
-            margin: 30px 0;
-            padding: 25px;
-            background: #000000;
-            color: white;
-            border: 4px solid #000000;
-            border-radius: 0;
+            margin: 20px 0;
+            padding: 18px;
+            background: #f8f9fa;
+            color: #000000;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
         }
         
         .policy-header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            font-weight: 700;
+            font-size: 22px;
+            margin-bottom: 6px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         
         .policy-header p {
-            font-size: 16px;
+            font-size: 14px;
             font-style: italic;
             font-weight: 500;
         }
@@ -462,8 +463,13 @@ export class PDFGenerator {
         </div>
         ` : ''}
         
-        ${options.clientName || options.policyReference ? `
+        ${options.clientName || options.policyReference || options.clientLogo ? `
         <div class="client-info">
+            ${options.clientLogo ? `
+            <div class="client-logo-container" style="text-align: center; margin-bottom: 15px;">
+                <img src="${options.clientLogo}" alt="Client Logo" style="max-height: 60px; max-width: 200px; object-fit: contain;">
+            </div>
+            ` : ''}
             ${options.clientName ? `<div><strong>Prepared for:</strong> ${options.clientName}</div>` : ''}
             ${options.policyReference ? `<div><strong>Policy Reference:</strong> ${options.policyReference}</div>` : ''}
             <div><strong>Analysis Date:</strong> ${new Date().toLocaleDateString('en-US', { 

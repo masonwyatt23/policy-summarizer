@@ -305,6 +305,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Optimized PDF margins (15mm top/bottom, 12mm left/right) for better page utilization
   - Added page-break controls to prevent awkward content splitting across pages
   - Reduced font sizes and spacing in coverage boxes for more compact presentation
+- July 04, 2025: Added client logo upload functionality for personalized PDF exports
+  - Created client information section in PolicySummaryGenerator with name and logo upload
+  - Added drag-and-drop logo upload with 2MB file size limit and image preview
+  - Integrated client logo display in PDF header below Valley Trust branding
+  - Updated PDF generator to include client logo (max 60px height, 200px width) when provided
+  - Enhanced workflow: agents can now add client-specific branding for each document export
+  - Client information appears between summary preview/edit tabs and export button for optimal workflow
 
 ## Changelog
 - July 01, 2025. Initial setup

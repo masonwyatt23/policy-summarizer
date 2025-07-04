@@ -10,7 +10,7 @@ import { FileUpload } from '@/components/FileUpload';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { SummaryEditor } from '@/components/SummaryEditor';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
-import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download } from 'lucide-react';
+import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download, Image, X, Upload } from 'lucide-react';
 import { api, type ProcessedDocument, type DocumentListItem } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
@@ -29,6 +29,9 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const [activeTab, setActiveTab] = useState<string>("preview");
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [exportFilename, setExportFilename] = useState<string>('');
+  const [clientName, setClientName] = useState<string>('');
+  const [clientLogo, setClientLogo] = useState<string>('');
+  const [logoPreview, setLogoPreview] = useState<string>('');
   const { toast } = useToast();
 
   // Update currentDocumentId when documentId prop changes
@@ -55,10 +58,16 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
 
   // PDF Export mutation
   const exportPDFMutation = useMutation({
-    mutationFn: async ({ documentId, filename }: { documentId: number; filename: string }) => {
+    mutationFn: async ({ documentId, filename, clientName, clientLogo }: { 
+      documentId: number; 
+      filename: string; 
+      clientName?: string; 
+      clientLogo?: string; 
+    }) => {
       const options = {
-        clientName: '',
+        clientName: clientName || '',
         policyReference: '',
+        clientLogo: clientLogo || '',
         includeExplanations: true,
         includeTechnicalDetails: false,
         includeBranding: true,
@@ -114,7 +123,9 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
     if (currentDocumentId && exportFilename.trim()) {
       exportPDFMutation.mutate({ 
         documentId: currentDocumentId, 
-        filename: exportFilename.trim() 
+        filename: exportFilename.trim(),
+        clientName: clientName.trim(),
+        clientLogo: clientLogo
       });
     }
   };
@@ -122,6 +133,33 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const handleSummaryUpdate = (updatedSummary: string) => {
     setEditedSummary(updatedSummary);
     // You can also trigger a backend update here if needed
+  };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 2MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string;
+      setClientLogo(base64);
+      setLogoPreview(base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeLogo = () => {
+    setClientLogo('');
+    setLogoPreview('');
   };
 
   const isDocumentReady = document?.processed && document?.extractedData;
@@ -193,6 +231,98 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
             </TabsContent>
           </Tabs>
         </div>
+
+        {/* Client Information Section */}
+        {isDocumentReady && (
+          <div className="mt-6 bg-card rounded-xl shadow-sm border border-border p-6">
+            <div className="flex items-center space-x-2 mb-4">
+              <User className="w-5 h-5 text-valley-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Client Information (Optional)</h3>
+              <span className="text-sm text-muted-foreground">- Personalize your PDF export</span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Client Name */}
+              <div className="space-y-2">
+                <Label htmlFor="clientName" className="text-sm font-medium">
+                  Client Name
+                </Label>
+                <Input
+                  id="clientName"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  placeholder="Enter client or business name"
+                  className="w-full"
+                />
+              </div>
+
+              {/* Client Logo Upload */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Client Logo
+                </Label>
+                <div className="space-y-3">
+                  {!logoPreview ? (
+                    <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-valley-primary transition-colors">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                        id="logo-upload"
+                      />
+                      <label
+                        htmlFor="logo-upload"
+                        className="cursor-pointer flex flex-col items-center space-y-2"
+                      >
+                        <Upload className="w-8 h-8 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                          Click to upload client logo
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          PNG, JPG up to 2MB
+                        </span>
+                      </label>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <div className="border border-border rounded-lg p-2 bg-background">
+                        <img
+                          src={logoPreview}
+                          alt="Client logo preview"
+                          className="w-full h-20 object-contain rounded"
+                        />
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={removeLogo}
+                        className="absolute -top-2 -right-2 rounded-full p-1 h-6 w-6 bg-background border border-border hover:bg-destructive hover:text-destructive-foreground"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {(clientName || logoPreview) && (
+              <div className="mt-4 p-3 bg-muted rounded-lg border-l-4 border-valley-primary">
+                <div className="flex items-start space-x-2">
+                  <Image className="w-4 h-4 text-valley-primary mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-foreground">PDF will include:</p>
+                    <ul className="text-muted-foreground mt-1 space-y-1">
+                      {clientName && <li>• Client name: {clientName}</li>}
+                      {logoPreview && <li>• Client logo in document header</li>}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Quick Actions Bar */}
         <div className="mt-8 bg-card rounded-xl shadow-sm border border-border p-4">

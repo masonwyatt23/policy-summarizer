@@ -208,6 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const options: any = {
         clientName: req.body.clientName || exportPrefs?.defaultClientName || '',
         policyReference: req.body.policyReference || exportPrefs?.defaultPolicyReference || '',
+        clientLogo: req.body.clientLogo || '',
         includeExplanations: req.body.includeExplanations !== false,
         includeTechnicalDetails: req.body.includeTechnicalDetails === true,
         includeBranding: req.body.includeBranding !== false,
