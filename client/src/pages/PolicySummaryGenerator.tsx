@@ -3,11 +3,14 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { FileUpload } from '@/components/FileUpload';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { SummaryEditor } from '@/components/SummaryEditor';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
-import { Clock, FileText, CheckCircle, User, Eye, Edit3 } from 'lucide-react';
+import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download } from 'lucide-react';
 import { api, type ProcessedDocument, type DocumentListItem } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
@@ -24,6 +27,8 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [editedSummary, setEditedSummary] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>("preview");
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+  const [exportFilename, setExportFilename] = useState<string>('');
   const { toast } = useToast();
 
   // Update currentDocumentId when documentId prop changes
@@ -50,7 +55,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
 
   // PDF Export mutation
   const exportPDFMutation = useMutation({
-    mutationFn: async (documentId: number) => {
+    mutationFn: async ({ documentId, filename }: { documentId: number; filename: string }) => {
       const options = {
         clientName: '',
         policyReference: '',
@@ -62,18 +67,19 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
       
       const blob = await api.exportPDF(documentId, options);
       
-      // Download the PDF
+      // Download the PDF with custom filename
       const url = window.URL.createObjectURL(blob);
       const link = window.document.createElement('a');
       link.style.display = 'none';
       link.href = url;
-      // Let the backend handle the filename via Content-Disposition header
+      link.download = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
       window.document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);
       window.document.body.removeChild(link);
     },
     onSuccess: () => {
+      setIsExportDialogOpen(false);
       toast({
         title: "Export Successful",
         description: "PDF has been downloaded successfully.",
@@ -93,8 +99,23 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   };
 
   const handleExportPDF = () => {
-    if (currentDocumentId) {
-      exportPDFMutation.mutate(currentDocumentId);
+    if (currentDocumentId && document) {
+      // Generate default filename based on document info
+      const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
+      const timeStr = new Date().toISOString().split('T')[1].substring(0, 5).replace(':', ''); // HHMM
+      const defaultFilename = `policy-summary-${dateStr}-${timeStr}`;
+      
+      setExportFilename(defaultFilename);
+      setIsExportDialogOpen(true);
+    }
+  };
+
+  const handleConfirmExport = () => {
+    if (currentDocumentId && exportFilename.trim()) {
+      exportPDFMutation.mutate({ 
+        documentId: currentDocumentId, 
+        filename: exportFilename.trim() 
+      });
     }
   };
 
@@ -236,6 +257,51 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
         isOpen={isHistoryDialogOpen}
         onClose={() => setIsHistoryDialogOpen(false)}
       />
+      
+      {/* Export PDF Dialog */}
+      <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <Download className="w-5 h-5" />
+              <span>Export PDF</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="filename" className="text-right">
+                Filename
+              </Label>
+              <Input
+                id="filename"
+                value={exportFilename}
+                onChange={(e) => setExportFilename(e.target.value)}
+                className="col-span-3"
+                placeholder="Enter filename"
+              />
+            </div>
+            <div className="text-sm text-muted-foreground">
+              The .pdf extension will be added automatically if not included.
+            </div>
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsExportDialogOpen(false)}
+              disabled={exportPDFMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmExport}
+              disabled={!exportFilename.trim() || exportPDFMutation.isPending}
+              className="valley-secondary valley-secondary-hover"
+            >
+              {exportPDFMutation.isPending ? 'Exporting...' : 'Export PDF'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

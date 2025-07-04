@@ -285,6 +285,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Frontend now respects backend Content-Disposition header for proper filename
   - Eliminated complex UUID and domain-based filenames in favor of simple timestamp format
   - PDF exports now use clean backend-generated filenames consistently
+- July 03, 2025: Added PDF export filename editing dialog
+  - Created export dialog that allows users to edit filename before export
+  - Fixed PDF export functionality issues causing export failures
+  - Added proper filename validation and automatic .pdf extension handling
+  - Enhanced user experience with clear export workflow and loading states
+  - Default filename generates timestamp format (policy-summary-YYYYMMDD-HHMM) for convenience
 
 ## Changelog
 - July 01, 2025. Initial setup
