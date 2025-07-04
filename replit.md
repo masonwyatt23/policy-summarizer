@@ -274,6 +274,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Fixed bracket header parsing to properly extract and display subheaders as styled sections
   - Updated reset function to use cleaned summary text without formatting artifacts
   - Headers now display as proper styled subheaders instead of raw bracket text
+- July 03, 2025: Enhanced PDF exports with improved header parsing and meaningful filenames
+  - Updated PDF generator regex to handle both [Header] and **[Header]** formats like CleanSummaryPreview
+  - Fixed bracket headers in PDF exports - headers now display as styled sections without brackets
+  - Improved PDF filename generation to be meaningful instead of random strings
+  - PDF filenames now follow format: policy-summary-[type]-[insured-name]-[date].pdf
+  - Added filename sanitization to remove special characters and limit length for compatibility
 
 ## Changelog
 - July 01, 2025. Initial setup

@@ -232,8 +232,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const pdfBuffer = await pdfGenerator.generatePolicyPDF(policyData, summary, options);
 
+      // Create a meaningful filename based on policy information
+      const cleanString = (str: string) => str.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').toLowerCase();
+      const dateStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      
+      let filename = 'policy-summary';
+      if (policyData?.policyType) {
+        filename += `-${cleanString(policyData.policyType)}`;
+      }
+      if (policyData?.insuredName) {
+        const insuredName = cleanString(policyData.insuredName).substring(0, 20); // Limit length
+        filename += `-${insuredName}`;
+      }
+      filename += `-${dateStr}.pdf`;
+
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="policy-summary-${document.originalName}.pdf"`);
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
       res.send(pdfBuffer);
     } catch (error) {
       console.error("PDF export error:", error);

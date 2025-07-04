@@ -528,8 +528,8 @@ export class PDFGenerator {
         continue;
       }
       
-      // Handle subheaders in brackets [like this]
-      const subheaderMatch = paragraph.match(/^\[([^\]]+)\]\s*([\s\S]*)/);
+      // Handle subheaders in brackets [like this] or **[like this]**
+      const subheaderMatch = paragraph.match(/^(?:\*\*)?\[([^\]]+)\](?:\*\*)?\s*([\s\S]*)/);
       if (subheaderMatch) {
         const [, subheader, content] = subheaderMatch;
         formattedHtml += `
