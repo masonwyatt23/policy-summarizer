@@ -67,7 +67,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
       const link = window.document.createElement('a');
       link.style.display = 'none';
       link.href = url;
-      link.download = `policy-summary-${window.location.hostname}-${Date.now()}.pdf`;
+      // Let the backend handle the filename via Content-Disposition header
       window.document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);

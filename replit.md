@@ -280,6 +280,11 @@ This is a full-stack policy document processing application built for Valley Tru
   - Improved PDF filename generation to be meaningful instead of random strings
   - PDF filenames now follow simple format: policy-summary-YYYYMMDD-HHMM.pdf
   - Simplified filename generation for shorter, cleaner file names
+- July 03, 2025: Fixed PDF export filenames being overridden by frontend
+  - Removed frontend filename override in PolicySummaryGenerator and DocumentDashboard
+  - Frontend now respects backend Content-Disposition header for proper filename
+  - Eliminated complex UUID and domain-based filenames in favor of simple timestamp format
+  - PDF exports now use clean backend-generated filenames consistently
 
 ## Changelog
 - July 01, 2025. Initial setup
