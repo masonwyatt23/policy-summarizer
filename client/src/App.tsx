@@ -1,5 +1,6 @@
 import { Switch, Route, Link, useLocation } from "wouter";
 import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { 
   FileText, 
   Settings, 
@@ -11,7 +12,8 @@ import {
   ChevronRight,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  LogOut
 } from "lucide-react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -24,7 +26,11 @@ import PolicySummaryGenerator from "@/pages/PolicySummaryGenerator";
 import NotFound from "@/pages/not-found";
 import { DocumentDashboard } from "@/components/DocumentDashboard";
 import { UserSettings } from "@/components/UserSettings";
+import { AuthPage } from "@/components/AuthPage";
 import { ThemeProvider, useTheme } from "@/hooks/use-theme";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { apiRequest } from "@/lib/queryClient";
 
 function Navigation({ 
   isSidebarCollapsed, 
@@ -36,6 +42,7 @@ function Navigation({
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { logout, isLoggingOut, agent } = useAuth();
 
   const navigationItems = [
     { path: "/", label: "Upload & Process", icon: Upload },
@@ -171,6 +178,9 @@ function Navigation({
             <span className="font-semibold text-foreground">Policy Processor</span>
           </div>
           <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600 dark:text-gray-300">
+              {agent?.username}
+            </span>
             <Button
               variant="ghost"
               size="sm"
@@ -185,6 +195,15 @@ function Navigation({
             <Button
               variant="ghost"
               size="sm"
+              onClick={logout}
+              disabled={isLoggingOut}
+              className="w-8 h-8 p-0"
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -195,7 +214,7 @@ function Navigation({
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200">
+        <div className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <nav className="px-4 py-3 space-y-2">
             {navigationItems.map((item) => (
               <NavItem
@@ -207,6 +226,21 @@ function Navigation({
                 isCollapsed={false}
               />
             ))}
+            <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-600">
+              <span className="text-sm text-gray-600 dark:text-gray-300">
+                {agent?.username}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={logout}
+                disabled={isLoggingOut}
+                className="flex items-center space-x-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </Button>
+            </div>
           </nav>
         </div>
       )}
@@ -219,6 +253,26 @@ function SummaryView(props: any) {
 }
 
 function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, show login page
+  if (!isAuthenticated) {
+    return <AuthPage />;
+  }
+
+  // If authenticated, show main app
   return (
     <Switch>
       <Route path="/" component={PolicySummaryGenerator} />

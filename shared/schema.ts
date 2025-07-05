@@ -3,15 +3,31 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
 
+// Keep existing users table structure (from Replit auth)
 export const users = pgTable("users", {
+  id: text("id").primaryKey(),
+  email: text("email").unique(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  profileImageUrl: text("profile_image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// New simple authentication table for agents
+export const agents = pgTable("agents", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const policyDocuments = pgTable("policy_documents", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id),
+  agentId: integer("agent_id").references(() => agents.id),
   filename: text("filename").notNull(),
   originalName: text("original_name").notNull(),
   fileSize: integer("file_size").notNull(),
@@ -41,7 +57,7 @@ export const summaryHistory = pgTable("summary_history", {
 
 export const userSettings = pgTable("user_settings", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  agentId: integer("agent_id").references(() => agents.id).notNull().unique(),
   defaultProcessingOptions: jsonb("default_processing_options").default({
     extractCoverage: true,
     generateExplanations: true,
@@ -79,14 +95,18 @@ export const userSettings = pgTable("user_settings", {
 
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
+  // Keep for compatibility with existing data
+}));
+
+export const agentsRelations = relations(agents, ({ many, one }) => ({
   documents: many(policyDocuments),
   settings: one(userSettings),
 }));
 
 export const policyDocumentsRelations = relations(policyDocuments, ({ one, many }) => ({
-  user: one(users, {
-    fields: [policyDocuments.userId],
-    references: [users.id],
+  agent: one(agents, {
+    fields: [policyDocuments.agentId],
+    references: [agents.id],
   }),
   summaryVersions: many(summaryHistory),
 }));
@@ -99,15 +119,23 @@ export const summaryHistoryRelations = relations(summaryHistory, ({ one }) => ({
 }));
 
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
-  user: one(users, {
-    fields: [userSettings.userId],
-    references: [users.id],
+  agent: one(agents, {
+    fields: [userSettings.agentId],
+    references: [agents.id],
   }),
 }));
 
 export const insertUserSchema = createInsertSchema(users).pick({
+  email: true,
+  firstName: true,
+  lastName: true,
+});
+
+export const insertAgentSchema = createInsertSchema(agents).pick({
   username: true,
   password: true,
+  fullName: true,
+  email: true,
 });
 
 export const insertPolicyDocumentSchema = createInsertSchema(policyDocuments).omit({
@@ -128,6 +156,8 @@ export const insertUserSettingsSchema = createInsertSchema(userSettings).omit({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type InsertAgent = z.infer<typeof insertAgentSchema>;
+export type Agent = typeof agents.$inferSelect;
 export type PolicyDocument = typeof policyDocuments.$inferSelect;
 export type InsertPolicyDocument = z.infer<typeof insertPolicyDocumentSchema>;
 export type SummaryHistory = typeof summaryHistory.$inferSelect;

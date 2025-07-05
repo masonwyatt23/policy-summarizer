@@ -1,11 +1,21 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
+import session from "express-session";
+import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { storage } from "./storage";
 import { documentProcessor } from "./services/documentProcessor";
 import { pdfGenerator } from "./services/pdfGenerator";
-import { insertPolicyDocumentSchema, PolicyDataSchema } from "@shared/schema";
+import { insertPolicyDocumentSchema, PolicyDataSchema, insertAgentSchema } from "@shared/schema";
+
+// Extend Express session to include agent
+declare module 'express-session' {
+  interface SessionData {
+    agentId?: number;
+    agentUsername?: string;
+  }
+}
 
 // Configure multer for file uploads
 const upload = multer({
@@ -23,8 +33,137 @@ const upload = multer({
   },
 });
 
+// Authentication middleware
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.agentId) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+  next();
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Configure session middleware
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-development-secret-here',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // Set to true in production with HTTPS
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
+
+  // Agent registration route
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const validatedData = insertAgentSchema.parse(req.body);
+      
+      // Check if username already exists
+      const existingAgent = await storage.getAgentByUsername(validatedData.username);
+      if (existingAgent) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+      
+      // Create agent
+      const agent = await storage.createAgent({
+        ...validatedData,
+        password: hashedPassword
+      });
+
+      // Create session
+      req.session.agentId = agent.id;
+      req.session.agentUsername = agent.username;
+
+      res.status(201).json({ 
+        success: true, 
+        agent: { 
+          id: agent.id, 
+          username: agent.username, 
+          fullName: agent.fullName,
+          email: agent.email 
+        } 
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(400).json({ error: "Registration failed" });
+    }
+  });
+
+  // Agent login route
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password required" });
+      }
+
+      // Find agent
+      const agent = await storage.getAgentByUsername(username);
+      if (!agent) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Verify password
+      const isValidPassword = await bcrypt.compare(password, agent.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Create session
+      req.session.agentId = agent.id;
+      req.session.agentUsername = agent.username;
+
+      res.json({ 
+        success: true, 
+        agent: { 
+          id: agent.id, 
+          username: agent.username, 
+          fullName: agent.fullName,
+          email: agent.email 
+        } 
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  // Agent logout route
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Logout failed" });
+      }
+      res.json({ success: true });
+    });
+  });
+
+  // Get current agent route
+  app.get("/api/auth/me", requireAuth, async (req, res) => {
+    try {
+      const agent = await storage.getAgent(req.session.agentId!);
+      if (!agent) {
+        return res.status(404).json({ error: "Agent not found" });
+      }
+
+      res.json({ 
+        id: agent.id, 
+        username: agent.username, 
+        fullName: agent.fullName,
+        email: agent.email 
+      });
+    } catch (error) {
+      console.error("Get agent error:", error);
+      res.status(500).json({ error: "Failed to get agent" });
+    }
+  });
+
   // Upload and process policy document
   app.post("/api/documents/upload", upload.single('document'), async (req, res) => {
     try {
@@ -169,21 +308,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Document not processed or no data available" });
       }
 
-      // Get user settings for agent profile information
-      const userId = 1; // Using default user ID for now
+      // Get agent settings for agent profile information
+      const agentId = req.session.agentId || 1; // Using session agent ID or default
       
-      // Ensure user exists first
-      let user = await storage.getUser(userId);
-      if (!user) {
-        user = await storage.createUser({
-          username: 'agent',
-          password: 'temp_password'
-        });
-      }
-      
-      let settings = await storage.getUserSettings(user.id);
+      let settings = await storage.getUserSettings(agentId);
       if (!settings) {
-        settings = await storage.createDefaultSettings(user.id);
+        settings = await storage.createDefaultSettings(agentId);
       }
 
       // Type-safe access to settings with proper casting
@@ -343,24 +473,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Authentication routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      // Check if agent already exists
+      const existingAgent = await storage.getAgentByUsername(username);
+      if (existingAgent) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+      
+      // Create new agent
+      const agent = await storage.createAgent({ 
+        username, 
+        password,
+        fullName: username, // Default to username
+        email: `${username}@example.com` // Default email
+      });
+      
+      // Set session
+      req.session.agentId = agent.id;
+      req.session.agentUsername = agent.username;
+      
+      res.json({ success: true, agent: { id: agent.id, username: agent.username } });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Registration failed" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      const agent = await storage.getAgentByUsername(username);
+      if (!agent) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      
+      // TODO: Add proper password verification with bcrypt
+      if (agent.password !== password) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      
+      // Set session
+      req.session.agentId = agent.id;
+      req.session.agentUsername = agent.username;
+      
+      res.json({ success: true, agent: { id: agent.id, username: agent.username } });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Logout error:", err);
+          return res.status(500).json({ error: "Logout failed" });
+        }
+        res.json({ success: true });
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ error: "Logout failed" });
+    }
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      if (!req.session.agentId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+      
+      const agent = await storage.getAgent(req.session.agentId);
+      if (!agent) {
+        return res.status(401).json({ error: "Agent not found" });
+      }
+      
+      res.json({ agent: { id: agent.id, username: agent.username } });
+    } catch (error) {
+      console.error("Auth check error:", error);
+      res.status(500).json({ error: "Authentication check failed" });
+    }
+  });
+
   // Settings routes
   app.get("/api/settings", async (req, res) => {
     try {
-      // For now, use a mock user ID of 1. In a real app, this would come from authentication
-      const userId = 1;
+      // Use session agent ID or default
+      const agentId = req.session.agentId || 1;
       
-      // Ensure user exists first
-      let user = await storage.getUser(userId);
-      if (!user) {
-        user = await storage.createUser({
-          username: 'agent',
-          password: 'temp_password'
-        });
-      }
-      
-      let settings = await storage.getUserSettings(user.id);
+      let settings = await storage.getUserSettings(agentId);
       if (!settings) {
-        settings = await storage.createDefaultSettings(user.id);
+        settings = await storage.createDefaultSettings(agentId);
       }
       
       res.json(settings);
@@ -372,20 +581,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/settings", async (req, res) => {
     try {
-      // For now, use a mock user ID of 1. In a real app, this would come from authentication
-      const userId = 1;
-      
-      // Ensure user exists first
-      let user = await storage.getUser(userId);
-      if (!user) {
-        user = await storage.createUser({
-          username: 'agent',
-          password: 'temp_password'
-        });
-      }
+      // Use session agent ID or default
+      const agentId = req.session.agentId || 1;
       
       const settingsData = req.body;
-      const updatedSettings = await storage.updateUserSettings(user.id, settingsData);
+      const updatedSettings = await storage.updateUserSettings(agentId, settingsData);
       
       res.json(updatedSettings);
     } catch (error) {

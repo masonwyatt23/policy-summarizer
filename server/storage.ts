@@ -1,10 +1,13 @@
 import { 
   users, 
+  agents,
   policyDocuments, 
   summaryHistory, 
   userSettings,
   type User, 
   type InsertUser, 
+  type Agent,
+  type InsertAgent,
   type PolicyDocument, 
   type InsertPolicyDocument,
   type SummaryHistory,
@@ -14,10 +17,15 @@ import {
 } from "@shared/schema";
 
 export interface IStorage {
-  // User methods
-  getUser(id: number): Promise<User | undefined>;
+  // Legacy user methods (for compatibility)
+  getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  
+  // Agent methods (new authentication system)
+  getAgent(id: number): Promise<Agent | undefined>;
+  getAgentByUsername(username: string): Promise<Agent | undefined>;
+  createAgent(agent: InsertAgent): Promise<Agent>;
   
   // Policy document methods
   createPolicyDocument(document: InsertPolicyDocument): Promise<PolicyDocument>;
@@ -44,32 +52,63 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
+  private agents: Map<number, Agent>;
   private policyDocuments: Map<number, PolicyDocument>;
   private currentUserId: number;
+  private currentAgentId: number;
   private currentDocumentId: number;
 
   constructor() {
     this.users = new Map();
+    this.agents = new Map();
     this.policyDocuments = new Map();
     this.currentUserId = 1;
+    this.currentAgentId = 1;
     this.currentDocumentId = 1;
   }
 
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+  async getUser(id: string): Promise<User | undefined> {
+    // Convert string id to number for internal storage
+    const numId = parseInt(id);
+    return this.users.get(numId);
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    // Users don't have username field, returning undefined
+    return undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      id: id.toString(),
+      email: insertUser.email || null,
+      firstName: insertUser.firstName || null,
+      lastName: insertUser.lastName || null,
+      profileImageUrl: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
     this.users.set(id, user);
     return user;
+  }
+
+  // Agent methods (new authentication system)
+  async getAgent(id: number): Promise<Agent | undefined> {
+    return this.agents.get(id);
+  }
+
+  async getAgentByUsername(username: string): Promise<Agent | undefined> {
+    return Array.from(this.agents.values()).find(
+      (agent) => agent.username === username,
+    );
+  }
+
+  async createAgent(insertAgent: InsertAgent): Promise<Agent> {
+    const id = this.currentAgentId++;
+    const agent: Agent = { ...insertAgent, id, createdAt: new Date(), updatedAt: new Date() };
+    this.agents.set(id, agent);
+    return agent;
   }
 
   async createPolicyDocument(insertDocument: InsertPolicyDocument): Promise<PolicyDocument> {
@@ -77,6 +116,7 @@ export class MemStorage implements IStorage {
     const document: PolicyDocument = {
       ...insertDocument,
       id,
+      agentId: insertDocument.agentId || null,
       uploadedAt: new Date(),
       summary: insertDocument.summary || null,
       processed: insertDocument.processed || false,
@@ -87,6 +127,7 @@ export class MemStorage implements IStorage {
       lastViewedAt: null,
       clientName: insertDocument.clientName || null,
       policyReference: insertDocument.policyReference || null,
+      processingOptions: insertDocument.processingOptions || {},
     };
     this.policyDocuments.set(id, document);
     return document;
@@ -168,15 +209,16 @@ export class MemStorage implements IStorage {
     return true; // Mock implementation
   }
 
-  async getUserSettings(userId: number): Promise<UserSettings | undefined> {
+  async getUserSettings(agentId: number): Promise<UserSettings | undefined> {
     return undefined; // Mock implementation
   }
 
-  async updateUserSettings(userId: number, settings: Partial<InsertUserSettings>): Promise<UserSettings> {
+  async updateUserSettings(agentId: number, settings: Partial<InsertUserSettings>): Promise<UserSettings> {
     const mockSettings: UserSettings = {
       id: 1,
-      userId,
+      agentId,
       defaultProcessingOptions: {},
+      agentProfile: {},
       exportPreferences: {},
       uiPreferences: {},
       updatedAt: new Date(),
@@ -184,11 +226,12 @@ export class MemStorage implements IStorage {
     return mockSettings;
   }
 
-  async createDefaultSettings(userId: number): Promise<UserSettings> {
+  async createDefaultSettings(agentId: number): Promise<UserSettings> {
     const mockSettings: UserSettings = {
       id: 1,
-      userId,
+      agentId,
       defaultProcessingOptions: {},
+      agentProfile: {},
       exportPreferences: {},
       uiPreferences: {},
       updatedAt: new Date(),
@@ -199,24 +242,50 @@ export class MemStorage implements IStorage {
 
 import { db } from "./db";
 import { eq, like, desc, and } from "drizzle-orm";
+import crypto from "crypto";
 
 export class DatabaseStorage implements IStorage {
   // User methods
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
+    // Users don't have usernames in the current schema
+    return undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
-    // Create default settings for new user
-    await this.createDefaultSettings(user.id);
+    const [user] = await db
+      .insert(users)
+      .values({
+        id: crypto.randomUUID(),
+        email: insertUser.email || null,
+        firstName: insertUser.firstName || null,
+        lastName: insertUser.lastName || null,
+        profileImageUrl: null,
+      })
+      .returning();
     return user;
+  }
+
+  // Agent methods (new authentication system)
+  async getAgent(id: number): Promise<Agent | undefined> {
+    const [agent] = await db.select().from(agents).where(eq(agents.id, id));
+    return agent || undefined;
+  }
+
+  async getAgentByUsername(username: string): Promise<Agent | undefined> {
+    const [agent] = await db.select().from(agents).where(eq(agents.username, username));
+    return agent || undefined;
+  }
+
+  async createAgent(insertAgent: InsertAgent): Promise<Agent> {
+    const [agent] = await db.insert(agents).values(insertAgent).returning();
+    // Create default settings for new agent
+    await this.createDefaultSettings(agent.id);
+    return agent;
   }
 
   // Policy document methods
@@ -244,10 +313,10 @@ export class DatabaseStorage implements IStorage {
     return updated || undefined;
   }
 
-  async listPolicyDocuments(userId?: number): Promise<PolicyDocument[]> {
+  async listPolicyDocuments(agentId?: number): Promise<PolicyDocument[]> {
     const query = db.select().from(policyDocuments).orderBy(desc(policyDocuments.uploadedAt));
-    if (userId) {
-      return await query.where(eq(policyDocuments.userId, userId));
+    if (agentId) {
+      return await query.where(eq(policyDocuments.agentId, agentId));
     }
     return await query;
   }
@@ -257,7 +326,7 @@ export class DatabaseStorage implements IStorage {
     await db.delete(summaryHistory).where(eq(summaryHistory.documentId, id));
     // Then delete document
     const result = await db.delete(policyDocuments).where(eq(policyDocuments.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async toggleFavorite(id: number): Promise<PolicyDocument | undefined> {
@@ -279,13 +348,13 @@ export class DatabaseStorage implements IStorage {
     return updated || undefined;
   }
 
-  async searchDocuments(query: string, userId?: number): Promise<PolicyDocument[]> {
+  async searchDocuments(query: string, agentId?: number): Promise<PolicyDocument[]> {
     const searchConditions = [
       like(policyDocuments.originalName, `%${query}%`),
     ];
     
-    if (userId) {
-      searchConditions.push(eq(policyDocuments.userId, userId));
+    if (agentId) {
+      searchConditions.push(eq(policyDocuments.agentId, agentId));
     }
 
     return await db.select()
@@ -351,37 +420,37 @@ export class DatabaseStorage implements IStorage {
       .set({ isActive: true })
       .where(eq(summaryHistory.id, versionId));
     
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async deleteSummaryVersion(versionId: number): Promise<boolean> {
     const result = await db.delete(summaryHistory).where(eq(summaryHistory.id, versionId));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Settings methods
-  async getUserSettings(userId: number): Promise<UserSettings | undefined> {
-    const [settings] = await db.select().from(userSettings).where(eq(userSettings.userId, userId));
+  async getUserSettings(agentId: number): Promise<UserSettings | undefined> {
+    const [settings] = await db.select().from(userSettings).where(eq(userSettings.agentId, agentId));
     return settings || undefined;
   }
 
-  async updateUserSettings(userId: number, settingsUpdate: Partial<InsertUserSettings>): Promise<UserSettings> {
-    const existing = await this.getUserSettings(userId);
+  async updateUserSettings(agentId: number, settingsUpdate: Partial<InsertUserSettings>): Promise<UserSettings> {
+    const existing = await this.getUserSettings(agentId);
     
     if (existing) {
       const [updated] = await db.update(userSettings)
         .set({ ...settingsUpdate, updatedAt: new Date() })
-        .where(eq(userSettings.userId, userId))
+        .where(eq(userSettings.agentId, agentId))
         .returning();
       return updated;
     } else {
-      return await this.createDefaultSettings(userId);
+      return await this.createDefaultSettings(agentId);
     }
   }
 
-  async createDefaultSettings(userId: number): Promise<UserSettings> {
+  async createDefaultSettings(agentId: number): Promise<UserSettings> {
     const [settings] = await db.insert(userSettings)
-      .values({ userId })
+      .values({ agentId })
       .returning();
     return settings;
   }

@@ -76,7 +76,7 @@ export function DocumentDashboard() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
-  const { data: documents = [], isLoading } = useQuery({
+  const { data: documents = [], isLoading } = useQuery<DocumentListItem[]>({
     queryKey: ['/api/documents'],
   });
 
