@@ -252,30 +252,14 @@ function SummaryView(props: any) {
   return <PolicySummaryGenerator documentId={props.params?.id} />;
 }
 
-function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+function PolicySummaryGeneratorWrapper() {
+  return <PolicySummaryGenerator />;
+}
 
-  // Show loading state while checking authentication
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If not authenticated, show login page
-  if (!isAuthenticated) {
-    return <AuthPage />;
-  }
-
-  // If authenticated, show main app
+function AuthenticatedRouter() {
   return (
     <Switch>
-      <Route path="/" component={PolicySummaryGenerator} />
+      <Route path="/" component={PolicySummaryGeneratorWrapper} />
       <Route path="/summary/:id" component={SummaryView} />
       <Route path="/dashboard" component={DocumentDashboard} />
       <Route path="/settings" component={UserSettings} />
@@ -284,27 +268,62 @@ function Router() {
   );
 }
 
-function App() {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+function AuthenticatedApp({ isSidebarCollapsed, setIsSidebarCollapsed }: {
+  isSidebarCollapsed: boolean;
+  setIsSidebarCollapsed: (collapsed: boolean) => void;
+}) {
+  return (
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <Navigation 
+        isSidebarCollapsed={isSidebarCollapsed}
+        setIsSidebarCollapsed={setIsSidebarCollapsed}
+      />
+      
+      {/* Main Content */}
+      <div className={`transition-all duration-300 ${isSidebarCollapsed ? 'md:pl-16' : 'md:pl-64'}`}>
+        <div className="max-w-7xl mx-auto px-4 py-6 md:px-6 md:py-8">
+          <AuthenticatedRouter />
+        </div>
+      </div>
+    </div>
+  );
+}
 
+function AppContent() {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show appropriate content based on authentication status
+  if (isAuthenticated) {
+    return (
+      <AuthenticatedApp 
+        isSidebarCollapsed={isSidebarCollapsed}
+        setIsSidebarCollapsed={setIsSidebarCollapsed}
+      />
+    );
+  } else {
+    return <AuthPage />;
+  }
+}
+
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="valley-trust-theme">
         <TooltipProvider>
-          <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-          <Navigation 
-            isSidebarCollapsed={isSidebarCollapsed}
-            setIsSidebarCollapsed={setIsSidebarCollapsed}
-          />
-          
-          {/* Main Content */}
-          <div className={`transition-all duration-300 ${isSidebarCollapsed ? 'md:pl-16' : 'md:pl-64'}`}>
-            <div className="max-w-7xl mx-auto px-4 py-6 md:px-6 md:py-8">
-              <Router />
-            </div>
-          </div>
-        </div>
-        
+          <AppContent />
           <Toaster />
         </TooltipProvider>
       </ThemeProvider>

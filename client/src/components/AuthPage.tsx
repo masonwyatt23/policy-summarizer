@@ -14,7 +14,7 @@ export function AuthPage() {
   const { toast } = useToast();
   
   const [loginData, setLoginData] = useState({ username: "", password: "" });
-  const [registerData, setRegisterData] = useState({ username: "", password: "", confirmPassword: "" });
+  const [registerData, setRegisterData] = useState({ username: "", password: "", confirmPassword: "", fullName: "", email: "" });
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
@@ -37,7 +37,7 @@ export function AuthPage() {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (credentials: { username: string; password: string }) => {
+    mutationFn: async (credentials: { username: string; password: string; fullName: string; email: string }) => {
       return await apiRequest("POST", "/api/auth/register", credentials);
     },
     onSuccess: () => {
@@ -69,7 +69,7 @@ export function AuthPage() {
   };
 
   const handleRegister = () => {
-    if (!registerData.username || !registerData.password || !registerData.confirmPassword) {
+    if (!registerData.username || !registerData.password || !registerData.confirmPassword || !registerData.fullName || !registerData.email) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -87,7 +87,9 @@ export function AuthPage() {
     }
     registerMutation.mutate({ 
       username: registerData.username, 
-      password: registerData.password 
+      password: registerData.password,
+      fullName: registerData.fullName,
+      email: registerData.email
     });
   };
 
@@ -138,6 +140,26 @@ export function AuthPage() {
             </TabsContent>
             
             <TabsContent value="register" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="register-fullname">Full Name</Label>
+                <Input
+                  id="register-fullname"
+                  type="text"
+                  value={registerData.fullName}
+                  onChange={(e) => setRegisterData(prev => ({ ...prev, fullName: e.target.value }))}
+                  placeholder="Enter your full name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="register-email">Email</Label>
+                <Input
+                  id="register-email"
+                  type="email"
+                  value={registerData.email}
+                  onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="Enter your email address"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="register-username">Username</Label>
                 <Input
