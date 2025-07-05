@@ -29,7 +29,9 @@ export function useAuth() {
       return await apiRequest("POST", "/api/auth/logout");
     },
     onSuccess: () => {
-      // Clear all query cache on logout
+      // Invalidate the auth query to trigger re-authentication
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      // Clear all other cached data
       queryClient.clear();
     },
   });
