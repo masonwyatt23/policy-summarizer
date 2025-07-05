@@ -29,10 +29,14 @@ export function useAuth() {
       return await apiRequest("POST", "/api/auth/logout");
     },
     onSuccess: () => {
-      // Invalidate the auth query to trigger re-authentication
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      // Clear all other cached data
-      queryClient.clear();
+      // Directly set auth query data to null to immediately trigger logout state
+      queryClient.setQueryData(['/api/auth/me'], null);
+      // Clear all cached data except auth query
+      queryClient.removeQueries({ 
+        predicate: (query) => {
+          return !query.queryKey.includes('/api/auth/me');
+        }
+      });
     },
   });
 
