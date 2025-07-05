@@ -332,6 +332,11 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added tooltip support for collapsed sidebar state
   - Maintained consistent styling with existing navigation elements
   - Logout now available in desktop sidebar, mobile header, and mobile menu for complete coverage
+- July 05, 2025: Fixed document dashboard refresh issue
+  - Resolved critical bug where uploaded documents weren't appearing in the document dashboard
+  - Added query cache invalidation to FileUpload component when documents are successfully processed
+  - DocumentDashboard now automatically refreshes to show new documents after upload completion
+  - Enhanced user experience with real-time document list updates
 
 ## Changelog
 - July 01, 2025. Initial setup

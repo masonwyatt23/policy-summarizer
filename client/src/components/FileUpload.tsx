@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -24,6 +25,7 @@ interface UploadingFile {
 export function FileUpload({ onUploadSuccess }: FileUploadProps) {
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map(file => ({
@@ -151,6 +153,9 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
               title: "Document processed successfully",
               description: `${status.originalName} has been analyzed and is ready for review.`,
             });
+            
+            // Invalidate documents query cache to refresh the dashboard
+            queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
             
             onUploadSuccess(documentId);
           }
