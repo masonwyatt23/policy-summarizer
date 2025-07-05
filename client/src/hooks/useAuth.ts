@@ -18,8 +18,8 @@ export function useAuth() {
     queryFn: async () => {
       try {
         const response = await apiRequest("GET", "/api/auth/me");
-        const data = await response.json() as AuthResponse;
-        return data.agent;
+        const data = await response.json() as Agent;
+        return data;
       } catch (error) {
         // If authentication fails, return null (not authenticated)
         return null;
