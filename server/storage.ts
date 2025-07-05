@@ -4,7 +4,7 @@ import {
   summaryHistory, 
   userSettings,
   type User, 
-  type InsertUser, 
+  type UpsertUser, 
   type PolicyDocument, 
   type InsertPolicyDocument,
   type SummaryHistory,
@@ -15,19 +15,19 @@ import {
 
 export interface IStorage {
   // User methods
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // (IMPORTANT) these user operations are mandatory for Replit Auth.
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
   
   // Policy document methods
   createPolicyDocument(document: InsertPolicyDocument): Promise<PolicyDocument>;
   getPolicyDocument(id: number): Promise<PolicyDocument | undefined>;
   updatePolicyDocument(id: number, updates: Partial<PolicyDocument>): Promise<PolicyDocument | undefined>;
-  listPolicyDocuments(userId?: number): Promise<PolicyDocument[]>;
+  listPolicyDocuments(userId?: string): Promise<PolicyDocument[]>;
   deletePolicyDocument(id: number): Promise<boolean>;
   toggleFavorite(id: number): Promise<PolicyDocument | undefined>;
   updateTags(id: number, tags: string[]): Promise<PolicyDocument | undefined>;
-  searchDocuments(query: string, userId?: number): Promise<PolicyDocument[]>;
+  searchDocuments(query: string, userId?: string): Promise<PolicyDocument[]>;
   
   // Summary history methods
   createSummaryVersion(summaryData: InsertSummaryHistory): Promise<SummaryHistory>;
@@ -37,56 +37,64 @@ export interface IStorage {
   deleteSummaryVersion(versionId: number): Promise<boolean>;
   
   // Settings methods
-  getUserSettings(userId: number): Promise<UserSettings | undefined>;
-  updateUserSettings(userId: number, settings: Partial<InsertUserSettings>): Promise<UserSettings>;
-  createDefaultSettings(userId: number): Promise<UserSettings>;
+  getUserSettings(userId: string): Promise<UserSettings | undefined>;
+  updateUserSettings(userId: string, settings: Partial<InsertUserSettings>): Promise<UserSettings>;
+  createDefaultSettings(userId: string): Promise<UserSettings>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
+  private users: Map<string, User>;
   private policyDocuments: Map<number, PolicyDocument>;
-  private currentUserId: number;
   private currentDocumentId: number;
 
   constructor() {
     this.users = new Map();
     this.policyDocuments = new Map();
-    this.currentUserId = 1;
     this.currentDocumentId = 1;
   }
 
-  async getUser(id: number): Promise<User | undefined> {
+  // User operations
+  // (IMPORTANT) these user operations are mandatory for Replit Auth.
+
+  async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const existingUser = this.users.get(userData.id);
+    const user: User = {
+      id: userData.id,
+      email: userData.email || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
+      createdAt: existingUser?.createdAt || new Date(),
+      updatedAt: new Date(),
+    };
+    this.users.set(userData.id, user);
     return user;
   }
 
   async createPolicyDocument(insertDocument: InsertPolicyDocument): Promise<PolicyDocument> {
     const id = this.currentDocumentId++;
     const document: PolicyDocument = {
-      ...insertDocument,
       id,
+      userId: insertDocument.userId || null,
+      filename: insertDocument.filename,
+      originalName: insertDocument.originalName,
+      fileSize: insertDocument.fileSize,
+      fileType: insertDocument.fileType,
       uploadedAt: new Date(),
-      summary: insertDocument.summary || null,
       processed: insertDocument.processed || false,
       extractedData: insertDocument.extractedData || null,
+      summary: insertDocument.summary || null,
       processingError: insertDocument.processingError || null,
       tags: insertDocument.tags || [],
       isFavorite: insertDocument.isFavorite || false,
       lastViewedAt: null,
       clientName: insertDocument.clientName || null,
       policyReference: insertDocument.policyReference || null,
+      processingOptions: insertDocument.processingOptions || null,
     };
     this.policyDocuments.set(id, document);
     return document;
@@ -105,9 +113,14 @@ export class MemStorage implements IStorage {
     return updatedDocument;
   }
 
-  async listPolicyDocuments(userId?: number): Promise<PolicyDocument[]> {
-    return Array.from(this.policyDocuments.values())
-      .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
+  async listPolicyDocuments(userId?: string): Promise<PolicyDocument[]> {
+    const documents = Array.from(this.policyDocuments.values());
+    if (userId) {
+      return documents
+        .filter(doc => doc.userId === userId)
+        .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
+    }
+    return documents.sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
   }
 
   async deletePolicyDocument(id: number): Promise<boolean> {
@@ -132,10 +145,17 @@ export class MemStorage implements IStorage {
     return updated;
   }
 
-  async searchDocuments(query: string, userId?: number): Promise<PolicyDocument[]> {
-    return Array.from(this.policyDocuments.values())
-      .filter(doc => doc.originalName.toLowerCase().includes(query.toLowerCase()))
-      .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
+  async searchDocuments(query: string, userId?: string): Promise<PolicyDocument[]> {
+    const documents = Array.from(this.policyDocuments.values())
+      .filter(doc => doc.originalName.toLowerCase().includes(query.toLowerCase()));
+    
+    if (userId) {
+      return documents
+        .filter(doc => doc.userId === userId)
+        .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
+    }
+    
+    return documents.sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
   }
 
   async createSummaryVersion(summaryData: InsertSummaryHistory): Promise<SummaryHistory> {
@@ -168,15 +188,16 @@ export class MemStorage implements IStorage {
     return true; // Mock implementation
   }
 
-  async getUserSettings(userId: number): Promise<UserSettings | undefined> {
+  async getUserSettings(userId: string): Promise<UserSettings | undefined> {
     return undefined; // Mock implementation
   }
 
-  async updateUserSettings(userId: number, settings: Partial<InsertUserSettings>): Promise<UserSettings> {
+  async updateUserSettings(userId: string, settings: Partial<InsertUserSettings>): Promise<UserSettings> {
     const mockSettings: UserSettings = {
       id: 1,
       userId,
       defaultProcessingOptions: {},
+      agentProfile: {},
       exportPreferences: {},
       uiPreferences: {},
       updatedAt: new Date(),
@@ -184,11 +205,12 @@ export class MemStorage implements IStorage {
     return mockSettings;
   }
 
-  async createDefaultSettings(userId: number): Promise<UserSettings> {
+  async createDefaultSettings(userId: string): Promise<UserSettings> {
     const mockSettings: UserSettings = {
       id: 1,
       userId,
       defaultProcessingOptions: {},
+      agentProfile: {},
       exportPreferences: {},
       uiPreferences: {},
       updatedAt: new Date(),
@@ -202,20 +224,25 @@ import { eq, like, desc, and } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
   // User methods
-  async getUser(id: number): Promise<User | undefined> {
+  // (IMPORTANT) these user operations are mandatory for Replit Auth.
+  
+  async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    return user;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
-    // Create default settings for new user
-    await this.createDefaultSettings(user.id);
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
     return user;
   }
 
@@ -244,7 +271,7 @@ export class DatabaseStorage implements IStorage {
     return updated || undefined;
   }
 
-  async listPolicyDocuments(userId?: number): Promise<PolicyDocument[]> {
+  async listPolicyDocuments(userId?: string): Promise<PolicyDocument[]> {
     const query = db.select().from(policyDocuments).orderBy(desc(policyDocuments.uploadedAt));
     if (userId) {
       return await query.where(eq(policyDocuments.userId, userId));
@@ -257,7 +284,7 @@ export class DatabaseStorage implements IStorage {
     await db.delete(summaryHistory).where(eq(summaryHistory.documentId, id));
     // Then delete document
     const result = await db.delete(policyDocuments).where(eq(policyDocuments.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async toggleFavorite(id: number): Promise<PolicyDocument | undefined> {
@@ -279,7 +306,7 @@ export class DatabaseStorage implements IStorage {
     return updated || undefined;
   }
 
-  async searchDocuments(query: string, userId?: number): Promise<PolicyDocument[]> {
+  async searchDocuments(query: string, userId?: string): Promise<PolicyDocument[]> {
     const searchConditions = [
       like(policyDocuments.originalName, `%${query}%`),
     ];
@@ -351,21 +378,21 @@ export class DatabaseStorage implements IStorage {
       .set({ isActive: true })
       .where(eq(summaryHistory.id, versionId));
     
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async deleteSummaryVersion(versionId: number): Promise<boolean> {
     const result = await db.delete(summaryHistory).where(eq(summaryHistory.id, versionId));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Settings methods
-  async getUserSettings(userId: number): Promise<UserSettings | undefined> {
+  async getUserSettings(userId: string): Promise<UserSettings | undefined> {
     const [settings] = await db.select().from(userSettings).where(eq(userSettings.userId, userId));
     return settings || undefined;
   }
 
-  async updateUserSettings(userId: number, settingsUpdate: Partial<InsertUserSettings>): Promise<UserSettings> {
+  async updateUserSettings(userId: string, settingsUpdate: Partial<InsertUserSettings>): Promise<UserSettings> {
     const existing = await this.getUserSettings(userId);
     
     if (existing) {
@@ -379,7 +406,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createDefaultSettings(userId: number): Promise<UserSettings> {
+  async createDefaultSettings(userId: string): Promise<UserSettings> {
     const [settings] = await db.insert(userSettings)
       .values({ userId })
       .returning();

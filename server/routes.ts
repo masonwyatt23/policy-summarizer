@@ -170,14 +170,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get user settings for agent profile information
-      const userId = 1; // Using default user ID for now
+      const userId = "demo-user"; // Using demo user ID for development
       
       // Ensure user exists first
       let user = await storage.getUser(userId);
       if (!user) {
-        user = await storage.createUser({
-          username: 'agent',
-          password: 'temp_password'
+        user = await storage.upsertUser({
+          id: userId,
+          email: 'demo@example.com',
+          firstName: 'Demo',
+          lastName: 'Agent'
         });
       }
       
@@ -346,15 +348,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Settings routes
   app.get("/api/settings", async (req, res) => {
     try {
-      // For now, use a mock user ID of 1. In a real app, this would come from authentication
-      const userId = 1;
+      // For now, use a demo user ID. In a real app, this would come from authentication
+      const userId = "demo-user";
       
       // Ensure user exists first
       let user = await storage.getUser(userId);
       if (!user) {
-        user = await storage.createUser({
-          username: 'agent',
-          password: 'temp_password'
+        user = await storage.upsertUser({
+          id: userId,
+          email: 'demo@example.com',
+          firstName: 'Demo',
+          lastName: 'Agent'
         });
       }
       
@@ -372,15 +376,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/settings", async (req, res) => {
     try {
-      // For now, use a mock user ID of 1. In a real app, this would come from authentication
-      const userId = 1;
+      // For now, use a demo user ID. In a real app, this would come from authentication
+      const userId = "demo-user";
       
       // Ensure user exists first
       let user = await storage.getUser(userId);
       if (!user) {
-        user = await storage.createUser({
-          username: 'agent',
-          password: 'temp_password'
+        user = await storage.upsertUser({
+          id: userId,
+          email: 'demo@example.com',
+          firstName: 'Demo',
+          lastName: 'Agent'
         });
       }
       

@@ -22,9 +22,12 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import PolicySummaryGenerator from "@/pages/PolicySummaryGenerator";
 import NotFound from "@/pages/not-found";
+import Landing from "@/pages/Landing";
+import Home from "@/pages/Home";
 import { DocumentDashboard } from "@/components/DocumentDashboard";
 import { UserSettings } from "@/components/UserSettings";
 import { ThemeProvider, useTheme } from "@/hooks/use-theme";
+import { useAuth } from "@/hooks/useAuth";
 
 function Navigation({ 
   isSidebarCollapsed, 
@@ -219,12 +222,21 @@ function SummaryView(props: any) {
 }
 
 function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return (
     <Switch>
-      <Route path="/" component={PolicySummaryGenerator} />
-      <Route path="/summary/:id" component={SummaryView} />
-      <Route path="/dashboard" component={DocumentDashboard} />
-      <Route path="/settings" component={UserSettings} />
+      {isLoading || !isAuthenticated ? (
+        <Route path="/" component={Landing} />
+      ) : (
+        <>
+          <Route path="/" component={Home} />
+          <Route path="/policy-summary-generator" component={PolicySummaryGenerator} />
+          <Route path="/summary/:id" component={SummaryView} />
+          <Route path="/documents" component={DocumentDashboard} />
+          <Route path="/settings" component={UserSettings} />
+        </>
+      )}
       <Route component={NotFound} />
     </Switch>
   );
