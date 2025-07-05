@@ -10,9 +10,10 @@ import { FileUpload } from '@/components/FileUpload';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { SummaryEditor } from '@/components/SummaryEditor';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
-import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download, Image, X, Upload } from 'lucide-react';
+import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download, Image, X, Upload, LogOut } from 'lucide-react';
 import { api, type ProcessedDocument, type DocumentListItem } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
 
 interface PolicySummaryGeneratorProps {
@@ -33,6 +34,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const [clientLogo, setClientLogo] = useState<string>('');
   const [logoPreview, setLogoPreview] = useState<string>('');
   const { toast } = useToast();
+  const { agent, logout, isLoggingOut } = useAuth();
 
   // Update currentDocumentId when documentId prop changes
   useEffect(() => {
@@ -178,9 +180,21 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="hidden md:flex items-center space-x-2 text-sm text-muted-foreground">
-                <User className="w-5 h-5" />
-                <span>Agent Portal</span>
+              <div className="hidden md:flex items-center space-x-4 text-sm text-muted-foreground">
+                <div className="flex items-center space-x-2">
+                  <User className="w-5 h-5" />
+                  <span>{agent?.fullName || agent?.username}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={logout}
+                  disabled={isLoggingOut}
+                  className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </Button>
               </div>
             </div>
           </div>

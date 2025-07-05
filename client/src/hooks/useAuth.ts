@@ -1,10 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-
-interface Agent {
-  id: number;
-  username: string;
-}
+import { type Agent } from "@shared/schema";
 
 interface AuthResponse {
   agent: Agent;
