@@ -159,6 +159,24 @@ function Navigation({
                 </TooltipContent>
               </Tooltip>
               
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={logout}
+                    disabled={isLoggingOut}
+                    className={`w-full ${isSidebarCollapsed ? 'justify-center px-2' : 'justify-start space-x-2'} text-muted-foreground hover:text-foreground hover:bg-accent`}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    {!isSidebarCollapsed && <span>Logout</span>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Logout</p>
+                </TooltipContent>
+              </Tooltip>
+              
               {!isSidebarCollapsed && (
                 <div className="text-xs text-muted-foreground mt-3">
                   <p>Intelligent document processing</p>

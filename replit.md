@@ -326,6 +326,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added logout functionality to PolicySummaryGenerator page header with proper loading states
   - Enhanced authentication state management with proper query cache invalidation
   - All agent-specific data (documents, settings, summaries) now properly isolated by agent_id
+- July 05, 2025: Enhanced user experience with comprehensive logout access
+  - Added logout button to desktop sidebar navigation for consistent access across all views
+  - Implemented responsive behavior: icon-only when collapsed, icon+text when expanded
+  - Added tooltip support for collapsed sidebar state
+  - Maintained consistent styling with existing navigation elements
+  - Logout now available in desktop sidebar, mobile header, and mobile menu for complete coverage
 
 ## Changelog
 - July 01, 2025. Initial setup
