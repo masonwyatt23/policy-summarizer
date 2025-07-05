@@ -283,8 +283,8 @@ export class DatabaseStorage implements IStorage {
 
   async createAgent(insertAgent: InsertAgent): Promise<Agent> {
     const [agent] = await db.insert(agents).values(insertAgent).returning();
-    // Create default settings for new agent
-    await this.createDefaultSettings(agent.id);
+    // Skip creating default settings until migration completes
+    // await this.createDefaultSettings(agent.id);
     return agent;
   }
 
