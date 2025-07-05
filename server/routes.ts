@@ -181,14 +181,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload and process policy document
-  app.post("/api/documents/upload", upload.single('document'), async (req, res) => {
+  app.post("/api/documents/upload", requireAuth, upload.single('document'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
       }
 
-      // Create document record
+      // Create document record with agent association
       const documentData = {
+        agentId: req.session.agentId!,
         filename: `${Date.now()}-${req.file.originalname}`,
         originalName: req.file.originalname,
         fileSize: req.file.size,
@@ -215,10 +216,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get document processing status
-  app.get("/api/documents/:id/status", async (req, res) => {
+  app.get("/api/documents/:id/status", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const document = await storage.getPolicyDocument(id);
+      const agentId = req.session.agentId!;
+      const document = await storage.getPolicyDocument(id, agentId);
       
       if (!document) {
         return res.status(404).json({ error: "Document not found" });
@@ -239,10 +241,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get processed document data
-  app.get("/api/documents/:id", async (req, res) => {
+  app.get("/api/documents/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const document = await storage.getPolicyDocument(id);
+      const agentId = req.session.agentId!;
+      const document = await storage.getPolicyDocument(id, agentId);
       
       if (!document) {
         return res.status(404).json({ error: "Document not found" });
@@ -277,21 +280,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update document summary
-  app.patch("/api/documents/:id/summary", async (req, res) => {
+  app.patch("/api/documents/:id/summary", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const agentId = req.session.agentId!;
       const { summary } = req.body;
       
       if (!summary || typeof summary !== 'string') {
         return res.status(400).json({ error: "Summary is required and must be a string" });
       }
       
-      const document = await storage.getPolicyDocument(id);
+      const document = await storage.getPolicyDocument(id, agentId);
       if (!document) {
         return res.status(404).json({ error: "Document not found" });
       }
       
-      const updatedDocument = await storage.updatePolicyDocument(id, { summary });
+      const updatedDocument = await storage.updatePolicyDocument(id, { summary }, agentId);
       if (!updatedDocument) {
         return res.status(500).json({ error: "Failed to update document summary" });
       }
@@ -311,10 +315,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate PDF export
-  app.post("/api/documents/:id/export", async (req, res) => {
+  app.post("/api/documents/:id/export", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const document = await storage.getPolicyDocument(id);
+      const agentId = req.session.agentId!;
+      const document = await storage.getPolicyDocument(id, agentId);
       
       if (!document) {
         return res.status(404).json({ error: "Document not found" });
@@ -325,7 +330,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get agent settings for agent profile information
-      const agentId = req.session.agentId || 1; // Using session agent ID or default
       
       let settings = await storage.getUserSettings(agentId);
       if (!settings) {
@@ -394,10 +398,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // List all documents
-  app.get("/api/documents", async (req, res) => {
+  // List all documents (agent-specific)
+  app.get("/api/documents", requireAuth, async (req, res) => {
     try {
-      const documents = await storage.listPolicyDocuments();
+      const agentId = req.session.agentId!;
+      const documents = await storage.listPolicyDocuments(agentId);
       res.json(documents.map(doc => ({
         id: doc.id,
         originalName: doc.originalName,
@@ -414,13 +419,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete document
-  app.delete("/api/documents/:id", async (req, res) => {
+  app.delete("/api/documents/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const deleted = await storage.deletePolicyDocument(id);
+      const agentId = req.session.agentId!;
+      const deleted = await storage.deletePolicyDocument(id, agentId);
       
       if (!deleted) {
-        return res.status(404).json({ error: "Document not found" });
+        return res.status(404).json({ error: "Document not found or access denied" });
       }
 
       res.json({ message: "Document deleted successfully" });

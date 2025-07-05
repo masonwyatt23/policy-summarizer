@@ -29,10 +29,10 @@ export interface IStorage {
   
   // Policy document methods
   createPolicyDocument(document: InsertPolicyDocument): Promise<PolicyDocument>;
-  getPolicyDocument(id: number): Promise<PolicyDocument | undefined>;
-  updatePolicyDocument(id: number, updates: Partial<PolicyDocument>): Promise<PolicyDocument | undefined>;
+  getPolicyDocument(id: number, agentId?: number): Promise<PolicyDocument | undefined>;
+  updatePolicyDocument(id: number, updates: Partial<PolicyDocument>, agentId?: number): Promise<PolicyDocument | undefined>;
   listPolicyDocuments(userId?: number): Promise<PolicyDocument[]>;
-  deletePolicyDocument(id: number): Promise<boolean>;
+  deletePolicyDocument(id: number, agentId?: number): Promise<boolean>;
   toggleFavorite(id: number): Promise<PolicyDocument | undefined>;
   updateTags(id: number, tags: string[]): Promise<PolicyDocument | undefined>;
   searchDocuments(query: string, userId?: number): Promise<PolicyDocument[]>;
@@ -133,13 +133,26 @@ export class MemStorage implements IStorage {
     return document;
   }
 
-  async getPolicyDocument(id: number): Promise<PolicyDocument | undefined> {
-    return this.policyDocuments.get(id);
-  }
-
-  async updatePolicyDocument(id: number, updates: Partial<PolicyDocument>): Promise<PolicyDocument | undefined> {
+  async getPolicyDocument(id: number, agentId?: number): Promise<PolicyDocument | undefined> {
     const document = this.policyDocuments.get(id);
     if (!document) return undefined;
+    
+    // If agent ID is provided, verify ownership
+    if (agentId && document.agentId !== agentId) {
+      return undefined;
+    }
+    
+    return document;
+  }
+
+  async updatePolicyDocument(id: number, updates: Partial<PolicyDocument>, agentId?: number): Promise<PolicyDocument | undefined> {
+    const document = this.policyDocuments.get(id);
+    if (!document) return undefined;
+
+    // If agent ID is provided, verify ownership
+    if (agentId && document.agentId !== agentId) {
+      return undefined;
+    }
 
     const updatedDocument = { ...document, ...updates };
     this.policyDocuments.set(id, updatedDocument);
@@ -151,7 +164,15 @@ export class MemStorage implements IStorage {
       .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
   }
 
-  async deletePolicyDocument(id: number): Promise<boolean> {
+  async deletePolicyDocument(id: number, agentId?: number): Promise<boolean> {
+    const document = this.policyDocuments.get(id);
+    if (!document) return false;
+    
+    // If agent ID is provided, verify ownership
+    if (agentId && document.agentId !== agentId) {
+      return false;
+    }
+    
     return this.policyDocuments.delete(id);
   }
 
@@ -294,8 +315,24 @@ export class DatabaseStorage implements IStorage {
     return document;
   }
 
-  async getPolicyDocument(id: number): Promise<PolicyDocument | undefined> {
-    const [document] = await db.select().from(policyDocuments).where(eq(policyDocuments.id, id));
+  async getPolicyDocument(id: number, agentId?: number): Promise<PolicyDocument | undefined> {
+    let query = db.select().from(policyDocuments).where(eq(policyDocuments.id, id));
+    
+    // If agent ID is provided, first verify ownership
+    if (agentId) {
+      const [document] = await db.select().from(policyDocuments)
+        .where(and(eq(policyDocuments.id, id), eq(policyDocuments.agentId, agentId)));
+      
+      if (document) {
+        // Update last viewed time
+        await db.update(policyDocuments)
+          .set({ lastViewedAt: new Date() })
+          .where(eq(policyDocuments.id, id));
+      }
+      return document || undefined;
+    }
+    
+    const [document] = await query;
     if (document) {
       // Update last viewed time
       await db.update(policyDocuments)
@@ -305,10 +342,19 @@ export class DatabaseStorage implements IStorage {
     return document || undefined;
   }
 
-  async updatePolicyDocument(id: number, updates: Partial<PolicyDocument>): Promise<PolicyDocument | undefined> {
+  async updatePolicyDocument(id: number, updates: Partial<PolicyDocument>, agentId?: number): Promise<PolicyDocument | undefined> {
+    let whereCondition;
+    
+    // If agent ID is provided, verify ownership
+    if (agentId) {
+      whereCondition = and(eq(policyDocuments.id, id), eq(policyDocuments.agentId, agentId));
+    } else {
+      whereCondition = eq(policyDocuments.id, id);
+    }
+    
     const [updated] = await db.update(policyDocuments)
       .set(updates)
-      .where(eq(policyDocuments.id, id))
+      .where(whereCondition)
       .returning();
     return updated || undefined;
   }
@@ -321,11 +367,20 @@ export class DatabaseStorage implements IStorage {
     return await query;
   }
 
-  async deletePolicyDocument(id: number): Promise<boolean> {
+  async deletePolicyDocument(id: number, agentId?: number): Promise<boolean> {
+    let whereCondition;
+    
+    // If agent ID is provided, verify ownership
+    if (agentId) {
+      whereCondition = and(eq(policyDocuments.id, id), eq(policyDocuments.agentId, agentId));
+    } else {
+      whereCondition = eq(policyDocuments.id, id);
+    }
+    
     // Delete summary history first
     await db.delete(summaryHistory).where(eq(summaryHistory.documentId, id));
     // Then delete document
-    const result = await db.delete(policyDocuments).where(eq(policyDocuments.id, id));
+    const result = await db.delete(policyDocuments).where(whereCondition);
     return (result.rowCount || 0) > 0;
   }
 
