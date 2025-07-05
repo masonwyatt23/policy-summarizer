@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 export function AuthPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [registerData, setRegisterData] = useState({ username: "", password: "", confirmPassword: "", fullName: "", email: "" });
@@ -21,6 +22,8 @@ export function AuthPage() {
       return await apiRequest("POST", "/api/auth/login", credentials);
     },
     onSuccess: () => {
+      // Invalidate auth query to refetch user data
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       toast({
         title: "Success",
         description: "Logged in successfully!",
@@ -41,6 +44,8 @@ export function AuthPage() {
       return await apiRequest("POST", "/api/auth/register", credentials);
     },
     onSuccess: () => {
+      // Invalidate auth query to refetch user data
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       toast({
         title: "Success",
         description: "Account created successfully!",
