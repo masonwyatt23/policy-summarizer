@@ -75,6 +75,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword
       });
 
+      // Create default user settings with registration information populated
+      await storage.createDefaultSettings(agent.id, {
+        agentProfile: {
+          name: agent.fullName,
+          title: "",
+          phone: "",
+          email: agent.email,
+          license: "",
+          signature: "",
+          firmName: "Valley Trust Insurance",
+          firmAddress: "",
+          firmPhone: "",
+          firmWebsite: ""
+        }
+      });
+
       // Create session
       req.session.agentId = agent.id;
       req.session.agentUsername = agent.username;

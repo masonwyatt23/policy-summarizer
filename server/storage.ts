@@ -47,7 +47,7 @@ export interface IStorage {
   // Settings methods
   getUserSettings(userId: number): Promise<UserSettings | undefined>;
   updateUserSettings(userId: number, settings: Partial<InsertUserSettings>): Promise<UserSettings>;
-  createDefaultSettings(userId: number): Promise<UserSettings>;
+  createDefaultSettings(userId: number, profileData?: Partial<any>): Promise<UserSettings>;
 }
 
 export class MemStorage implements IStorage {
@@ -226,12 +226,12 @@ export class MemStorage implements IStorage {
     return mockSettings;
   }
 
-  async createDefaultSettings(agentId: number): Promise<UserSettings> {
+  async createDefaultSettings(agentId: number, profileData?: Partial<any>): Promise<UserSettings> {
     const mockSettings: UserSettings = {
       id: 1,
       agentId,
       defaultProcessingOptions: {},
-      agentProfile: {},
+      agentProfile: profileData?.agentProfile || {},
       exportPreferences: {},
       uiPreferences: {},
       updatedAt: new Date(),
@@ -444,13 +444,28 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return updated;
     } else {
-      return await this.createDefaultSettings(agentId);
+      return await this.createDefaultSettings(agentId, undefined);
     }
   }
 
-  async createDefaultSettings(agentId: number): Promise<UserSettings> {
+  async createDefaultSettings(agentId: number, profileData?: Partial<any>): Promise<UserSettings> {
+    const insertData: any = { agentId };
+    
+    // Merge in any provided profile data
+    if (profileData) {
+      if (profileData.agentProfile) {
+        insertData.agentProfile = profileData.agentProfile;
+      }
+      if (profileData.exportPreferences) {
+        insertData.exportPreferences = profileData.exportPreferences;
+      }
+      if (profileData.uiPreferences) {
+        insertData.uiPreferences = profileData.uiPreferences;
+      }
+    }
+    
     const [settings] = await db.insert(userSettings)
-      .values({ agentId })
+      .values(insertData)
       .returning();
     return settings;
   }
