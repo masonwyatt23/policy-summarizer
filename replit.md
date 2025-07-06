@@ -389,6 +389,11 @@ This is a full-stack policy document processing application built for Valley Tru
   - Improved spacing and layout in collapsed state for cleaner appearance
   - Enhanced favorite star visibility and positioning
   - Created better visual hierarchy with improved typography and spacing
+- July 06, 2025: Removed favorites functionality from document dashboard
+  - Eliminated "Add to Favorites" button from document card dropdown menus
+  - Removed favorite star icons and badges from both collapsed and expanded card views
+  - Cleaned up unused Heart and Star icon imports and toggleFavoriteMutation
+  - Simplified interface by removing non-functional favorites feature
 
 ## Changelog
 - July 01, 2025. Initial setup

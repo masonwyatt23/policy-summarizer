@@ -4,12 +4,10 @@ import { useLocation } from "wouter";
 import { 
   FileText, 
   Search, 
-  Star, 
   Calendar, 
   Tag, 
   Filter, 
   MoreVertical,
-  Heart,
   Trash2,
   Eye,
   Download,
@@ -82,15 +80,6 @@ export function DocumentDashboard() {
 
   const { data: documents = [], isLoading } = useQuery<DocumentListItem[]>({
     queryKey: ['/api/documents'],
-  });
-
-  const toggleFavoriteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      return apiRequest('POST', `/api/documents/${id}/favorite`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
-    },
   });
 
   const deleteDocumentMutation = useMutation({
@@ -294,9 +283,7 @@ export function DocumentDashboard() {
                         <span className="bg-muted/50 px-2 py-1 rounded">{document.fileType.toUpperCase()}</span>
                       </div>
                       
-                      {document.isFavorite && (
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      )}
+
                     </div>
                   )}
                   
@@ -316,9 +303,7 @@ export function DocumentDashboard() {
                             : "Ready"
                           : "Processing"}
                       </Badge>
-                      {document.isFavorite && (
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                      )}
+
                     </div>
                   )}
                 </div>
@@ -355,14 +340,7 @@ export function DocumentDashboard() {
                     <History className="w-4 h-4 mr-2" />
                     Version History
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => toggleFavoriteMutation.mutate(document.id)}
-                    disabled={toggleFavoriteMutation.isPending}
-                  >
-                    <Heart className={`w-4 h-4 mr-2 ${document.isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
-                    {document.isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-                  </DropdownMenuItem>
+
                   <DropdownMenuItem
                     className="text-red-600"
                     onClick={() => deleteDocumentMutation.mutate(document.id)}
@@ -413,12 +391,7 @@ export function DocumentDashboard() {
                 <Badge variant={document.processed ? "default" : "secondary"} className={document.processed ? "bg-green-100 text-green-800" : ""}>
                   {document.processed ? "Processed" : "Processing..."}
                 </Badge>
-                {document.isFavorite && (
-                  <Badge variant="outline">
-                    <Star className="w-3 h-3 mr-1 fill-yellow-400 text-yellow-400" />
-                    Favorite
-                  </Badge>
-                )}
+
                 {document.processingError && (
                   <Badge variant="destructive">Error</Badge>
                 )}
