@@ -376,6 +376,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Changed cache invalidation to use refetchQueries for forced refresh
   - Fixed backend to return all document fields including export tracking data
   - PDF export counter now properly shows real-time updates when exports are made
+- July 06, 2025: Implemented collapsible document cards for better space utilization
+  - Redesigned document cards with clickable headers for expand/collapse functionality
+  - Added smooth animations with rotating chevron icons
+  - Collapsed state shows essential info (filename, status, file size, file type)
+  - Expanded state reveals full details including client info, policy reference, tags, timestamps, and action buttons
+  - PDF export count now visible in expanded view
+  - Improved space efficiency while maintaining all functionality
 
 ## Changelog
 - July 01, 2025. Initial setup

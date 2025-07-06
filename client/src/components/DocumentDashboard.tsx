@@ -20,7 +20,8 @@ import {
   Square,
   ExternalLink,
   FileDown,
-  AlertCircle
+  AlertCircle,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,6 +74,7 @@ export function DocumentDashboard() {
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [selectedDocumentForHistory, setSelectedDocumentForHistory] = useState<number | null>(null);
+  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -165,6 +167,18 @@ export function DocumentDashboard() {
     setHistoryDialogOpen(true);
   };
 
+  const toggleCardExpansion = (documentId: number) => {
+    setExpandedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(documentId)) {
+        newSet.delete(documentId);
+      } else {
+        newSet.add(documentId);
+      }
+      return newSet;
+    });
+  };
+
   const filteredDocuments = documents.filter((doc: DocumentListItem) => {
     const matchesSearch = doc.originalName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          doc.clientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -208,203 +222,248 @@ export function DocumentDashboard() {
     });
   };
 
-  const DocumentCard = ({ document }: { document: DocumentListItem }) => (
-    <Card className={`hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer border-l-4 ${
-      document.processed 
-        ? document.processingError 
-          ? 'border-l-red-500 hover:border-l-red-600' 
-          : 'border-l-green-500 hover:border-l-green-600'
-        : 'border-l-yellow-500 hover:border-l-yellow-600'
-    } ${isSelectionMode && selectedDocuments.includes(document.id) ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950/30' : 'bg-card hover:bg-muted/50'}`}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3 flex-1 min-w-0">
-            {isSelectionMode && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0 flex-shrink-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleDocumentSelection(document.id);
-                }}
-              >
-                {selectedDocuments.includes(document.id) ? (
-                  <CheckSquare className="w-4 h-4 text-blue-600" />
-                ) : (
-                  <Square className="w-4 h-4 text-gray-400" />
-                )}
-              </Button>
-            )}
-            <div className="flex items-center space-x-2 flex-1 min-w-0">
-              <FileText className={`w-5 h-5 flex-shrink-0 ${
-                document.processed 
-                  ? document.processingError 
-                    ? 'text-red-500' 
-                    : 'text-green-500'
-                  : 'text-yellow-500'
-              }`} />
-              <div className="min-w-0 flex-1">
-                <CardTitle className="text-sm font-medium truncate text-foreground" title={document.originalName}>
-                  {document.originalName}
-                </CardTitle>
-                <div className="flex items-center space-x-2 mt-1">
-                  <Badge variant={document.processed ? "default" : "secondary"} 
-                    className={`text-xs ${
-                      document.processed 
-                        ? document.processingError 
-                          ? 'bg-red-100 dark:bg-red-950/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' 
-                          : 'bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800'
-                        : 'bg-yellow-100 dark:bg-yellow-950/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
-                    }`}>
-                    {document.processed 
-                      ? document.processingError 
-                        ? "Error" 
-                        : "Ready"
-                      : "Processing"}
-                  </Badge>
-                  {document.isFavorite && (
-                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => handleViewSummary(document.id)}
-                disabled={!document.processed}
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                View Summary
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleViewHistory(document.id)}
-                disabled={!document.processed}
-              >
-                <History className="w-4 h-4 mr-2" />
-                Version History
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => toggleFavoriteMutation.mutate(document.id)}
-                disabled={toggleFavoriteMutation.isPending}
-              >
-                <Heart className={`w-4 h-4 mr-2 ${document.isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
-                {document.isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={() => deleteDocumentMutation.mutate(document.id)}
-                disabled={deleteDocumentMutation.isPending}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                {deleteDocumentMutation.isPending ? 'Deleting...' : 'Delete'}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </CardHeader>
-      <CardContent className="p-4">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>{formatFileSize(document.fileSize)}</span>
-            <span>{document.fileType.toUpperCase()}</span>
-          </div>
-          
-          {document.clientName && (
-            <div className="text-sm">
-              <span className="font-medium">Client:</span> {document.clientName}
-            </div>
-          )}
-          
-          {document.policyReference && (
-            <div className="text-sm">
-              <span className="font-medium">Policy:</span> {document.policyReference}
-            </div>
-          )}
-          
-          <div className="flex items-center space-x-2">
-            <Badge variant={document.processed ? "default" : "secondary"} className={document.processed ? "bg-green-100 text-green-800" : ""}>
-              {document.processed ? "Processed" : "Processing..."}
-            </Badge>
-            {document.isFavorite && (
-              <Badge variant="outline">
-                <Star className="w-3 h-3 mr-1 fill-yellow-400 text-yellow-400" />
-                Favorite
-              </Badge>
-            )}
-            {document.processingError && (
-              <Badge variant="destructive">Error</Badge>
-            )}
-          </div>
-          
-          {document.tags && document.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {document.tags.map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  <Tag className="w-2 h-2 mr-1" />
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-          
-          <div className="text-xs text-muted-foreground pt-2 border-t border-border">
-            <div>Uploaded: {formatDate(document.uploadedAt)}</div>
-            {document.lastViewedAt && (
-              <div>Last viewed: {formatDate(document.lastViewedAt)}</div>
-            )}
-          </div>
-
-          {/* Quick Action Buttons */}
-          {document.processed && !document.processingError && (
-            <div className="pt-3 border-t border-border space-y-2">
-              {/* Primary Action - View Summary */}
-              <Button
-                variant="default"
-                size="sm"
-                className="w-full h-8 text-xs bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold transition-all duration-300 shadow-md hover:shadow-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleViewSummary(document.id);
-                }}
-              >
-                <Eye className="w-3 h-3 mr-1.5" />
-                View Summary
-              </Button>
-              
-              {/* Secondary Actions */}
-              <div className="flex items-center space-x-2">
+  const DocumentCard = ({ document }: { document: DocumentListItem }) => {
+    const isExpanded = expandedCards.has(document.id);
+    
+    return (
+      <Card className={`transition-all duration-300 border-l-4 ${
+        document.processed 
+          ? document.processingError 
+            ? 'border-l-red-500' 
+            : 'border-l-green-500'
+          : 'border-l-yellow-500'
+      } ${isSelectionMode && selectedDocuments.includes(document.id) ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950/30' : 'bg-card hover:bg-muted/50'}`}>
+        
+        {/* Clickable Header */}
+        <CardHeader 
+          className="pb-3 cursor-pointer hover:bg-muted/30 transition-colors"
+          onClick={() => toggleCardExpansion(document.id)}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 flex-1 min-w-0">
+              {isSelectionMode && (
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="flex-1 h-7 text-xs transition-all duration-200"
+                  className="h-6 w-6 p-0 flex-shrink-0"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleViewHistory(document.id);
+                    toggleDocumentSelection(document.id);
                   }}
                 >
-                  <History className="w-3 h-3 mr-1" />
-                  History
+                  {selectedDocuments.includes(document.id) ? (
+                    <CheckSquare className="w-4 h-4 text-blue-600" />
+                  ) : (
+                    <Square className="w-4 h-4 text-gray-400" />
+                  )}
                 </Button>
-
+              )}
+              
+              <div className="flex items-center space-x-2 flex-1 min-w-0">
+                <FileText className={`w-5 h-5 flex-shrink-0 ${
+                  document.processed 
+                    ? document.processingError 
+                      ? 'text-red-500' 
+                      : 'text-green-500'
+                    : 'text-yellow-500'
+                }`} />
+                
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-sm font-medium truncate text-foreground" title={document.originalName}>
+                    {document.originalName}
+                  </CardTitle>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Badge variant={document.processed ? "default" : "secondary"} 
+                      className={`text-xs ${
+                        document.processed 
+                          ? document.processingError 
+                            ? 'bg-red-100 dark:bg-red-950/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' 
+                            : 'bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800'
+                          : 'bg-yellow-100 dark:bg-yellow-950/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
+                      }`}>
+                      {document.processed 
+                        ? document.processingError 
+                          ? "Error" 
+                          : "Ready"
+                        : "Processing"}
+                    </Badge>
+                    {document.isFavorite && (
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    )}
+                  </div>
+                </div>
               </div>
+              
+              {/* Compact info when collapsed */}
+              {!isExpanded && (
+                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                  <span>{formatFileSize(document.fileSize)}</span>
+                  <span>•</span>
+                  <span>{document.fileType.toUpperCase()}</span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
+            
+            <div className="flex items-center space-x-2">
+              {/* Dropdown Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0 hover:bg-muted"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => handleViewSummary(document.id)}
+                    disabled={!document.processed}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Summary
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleViewHistory(document.id)}
+                    disabled={!document.processed}
+                  >
+                    <History className="w-4 h-4 mr-2" />
+                    Version History
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => toggleFavoriteMutation.mutate(document.id)}
+                    disabled={toggleFavoriteMutation.isPending}
+                  >
+                    <Heart className={`w-4 h-4 mr-2 ${document.isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                    {document.isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-red-600"
+                    onClick={() => deleteDocumentMutation.mutate(document.id)}
+                    disabled={deleteDocumentMutation.isPending}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    {deleteDocumentMutation.isPending ? 'Deleting...' : 'Delete'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              {/* Expand/Collapse Chevron */}
+              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                isExpanded ? 'transform rotate-180' : ''
+              }`} />
+            </div>
+          </div>
+        </CardHeader>
+
+        {/* Collapsible Content */}
+        {isExpanded && (
+          <CardContent className="p-4 animate-in slide-in-from-top-2 duration-200">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>{formatFileSize(document.fileSize)}</span>
+                <span>{document.fileType.toUpperCase()}</span>
+              </div>
+              
+              {document.clientName && (
+                <div className="text-sm">
+                  <span className="font-medium">Client:</span> {document.clientName}
+                </div>
+              )}
+              
+              {document.policyReference && (
+                <div className="text-sm">
+                  <span className="font-medium">Policy:</span> {document.policyReference}
+                </div>
+              )}
+              
+              {document.pdfExportCount && document.pdfExportCount > 0 && (
+                <div className="text-sm">
+                  <span className="font-medium">PDF Exports:</span> {document.pdfExportCount}
+                </div>
+              )}
+              
+              <div className="flex items-center space-x-2">
+                <Badge variant={document.processed ? "default" : "secondary"} className={document.processed ? "bg-green-100 text-green-800" : ""}>
+                  {document.processed ? "Processed" : "Processing..."}
+                </Badge>
+                {document.isFavorite && (
+                  <Badge variant="outline">
+                    <Star className="w-3 h-3 mr-1 fill-yellow-400 text-yellow-400" />
+                    Favorite
+                  </Badge>
+                )}
+                {document.processingError && (
+                  <Badge variant="destructive">Error</Badge>
+                )}
+              </div>
+              
+              {document.tags && document.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {document.tags.map((tag, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
+                      <Tag className="w-2 h-2 mr-1" />
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              
+              <div className="text-xs text-muted-foreground pt-2 border-t border-border">
+                <div>Uploaded: {formatDate(document.uploadedAt)}</div>
+                {document.lastViewedAt && (
+                  <div>Last viewed: {formatDate(document.lastViewedAt)}</div>
+                )}
+                {document.lastExportedAt && (
+                  <div>Last exported: {formatDate(document.lastExportedAt)}</div>
+                )}
+              </div>
+
+              {/* Quick Action Buttons */}
+              {document.processed && !document.processingError && (
+                <div className="pt-3 border-t border-border space-y-2">
+                  {/* Primary Action - View Summary */}
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="w-full h-8 text-xs bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold transition-all duration-300 shadow-md hover:shadow-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewSummary(document.id);
+                    }}
+                  >
+                    <Eye className="w-3 h-3 mr-1.5" />
+                    View Summary
+                  </Button>
+                  
+                  {/* Secondary Actions */}
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-7 text-xs transition-all duration-200"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewHistory(document.id);
+                      }}
+                    >
+                      <History className="w-3 h-3 mr-1" />
+                      History
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        )}
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-6">
