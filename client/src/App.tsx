@@ -112,7 +112,7 @@ function Navigation({
               size="sm"
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
               title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className={`absolute ${isSidebarCollapsed ? 'right-1 top-2' : 'right-2 top-1/2 -translate-y-1/2'} h-6 w-6 p-0 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 border-0 rounded-full transition-all duration-300 opacity-70 hover:opacity-100 hover:scale-110`}
+              className={`absolute ${isSidebarCollapsed ? 'right-1 bottom-2' : 'right-2 top-1/2 -translate-y-1/2'} h-6 w-6 p-0 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 border-0 rounded-full transition-all duration-300 opacity-70 hover:opacity-100 hover:scale-110`}
             >
               {isSidebarCollapsed ? (
                 <ChevronRight className="w-3 h-3" />

@@ -394,6 +394,10 @@ This is a full-stack policy document processing application built for Valley Tru
   - Removed favorite star icons and badges from both collapsed and expanded card views
   - Cleaned up unused Heart and Star icon imports and toggleFavoriteMutation
   - Simplified interface by removing non-functional favorites feature
+- July 06, 2025: Fixed sidebar collapse button positioning to prevent icon overlap
+  - Changed collapse button position from top-2 to bottom-2 when sidebar is collapsed
+  - Prevents overlap with document icon in the collapsed sidebar header
+  - Maintains proper functionality while improving visual layout
 
 ## Changelog
 - July 01, 2025. Initial setup
