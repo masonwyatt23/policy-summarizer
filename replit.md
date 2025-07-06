@@ -343,6 +343,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Integrated client logo and name directly into the main policy header box
   - Enhanced header styling with flexible layout for both logo and non-logo layouts
   - Improved overall PDF presentation with cleaner, more professional structure
+- July 05, 2025: Removed Export Settings section from UserSettings
+  - Eliminated Export Settings tab from agent settings since PDF exports are now perfect
+  - Removed all exportPreferences fields from schema and form handling
+  - Simplified settings interface to focus on Agent Profile and Appearance preferences
+  - Updated header description to reflect removal of export configuration options
+  - Cleaned up unused imports (Switch, Separator, FileText) for cleaner codebase
 
 ## Changelog
 - July 01, 2025. Initial setup

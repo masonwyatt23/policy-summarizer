@@ -7,7 +7,6 @@ import {
   User, 
   Mail, 
   Phone, 
-  FileText, 
   Building2, 
   Globe, 
   MapPin,
@@ -28,10 +27,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
@@ -49,14 +46,6 @@ const AgentProfileSchema = z.object({
     firmAddress: z.string().min(1, "Firm address is required"),
     firmPhone: z.string().min(1, "Firm phone is required"),
     firmWebsite: z.string().url("Valid website URL is required").optional().or(z.literal(""))
-  }),
-  exportPreferences: z.object({
-    includeBranding: z.boolean(),
-    includeExplanations: z.boolean(),
-    includeTechnicalDetails: z.boolean(),
-    includeAgentSignature: z.boolean(),
-    defaultClientName: z.string().optional(),
-    defaultPolicyReference: z.string().optional()
   }),
   uiPreferences: z.object({
     theme: z.enum(["light", "dark", "system"])
@@ -88,14 +77,6 @@ export function UserSettings() {
         firmAddress: "",
         firmPhone: "",
         firmWebsite: ""
-      },
-      exportPreferences: {
-        includeBranding: true,
-        includeExplanations: true,
-        includeTechnicalDetails: false,
-        includeAgentSignature: true,
-        defaultClientName: "",
-        defaultPolicyReference: ""
       },
       uiPreferences: {
         theme: "system"
@@ -182,14 +163,6 @@ export function UserSettings() {
         firmPhone: "",
         firmWebsite: ""
       },
-      exportPreferences: {
-        includeBranding: true,
-        includeExplanations: true,
-        includeTechnicalDetails: false,
-        includeAgentSignature: true,
-        defaultClientName: "",
-        defaultPolicyReference: ""
-      },
       uiPreferences: {
         theme: "system"
       }
@@ -216,7 +189,7 @@ export function UserSettings() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Agent Settings</h1>
-          <p className="text-muted-foreground">Configure your profile and export preferences</p>
+          <p className="text-muted-foreground">Configure your profile and appearance preferences</p>
         </div>
         <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
           <Shield className="w-4 h-4 mr-2" />
@@ -227,9 +200,8 @@ export function UserSettings() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="profile">Agent Profile</TabsTrigger>
-              <TabsTrigger value="export">Export Settings</TabsTrigger>
               <TabsTrigger value="appearance">Appearance</TabsTrigger>
             </TabsList>
 
@@ -414,132 +386,6 @@ export function UserSettings() {
                       </div>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Export Settings Tab */}
-            <TabsContent value="export" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <FileText className="w-5 h-5" />
-                    <span>PDF Export Preferences</span>
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    Configure how your PDF reports are generated and what information to include
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="exportPreferences.includeBranding"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                          <div className="space-y-0.5">
-                            <FormLabel>Include Branding</FormLabel>
-                            <FormDescription className="text-sm">
-                              Add Valley Trust Insurance branding to PDFs
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="exportPreferences.includeAgentSignature"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                          <div className="space-y-0.5">
-                            <FormLabel>Include Agent Signature</FormLabel>
-                            <FormDescription className="text-sm">
-                              Add your digital signature to PDF exports
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="exportPreferences.includeExplanations"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                          <div className="space-y-0.5">
-                            <FormLabel>Include Explanations</FormLabel>
-                            <FormDescription className="text-sm">
-                              Add detailed explanations for policy terms
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="exportPreferences.includeTechnicalDetails"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                          <div className="space-y-0.5">
-                            <FormLabel>Technical Details</FormLabel>
-                            <FormDescription className="text-sm">
-                              Include technical policy details and fine print
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <Separator />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="exportPreferences.defaultClientName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Default Client Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="Preferred client name format" />
-                          </FormControl>
-                          <FormDescription>
-                            Default client name to use when none is specified
-                          </FormDescription>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="exportPreferences.defaultPolicyReference"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Default Policy Reference</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="Policy reference format" />
-                          </FormControl>
-                          <FormDescription>
-                            Default policy reference format
-                          </FormDescription>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
