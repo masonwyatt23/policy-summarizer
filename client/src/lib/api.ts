@@ -31,6 +31,14 @@ export interface DocumentListItem {
   processed: boolean;
   uploadedAt: string;
   hasError: boolean;
+  pdfExportCount?: number;
+  lastExportedAt?: string;
+  clientName?: string;
+  policyReference?: string;
+  isFavorite?: boolean;
+  tags?: string[];
+  lastViewedAt?: string;
+  processingError?: string | null;
 }
 
 export interface ExportOptions {

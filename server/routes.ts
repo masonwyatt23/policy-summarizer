@@ -414,6 +414,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const agentId = req.session.agentId!;
       const documents = await storage.listPolicyDocuments(agentId);
+      
+      // Prevent caching to ensure fresh data after exports
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+      
       res.json(documents.map(doc => ({
         id: doc.id,
         originalName: doc.originalName,
@@ -422,6 +430,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         processed: doc.processed,
         uploadedAt: doc.uploadedAt,
         hasError: !!doc.processingError,
+        processingError: doc.processingError,
+        pdfExportCount: doc.pdfExportCount || 0,
+        lastExportedAt: doc.lastExportedAt,
+        clientName: doc.clientName,
+        policyReference: doc.policyReference,
+        isFavorite: doc.isFavorite || false,
+        tags: doc.tags || [],
       })));
     } catch (error) {
       console.error("List documents error:", error);

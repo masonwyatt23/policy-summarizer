@@ -369,6 +369,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - PDF exports now only available from PolicySummaryGenerator page as requested
   - Enhanced cache invalidation with comprehensive query invalidation and debugging
   - Streamlined user experience to single export location with proper functionality
+- July 06, 2025: Fixed PDF export counter not updating by correcting missing data fields
+  - Updated GET /api/documents endpoint to include pdfExportCount and other dashboard fields
+  - Enhanced DocumentListItem interface to include all fields needed by dashboard
+  - Added cache-control headers to prevent stale data responses
+  - Changed cache invalidation to use refetchQueries for forced refresh
+  - Fixed backend to return all document fields including export tracking data
+  - PDF export counter now properly shows real-time updates when exports are made
 
 ## Changelog
 - July 01, 2025. Initial setup
