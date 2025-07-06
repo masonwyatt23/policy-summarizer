@@ -355,6 +355,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced PDF export route to automatically increment export count and track timestamps
   - Updated dashboard statistics to show total PDF exports and count of exported documents
   - Streamlined filtering logic by removing unused favorites and errors categories
+- July 06, 2025: Fixed PDF export counter functionality
+  - Added debug logging to PDF export route to track increment operations
+  - Fixed cache invalidation issue preventing real-time counter updates
+  - Added queryClient.invalidateQueries to PDF export mutations in both PolicySummaryGenerator and DocumentDashboard
+  - Simplified dashboard statistics to single PDF exports counter that increments by one per export
+  - Removed "Exported Docs" counter card as requested by user
+  - PDF export counter now properly updates in real-time when PDFs are exported
 
 ## Changelog
 - July 01, 2025. Initial setup

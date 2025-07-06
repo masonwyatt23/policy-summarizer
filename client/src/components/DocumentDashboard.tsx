@@ -183,6 +183,8 @@ export function DocumentDashboard() {
         title: "Export Successful",
         description: "PDF has been downloaded successfully.",
       });
+      // Invalidate documents cache to refresh the PDF export count
+      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
     },
     onError: (error) => {
       toast({
@@ -621,21 +623,7 @@ export function DocumentDashboard() {
                   {documents.reduce((total: number, d: DocumentListItem) => total + (d.pdfExportCount || 0), 0)}
                 </p>
               </div>
-              <FileText className="w-8 h-8 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Exported Docs</p>
-                <p className="text-2xl font-bold">
-                  {documents.filter((d: DocumentListItem) => (d.pdfExportCount || 0) > 0).length}
-                </p>
-              </div>
-              <Download className="w-8 h-8 text-indigo-500" />
+              <Download className="w-8 h-8 text-purple-500" />
             </div>
           </CardContent>
         </Card>

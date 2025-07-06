@@ -384,10 +384,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pdfBuffer = await pdfGenerator.generatePolicyPDF(policyData, summary, options);
 
       // Track PDF export
+      const newCount = (document.pdfExportCount || 0) + 1;
+      console.log(`[PDF Export] Document ${id}: incrementing count from ${document.pdfExportCount || 0} to ${newCount}`);
+      
       await storage.updatePolicyDocument(id, {
-        pdfExportCount: (document.pdfExportCount || 0) + 1,
+        pdfExportCount: newCount,
         lastExportedAt: new Date(),
       }, agentId);
+      
+      console.log(`[PDF Export] Document ${id}: export count updated successfully`);
 
       // Create a simple, short filename
       const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD format

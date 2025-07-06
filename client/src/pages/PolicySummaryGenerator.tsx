@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +12,7 @@ import { SummaryEditor } from '@/components/SummaryEditor';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
 import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download, Image, X, Upload, LogOut } from 'lucide-react';
 import { api, type ProcessedDocument, type DocumentListItem } from '@/lib/api';
+
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import logoPath from '@assets/Valley-Trust-Insurance-Logo_1751344889285.png';
@@ -35,6 +36,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const [logoPreview, setLogoPreview] = useState<string>('');
   const { toast } = useToast();
   const { agent, logout, isLoggingOut } = useAuth();
+  const queryClient = useQueryClient();
 
   // Update currentDocumentId when documentId prop changes
   useEffect(() => {
@@ -95,6 +97,8 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
         title: "Export Successful",
         description: "PDF has been downloaded successfully.",
       });
+      // Invalidate documents cache to refresh the PDF export count
+      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
     },
     onError: (error) => {
       toast({
