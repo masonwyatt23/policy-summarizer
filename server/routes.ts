@@ -383,6 +383,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const pdfBuffer = await pdfGenerator.generatePolicyPDF(policyData, summary, options);
 
+      // Track PDF export
+      await storage.updatePolicyDocument(id, {
+        pdfExportCount: (document.pdfExportCount || 0) + 1,
+        lastExportedAt: new Date(),
+      }, agentId);
+
       // Create a simple, short filename
       const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD format
       const timeStr = new Date().toISOString().split('T')[1].substring(0, 5).replace(':', ''); // HHMM format

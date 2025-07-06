@@ -60,6 +60,8 @@ interface DocumentListItem {
   processingError?: string | null;
   clientName?: string;
   policyReference?: string;
+  pdfExportCount?: number;
+  lastExportedAt?: string;
 }
 
 export function DocumentDashboard() {
@@ -216,10 +218,8 @@ export function DocumentDashboard() {
                          doc.policyReference?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesFilter = filterBy === "all" || 
-                         (filterBy === "favorites" && doc.isFavorite) ||
                          (filterBy === "processed" && doc.processed) ||
-                         (filterBy === "unprocessed" && !doc.processed) ||
-                         (filterBy === "errors" && doc.processingError);
+                         (filterBy === "unprocessed" && !doc.processed);
     
     return matchesSearch && matchesFilter;
   });
@@ -499,10 +499,8 @@ export function DocumentDashboard() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Documents</SelectItem>
-            <SelectItem value="favorites">Favorites</SelectItem>
             <SelectItem value="processed">Processed</SelectItem>
             <SelectItem value="unprocessed">Unprocessed</SelectItem>
-            <SelectItem value="errors">With Errors</SelectItem>
           </SelectContent>
         </Select>
         
@@ -618,12 +616,12 @@ export function DocumentDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Favorites</p>
+                <p className="text-sm font-medium text-gray-600">PDF Exports</p>
                 <p className="text-2xl font-bold">
-                  {documents.filter((d: DocumentListItem) => d.isFavorite).length}
+                  {documents.reduce((total: number, d: DocumentListItem) => total + (d.pdfExportCount || 0), 0)}
                 </p>
               </div>
-              <Heart className="w-8 h-8 text-red-500" />
+              <FileText className="w-8 h-8 text-purple-500" />
             </div>
           </CardContent>
         </Card>
@@ -632,12 +630,12 @@ export function DocumentDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">With Errors</p>
+                <p className="text-sm font-medium text-gray-600">Exported Docs</p>
                 <p className="text-2xl font-bold">
-                  {documents.filter((d: DocumentListItem) => d.processingError).length}
+                  {documents.filter((d: DocumentListItem) => (d.pdfExportCount || 0) > 0).length}
                 </p>
               </div>
-              <Filter className="w-8 h-8 text-orange-500" />
+              <Download className="w-8 h-8 text-indigo-500" />
             </div>
           </CardContent>
         </Card>

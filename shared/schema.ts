@@ -43,6 +43,8 @@ export const policyDocuments = pgTable("policy_documents", {
   processingOptions: jsonb("processing_options").default({}).notNull(),
   clientName: text("client_name"),
   policyReference: text("policy_reference"),
+  pdfExportCount: integer("pdf_export_count").default(0).notNull(),
+  lastExportedAt: timestamp("last_exported_at"),
 });
 
 export const summaryHistory = pgTable("summary_history", {

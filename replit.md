@@ -349,6 +349,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Simplified settings interface to focus on Agent Profile and Appearance preferences
   - Updated header description to reflect removal of export configuration options
   - Cleaned up unused imports (Switch, Separator, FileText) for cleaner codebase
+- July 06, 2025: Replaced favorites and errors dashboard filters with PDF export tracking
+  - Removed unused "favorites" and "with errors" filter options from document dashboard
+  - Added PDF export tracking fields to policy_documents table (pdfExportCount, lastExportedAt)
+  - Enhanced PDF export route to automatically increment export count and track timestamps
+  - Updated dashboard statistics to show total PDF exports and count of exported documents
+  - Streamlined filtering logic by removing unused favorites and errors categories
 
 ## Changelog
 - July 01, 2025. Initial setup
