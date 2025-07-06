@@ -383,6 +383,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Expanded state reveals full details including client info, policy reference, tags, timestamps, and action buttons
   - PDF export count now visible in expanded view
   - Improved space efficiency while maintaining all functionality
+- July 06, 2025: Enhanced collapsed document card formatting for better readability
+  - Made document names larger and more prominent (text-base font-semibold)
+  - Added rounded background boxes for file size and type information for better visual separation
+  - Improved spacing and layout in collapsed state for cleaner appearance
+  - Enhanced favorite star visibility and positioning
+  - Created better visual hierarchy with improved typography and spacing
 
 ## Changelog
 - July 01, 2025. Initial setup

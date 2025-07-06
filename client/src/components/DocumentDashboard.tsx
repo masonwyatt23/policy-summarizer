@@ -236,7 +236,7 @@ export function DocumentDashboard() {
         
         {/* Clickable Header */}
         <CardHeader 
-          className="pb-3 cursor-pointer hover:bg-muted/30 transition-colors"
+          className="pb-2 cursor-pointer hover:bg-muted/30 transition-colors"
           onClick={() => toggleCardExpansion(document.id)}
         >
           <div className="flex items-center justify-between">
@@ -259,7 +259,7 @@ export function DocumentDashboard() {
                 </Button>
               )}
               
-              <div className="flex items-center space-x-2 flex-1 min-w-0">
+              <div className="flex items-center space-x-3 flex-1 min-w-0">
                 <FileText className={`w-5 h-5 flex-shrink-0 ${
                   document.processed 
                     ? document.processingError 
@@ -269,39 +269,60 @@ export function DocumentDashboard() {
                 }`} />
                 
                 <div className="min-w-0 flex-1">
-                  <CardTitle className="text-sm font-medium truncate text-foreground" title={document.originalName}>
+                  <CardTitle className="text-base font-semibold truncate text-foreground leading-tight" title={document.originalName}>
                     {document.originalName}
                   </CardTitle>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Badge variant={document.processed ? "default" : "secondary"} 
-                      className={`text-xs ${
-                        document.processed 
+                  {!isExpanded && (
+                    <div className="flex items-center space-x-3 mt-1">
+                      <Badge variant={document.processed ? "default" : "secondary"} 
+                        className={`text-xs ${
+                          document.processed 
+                            ? document.processingError 
+                              ? 'bg-red-100 dark:bg-red-950/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' 
+                              : 'bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800'
+                            : 'bg-yellow-100 dark:bg-yellow-950/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
+                        }`}>
+                        {document.processed 
                           ? document.processingError 
-                            ? 'bg-red-100 dark:bg-red-950/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' 
-                            : 'bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800'
-                          : 'bg-yellow-100 dark:bg-yellow-950/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
-                      }`}>
-                      {document.processed 
-                        ? document.processingError 
-                          ? "Error" 
-                          : "Ready"
-                        : "Processing"}
-                    </Badge>
-                    {document.isFavorite && (
-                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    )}
-                  </div>
+                            ? "Error" 
+                            : "Ready"
+                          : "Processing"}
+                      </Badge>
+                      
+                      <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                        <span className="bg-muted/50 px-2 py-1 rounded">{formatFileSize(document.fileSize)}</span>
+                        <span className="bg-muted/50 px-2 py-1 rounded">{document.fileType.toUpperCase()}</span>
+                      </div>
+                      
+                      {document.isFavorite && (
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      )}
+                    </div>
+                  )}
+                  
+                  {isExpanded && (
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Badge variant={document.processed ? "default" : "secondary"} 
+                        className={`text-xs ${
+                          document.processed 
+                            ? document.processingError 
+                              ? 'bg-red-100 dark:bg-red-950/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' 
+                              : 'bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800'
+                            : 'bg-yellow-100 dark:bg-yellow-950/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
+                        }`}>
+                        {document.processed 
+                          ? document.processingError 
+                            ? "Error" 
+                            : "Ready"
+                          : "Processing"}
+                      </Badge>
+                      {document.isFavorite && (
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-              
-              {/* Compact info when collapsed */}
-              {!isExpanded && (
-                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                  <span>{formatFileSize(document.fileSize)}</span>
-                  <span>•</span>
-                  <span>{document.fileType.toUpperCase()}</span>
-                </div>
-              )}
             </div>
             
             <div className="flex items-center space-x-2">
