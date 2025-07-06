@@ -97,8 +97,11 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
         title: "Export Successful",
         description: "PDF has been downloaded successfully.",
       });
-      // Invalidate documents cache to refresh the PDF export count
+      // Invalidate all document-related queries to refresh the PDF export count
+      console.log('PDF export successful - invalidating cache');
       queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/documents', documentId] });
+      queryClient.invalidateQueries({ queryKey: ['/api'] });
     },
     onError: (error) => {
       toast({

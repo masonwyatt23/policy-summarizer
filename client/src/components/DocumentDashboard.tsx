@@ -148,52 +148,7 @@ export function DocumentDashboard() {
     },
   });
 
-  // Export PDF mutation
-  const exportPDFMutation = useMutation({
-    mutationFn: async (documentId: number) => {
-      const response = await fetch(`/api/documents/${documentId}/export`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          includeBranding: true,
-          includeExplanations: true,
-          includeTechnicalDetails: false,
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error('Export failed');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      // Let the backend handle the filename via Content-Disposition header
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Export Successful",
-        description: "PDF has been downloaded successfully.",
-      });
-      // Invalidate documents cache to refresh the PDF export count
-      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Export Failed",
-        description: error instanceof Error ? error.message : "Failed to export PDF",
-        variant: "destructive",
-      });
-    },
-  });
 
   // Handler functions
   const handleViewSummary = (documentId: number) => {
@@ -208,10 +163,6 @@ export function DocumentDashboard() {
   const handleViewHistory = (documentId: number) => {
     setSelectedDocumentForHistory(documentId);
     setHistoryDialogOpen(true);
-  };
-
-  const handleExportPDF = (documentId: number) => {
-    exportPDFMutation.mutate(documentId);
   };
 
   const filteredDocuments = documents.filter((doc: DocumentListItem) => {
@@ -342,13 +293,7 @@ export function DocumentDashboard() {
                 <History className="w-4 h-4 mr-2" />
                 Version History
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleExportPDF(document.id)}
-                disabled={!document.processed || exportPDFMutation.isPending}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                {exportPDFMutation.isPending ? 'Exporting...' : 'Export PDF'}
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => toggleFavoriteMutation.mutate(document.id)}
@@ -452,19 +397,7 @@ export function DocumentDashboard() {
                   <History className="w-3 h-3 mr-1" />
                   History
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 h-7 text-xs border-green-300 text-green-700 hover:border-green-400 hover:bg-green-50 transition-all duration-200"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleExportPDF(document.id);
-                  }}
-                  disabled={exportPDFMutation.isPending}
-                >
-                  <Download className="w-3 h-3 mr-1" />
-                  {exportPDFMutation.isPending ? 'Export...' : 'Export'}
-                </Button>
+
               </div>
             </div>
           )}
