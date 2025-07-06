@@ -337,6 +337,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added query cache invalidation to FileUpload component when documents are successfully processed
   - DocumentDashboard now automatically refreshes to show new documents after upload completion
   - Enhanced user experience with real-time document list updates
+- July 05, 2025: Optimized PDF layout with integrated client branding header
+  - Combined separate client info box with policy header for efficient space utilization
+  - Removed redundant "Professional Insurance Policy Analysis" text from client section
+  - Integrated client logo and name directly into the main policy header box
+  - Enhanced header styling with flexible layout for both logo and non-logo layouts
+  - Improved overall PDF presentation with cleaner, more professional structure
 
 ## Changelog
 - July 01, 2025. Initial setup

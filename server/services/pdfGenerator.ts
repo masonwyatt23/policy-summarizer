@@ -139,42 +139,10 @@ export class PDFGenerator {
             font-weight: 500;
         }
         
-        .client-info {
-            margin-bottom: 30px;
-            padding: 25px;
-            background: #f8f9fa;
-            border: 2px solid #dee2e6;
-            border-radius: 4px;
-        }
-        
-        .client-info.with-logo {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-        
         .client-logo-section {
             flex-shrink: 0;
             text-align: center;
             min-width: 120px;
-        }
-        
-        .client-details-section {
-            flex: 1;
-            text-align: left;
-        }
-        
-        .client-info div {
-            margin-bottom: 10px;
-            font-size: 15px;
-            color: #000000;
-            line-height: 1.4;
-        }
-        
-        .client-info strong {
-            color: #000000;
-            font-weight: 700;
-            text-transform: uppercase;
         }
         
         .policy-header {
@@ -185,6 +153,40 @@ export class PDFGenerator {
             color: #000000;
             border: 2px solid #dee2e6;
             border-radius: 4px;
+        }
+        
+        .policy-header.with-client-logo {
+            text-align: left;
+            padding: 20px;
+        }
+        
+        .policy-header-with-logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .policy-main-section {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .policy-client-details {
+            padding-top: 15px;
+            margin-top: 15px;
+            border-top: 1px solid #dee2e6;
+            font-size: 13px;
+            color: #333;
+        }
+        
+        .policy-client-details div {
+            margin-bottom: 5px;
+        }
+        
+        .policy-client-details strong {
+            color: #000000;
+            font-weight: 600;
         }
         
         .policy-header h1 {
@@ -480,14 +482,23 @@ export class PDFGenerator {
         </div>
         ` : ''}
         
-        ${options.clientName || options.policyReference || options.clientLogo ? `
-        <div class="client-info${options.clientLogo ? ' with-logo' : ''}">
+        <div class="policy-header${options.clientLogo ? ' with-client-logo' : ''}">
             ${options.clientLogo ? `
-            <div class="client-logo-section">
-                <img src="${options.clientLogo}" alt="Client Logo" style="max-height: 80px; max-width: 150px; object-fit: contain; border: 1px solid #dee2e6; border-radius: 4px; padding: 8px; background: white;">
+            <div class="policy-header-with-logo">
+                <div class="client-logo-section">
+                    <img src="${options.clientLogo}" alt="Client Logo" style="max-height: 60px; max-width: 150px; object-fit: contain; border: 1px solid #dee2e6; border-radius: 4px; padding: 6px; background: white;">
+                </div>
+                <div class="policy-main-section">
+                    <h1>${policyData.policyType} Policy</h1>
+                    <p>Comprehensive Coverage Analysis</p>
+                </div>
             </div>
-            ` : ''}
-            <div class="client-details-section">
+            ` : `
+            <h1>${policyData.policyType} Policy</h1>
+            <p>Comprehensive Coverage Analysis</p>
+            `}
+            ${options.clientName || options.policyReference ? `
+            <div class="policy-client-details">
                 ${options.clientName ? `<div><strong>Prepared for:</strong> ${options.clientName}</div>` : ''}
                 ${options.policyReference ? `<div><strong>Policy Reference:</strong> ${options.policyReference}</div>` : ''}
                 <div><strong>Analysis Date:</strong> ${new Date().toLocaleDateString('en-US', { 
@@ -495,14 +506,8 @@ export class PDFGenerator {
                     month: 'long', 
                     day: 'numeric' 
                 })}</div>
-                <div style="margin-top: 12px; font-size: 13px; color: #666; font-style: italic;">Professional Insurance Policy Analysis</div>
             </div>
-        </div>
-        ` : ''}
-        
-        <div class="policy-header">
-            <h1>${policyData.policyType} Policy</h1>
-            <p>Comprehensive Coverage Analysis</p>
+            ` : ''}
         </div>
 
         ${options.includeTechnicalDetails ? `
