@@ -398,6 +398,16 @@ This is a full-stack policy document processing application built for Valley Tru
   - Changed collapse button position from top-2 to bottom-2 when sidebar is collapsed
   - Prevents overlap with document icon in the collapsed sidebar header
   - Maintains proper functionality while improving visual layout
+- July 07, 2025: Added Normal/Brief toggle for policy summary length options
+  - Implemented summary type toggle before file upload in PolicySummaryGenerator
+  - Added Normal option: Current 5-paragraph comprehensive analysis (default)
+  - Added Brief option: Single comprehensive paragraph with all essential information
+  - Updated UI with Valley Trust branded toggle switch and explanatory descriptions
+  - Updated backend to handle summaryType parameter throughout processing pipeline
+  - Enhanced xAI service to generate different summary formats based on user preference
+  - Brief summaries are 400-600 words in one flowing paragraph with subheader
+  - Normal summaries maintain existing 5-paragraph structure with subheaders
+  - Addresses user feedback about longer summaries being too lengthy for some clients
 
 ## Changelog
 - July 01, 2025. Initial setup

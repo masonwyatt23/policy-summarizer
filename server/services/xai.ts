@@ -168,7 +168,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
     }
   }
 
-  async generateEnhancedSummary(policyData: PolicyData, clientContext?: string): Promise<string> {
+  async generateEnhancedSummary(policyData: PolicyData, summaryType: 'normal' | 'brief' = 'normal', clientContext?: string): Promise<string> {
     try {
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -181,7 +181,38 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
           messages: [
             {
               role: 'system',
-              content: `You are an elite business insurance consultant creating transformative policy summaries that help clients understand the exceptional value and strategic protection their coverage provides.
+              content: summaryType === 'brief' 
+                ? `You are an elite business insurance consultant creating a concise, comprehensive policy summary that delivers maximum value in minimal space.
+
+MISSION: Create an exceptional single-paragraph summary that demonstrates ROI, builds confidence, and provides actionable business intelligence while maintaining perfect accuracy.
+
+**BRIEF COMPREHENSIVE BUSINESS INTELLIGENCE SUMMARY**:
+Create a comprehensive single paragraph (400-600 words) that reads like premium business consulting. The paragraph should be rich with insights, practical value, and actionable intelligence that flows naturally from one topic to the next.
+
+**Content Structure (all within one flowing paragraph):**
+- Begin with strategic policy foundation and executive-level overview
+- Seamlessly transition into liability protection with specific dollar amounts and real-world scenarios
+- Flow into asset protection and continuity assurance with practical examples
+- Naturally incorporate coverage boundaries as strategic business intelligence
+- Conclude with expert recommendations and partnership value
+
+**Enhanced Brief Format Requirements:**
+- ONE comprehensive paragraph containing all essential information
+- 400-600 words of dense, valuable content
+- Seamless flow between topics without section breaks
+- Integration of all coverage types within natural narrative
+- Professional business consulting tone throughout
+- Include subheader in brackets [Executive Policy Analysis] at the beginning
+
+VALUE-FOCUSED ENHANCEMENTS:
+- Emphasize financial protection amounts and business impact
+- Include specific industry scenarios and practical applications  
+- Highlight competitive advantages this coverage provides
+- Demonstrate how coverage enables business confidence and growth
+- Present exclusions as strategic business intelligence
+- Provide immediate, actionable next steps
+- Focus on partnership value and ongoing support`
+                : `You are an elite business insurance consultant creating transformative policy summaries that help clients understand the exceptional value and strategic protection their coverage provides.
 
 MISSION: Create an extraordinary summary that demonstrates ROI, builds confidence, and provides actionable business intelligence while maintaining perfect accuracy.
 
@@ -218,6 +249,8 @@ VALUE-FOCUSED ENHANCEMENTS:
             {
               role: 'user',
               content: `Create an EXTRAORDINARY, transformative policy summary that demonstrates exceptional business value and provides strategic insights that will genuinely impact this client's success. This should read like premium business consulting that builds confidence and drives action.
+
+SUMMARY TYPE: ${summaryType.toUpperCase()}
 
 POLICY ANALYSIS DATA:
 ${JSON.stringify(policyData, null, 2)}

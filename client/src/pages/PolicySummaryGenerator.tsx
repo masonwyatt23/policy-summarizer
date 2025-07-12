@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { FileUpload } from '@/components/FileUpload';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { SummaryEditor } from '@/components/SummaryEditor';
@@ -34,6 +35,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const [clientName, setClientName] = useState<string>('');
   const [clientLogo, setClientLogo] = useState<string>('');
   const [logoPreview, setLogoPreview] = useState<string>('');
+  const [summaryType, setSummaryType] = useState<'normal' | 'brief'>('normal');
   const { toast } = useToast();
   const { agent, logout, isLoggingOut } = useAuth();
   const queryClient = useQueryClient();
@@ -209,9 +211,54 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Summary Type Toggle */}
+        <div className="mb-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <h3 className="text-lg font-semibold text-foreground">Summary Format</h3>
+                <p className="text-sm text-muted-foreground">
+                  Choose the summary length for your policy analysis
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-3">
+                  <span className={`text-sm font-medium ${summaryType === 'normal' ? 'text-valley-primary' : 'text-muted-foreground'}`}>
+                    Normal
+                  </span>
+                  <Switch
+                    checked={summaryType === 'brief'}
+                    onCheckedChange={(checked) => setSummaryType(checked ? 'brief' : 'normal')}
+                    className="data-[state=checked]:bg-valley-primary"
+                  />
+                  <span className={`text-sm font-medium ${summaryType === 'brief' ? 'text-valley-primary' : 'text-muted-foreground'}`}>
+                    Brief
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 p-4 bg-muted rounded-lg">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-2 h-2 bg-valley-primary rounded-full mt-2"></div>
+                <div className="text-sm text-muted-foreground">
+                  {summaryType === 'normal' ? (
+                    <span>
+                      <strong>Normal:</strong> Comprehensive 5-paragraph analysis with detailed coverage explanations, exclusions, and recommendations
+                    </span>
+                  ) : (
+                    <span>
+                      <strong>Brief:</strong> Concise single-paragraph summary with all essential information in an easy-to-read format
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Upload Section */}
         <div className="mb-8">
-          <FileUpload onUploadSuccess={handleUploadSuccess} />
+          <FileUpload onUploadSuccess={handleUploadSuccess} summaryType={summaryType} />
         </div>
 
         {/* Summary Tabs Section */}

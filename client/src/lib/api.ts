@@ -51,9 +51,10 @@ export interface ExportOptions {
 }
 
 export const api = {
-  async uploadDocument(file: File): Promise<UploadResponse> {
+  async uploadDocument(file: File, summaryType: 'normal' | 'brief' = 'normal'): Promise<UploadResponse> {
     const formData = new FormData();
     formData.append('document', file);
+    formData.append('summaryType', summaryType);
     
     const response = await fetch('/api/documents/upload', {
       method: 'POST',
