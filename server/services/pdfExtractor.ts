@@ -8,6 +8,16 @@ export class PDFExtractor {
   async extractText(buffer: Buffer): Promise<string> {
     console.log('Starting PDF text extraction...');
     
+    // Add overall timeout for the entire extraction process (5 minutes)
+    const extractionPromise = this.performExtraction(buffer);
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('PDF extraction timed out after 5 minutes')), 300000);
+    });
+    
+    return Promise.race([extractionPromise, timeoutPromise]);
+  }
+
+  private async performExtraction(buffer: Buffer): Promise<string> {
     // Try multiple extraction strategies
     const strategies = [
       () => this.extractWithAdvancedPdfjs(buffer),
@@ -211,26 +221,38 @@ export class PDFExtractor {
       
       console.log(`Processing ${imageFiles.length} pages with OCR...`);
       
-      // Extract text from each image using Tesseract
+      // Extract text from each image using Tesseract with timeout
       const extractedTexts = [];
       
-      for (const imageFile of imageFiles) {
+      // Process only first 5 pages to prevent hanging
+      const maxPages = Math.min(imageFiles.length, 5);
+      
+      for (let i = 0; i < maxPages; i++) {
+        const imageFile = imageFiles[i];
         const imagePath = path.join(tempDir, imageFile);
         
         try {
           console.log(`OCR processing page: ${imageFile}`);
           
-          const text = await tesseract.recognize(imagePath, {
+          // Add timeout wrapper for OCR processing (30 seconds per page)
+          const ocrPromise = tesseract.recognize(imagePath, {
             lang: 'eng',
             oem: 1,
             psm: 6
           });
+          
+          const timeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(() => reject(new Error(`OCR timeout for ${imageFile}`)), 30000);
+          });
+          
+          const text = await Promise.race([ocrPromise, timeoutPromise]);
           
           if (text && text.trim().length > 10) {
             extractedTexts.push(text.trim());
           }
         } catch (pageError) {
           console.warn(`OCR failed for page ${imageFile}:`, pageError instanceof Error ? pageError.message : String(pageError));
+          // Continue processing other pages even if one fails
         }
       }
       

@@ -1,135 +1,122 @@
-// Debug script to test brief toggle functionality
 const fs = require('fs');
-const path = require('path');
+const FormData = require('form-data');
+const fetch = require('node-fetch');
 
 async function testBriefToggle() {
-  console.log('🔍 Testing brief toggle functionality...');
+  // Create test file
+  const testContent = `TEST POLICY DOCUMENT FOR BRIEF TOGGLE
   
-  // Test 1: Check if frontend is sending correct parameters
-  console.log('\n--- Test 1: Frontend Parameter Check ---');
+Policy Number: BRIEF-TEST-001
+Insured: Brief Toggle Test Company
+Policy Type: General Liability Insurance
+Coverage Amount: $1,000,000 per occurrence
+Annual Premium: $2,400
+Policy Period: 01/01/2025 - 01/01/2026
+
+COVERAGE DETAILS:
+- General Liability: $1,000,000 per occurrence, $2,000,000 aggregate
+- Product Liability: $1,000,000 per occurrence  
+- Professional Liability: $500,000 per claim
+- Cyber Liability: $100,000 per incident
+
+EXCLUSIONS:
+- Intentional acts and criminal activity
+- War, terrorism, and nuclear incidents
+- Pollution (except sudden and accidental)
+- Employment practices liability
+- Professional services outside scope of business
+
+CONTACT INFORMATION:
+Valley Trust Insurance Group
+Phone: (540) 885-5531
+Email: jake@valleytrustinsurance.com
+Address: 123 Insurance Way, Waynesboro, VA 22980
+
+This is a comprehensive test document designed to verify the brief toggle functionality works correctly.`;
+
+  fs.writeFileSync('test-brief.txt', testContent);
+  
+  // Test normal mode first
+  console.log('Testing Normal Mode...');
+  await testUpload('normal');
+  
+  // Wait a bit
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
+  // Test brief mode
+  console.log('\nTesting Brief Mode...');
+  await testUpload('brief');
+  
+  // Clean up
+  fs.unlinkSync('test-brief.txt');
+}
+
+async function testUpload(summaryType) {
   const formData = new FormData();
-  formData.append('summaryType', 'brief');
-  
-  // Log what we're sending
-  console.log('Sending summaryType:', formData.get('summaryType'));
-  
-  // Test 2: Check backend route handling
-  console.log('\n--- Test 2: Backend Route Check ---');
-  
-  // Create a simple test file for upload
-  const testContent = `
-    POLICY DOCUMENT
-    
-    Policy Number: TEST-123
-    Insured: Test Business
-    Policy Type: General Liability
-    Coverage Limits: $1,000,000
-    
-    This is a test policy document for verifying brief summary functionality.
-    The brief toggle should produce a single comprehensive paragraph instead of 5 separate paragraphs.
-  `;
-  
-  const testFile = new Blob([testContent], { type: 'text/plain' });
-  
-  const uploadFormData = new FormData();
-  uploadFormData.append('document', testFile, 'test-policy.txt');
-  uploadFormData.append('summaryType', 'brief');
-  
-  console.log('Upload form data contains:');
-  console.log('- document:', uploadFormData.has('document'));
-  console.log('- summaryType:', uploadFormData.get('summaryType'));
+  formData.append('document', fs.createReadStream('test-brief.txt'));
+  formData.append('summaryType', summaryType);
   
   try {
+    console.log(`Making upload request with summaryType: ${summaryType}`);
+    
     const response = await fetch('http://localhost:5000/api/documents/upload', {
       method: 'POST',
-      body: uploadFormData,
+      body: formData,
+      headers: {
+        // Add basic auth header for testing (this won't work in production)
+        'Authorization': 'Bearer test-token'
+      }
     });
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Upload failed:', errorText);
+      console.error(`Upload failed (${response.status}): ${errorText}`);
       return;
     }
     
     const result = await response.json();
-    console.log('✅ Upload successful:', result);
+    console.log(`Upload result:`, result);
     
-    // Monitor processing
-    const documentId = result.documentId;
-    console.log(`\n--- Monitoring Document ${documentId} Processing ---`);
-    
-    // Check processing status
-    let attempts = 0;
-    let processed = false;
-    
-    while (!processed && attempts < 15) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      try {
-        const statusResponse = await fetch(`http://localhost:5000/api/documents/${documentId}/status`);
-        const status = await statusResponse.json();
-        
-        console.log(`Attempt ${attempts + 1}: Processing status:`, status.processed);
-        
-        if (status.processed) {
-          processed = true;
-          console.log('\n--- Processing Complete - Fetching Results ---');
-          
-          const docResponse = await fetch(`http://localhost:5000/api/documents/${documentId}`);
-          const doc = await docResponse.json();
-          
-          console.log('Summary Analysis:');
-          console.log('- Summary length:', doc.summary.length, 'characters');
-          
-          // Count paragraphs (split by double newlines)
-          const paragraphs = doc.summary.split('\n\n').filter(p => p.trim().length > 0);
-          console.log('- Paragraph count:', paragraphs.length);
-          
-          // Check for brief format indicators
-          const hasBriefHeader = doc.summary.includes('[Executive Policy Analysis]');
-          console.log('- Has brief header:', hasBriefHeader);
-          
-          // Show first 300 characters
-          console.log('- First 300 chars:', doc.summary.substring(0, 300));
-          
-          // Determine if brief toggle worked
-          if (paragraphs.length === 1 && hasBriefHeader) {
-            console.log('\n✅ BRIEF TOGGLE WORKING - Single paragraph with proper header generated');
-          } else if (paragraphs.length > 1) {
-            console.log('\n❌ BRIEF TOGGLE NOT WORKING - Multiple paragraphs generated');
-            console.log('Expected: 1 paragraph');
-            console.log('Actual:', paragraphs.length, 'paragraphs');
-          } else {
-            console.log('\n⚠️ BRIEF TOGGLE PARTIAL - Single paragraph but missing header');
-          }
-          
-          return;
-        }
-        
-        if (status.processingError) {
-          console.error('Processing error:', status.processingError);
-          return;
-        }
-        
-      } catch (error) {
-        console.error('Status check error:', error);
-      }
-      
-      attempts++;
+    // Poll for completion
+    if (result.documentId) {
+      console.log(`Polling for completion of document ${result.documentId}...`);
+      await pollForCompletion(result.documentId);
     }
-    
-    console.log('\n❌ Processing timeout after 15 attempts');
-    
   } catch (error) {
-    console.error('Test failed:', error);
+    console.error('Upload error:', error.message);
   }
 }
 
-// Run the test
-if (typeof window === 'undefined') {
-  // Node.js environment
-  console.log('Note: This test requires running in a browser environment with fetch API');
-} else {
-  // Browser environment
-  testBriefToggle();
+async function pollForCompletion(documentId) {
+  for (let i = 0; i < 30; i++) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/documents/${documentId}/status`);
+      
+      if (!response.ok) {
+        console.error(`Status check failed: ${response.status}`);
+        break;
+      }
+      
+      const status = await response.json();
+      console.log(`Status: ${status.processed ? 'COMPLETED' : 'PROCESSING'}`);
+      
+      if (status.processed) {
+        if (status.processingError) {
+          console.error(`Processing error: ${status.processingError}`);
+        } else {
+          console.log(`Summary length: ${status.summary?.length || 0} characters`);
+          console.log(`Summary paragraphs: ${status.summary?.split('\n\n').length || 0}`);
+          console.log(`First 100 chars: ${status.summary?.substring(0, 100) || 'N/A'}`);
+        }
+        break;
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } catch (error) {
+      console.error('Polling error:', error.message);
+      break;
+    }
+  }
 }
+
+testBriefToggle().catch(console.error);
