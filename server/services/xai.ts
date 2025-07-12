@@ -171,6 +171,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
   async generateEnhancedSummary(policyData: PolicyData, summaryType: 'normal' | 'brief' = 'normal', clientContext?: string): Promise<string> {
     console.log(`🔍 xAI Summary Generation: Using ${summaryType} format`);
     console.log(`📋 Brief mode active: ${summaryType === 'brief'}`);
+    console.log(`🎯 Expected output: ${summaryType === 'brief' ? 'Single paragraph with [Executive Policy Analysis] header' : '5-paragraph structured summary'}`);
     
     try {
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
@@ -184,8 +185,9 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
           messages: [
             {
               role: 'system',
-              content: summaryType === 'brief' 
-                ? `You are an elite business insurance consultant creating a concise, comprehensive policy summary that delivers maximum value in minimal space.
+              content: (() => {
+                const prompt = summaryType === 'brief' 
+                  ? `You are an elite business insurance consultant creating a concise, comprehensive policy summary that delivers maximum value in minimal space.
 
 MISSION: Create an exceptional single-paragraph summary that demonstrates ROI, builds confidence, and provides actionable business intelligence while maintaining perfect accuracy.
 
@@ -247,7 +249,13 @@ VALUE-FOCUSED ENHANCEMENTS:
 - Demonstrate how coverage enables business confidence and growth
 - Present exclusions as strategic business intelligence
 - Provide immediate, actionable next steps
-- Focus on partnership value and ongoing support`
+- Focus on partnership value and ongoing support`;
+                
+                console.log(`🎯 Selected Prompt Type: ${summaryType}`);
+                console.log(`📝 Prompt Preview: ${prompt.substring(0, 100)}...`);
+                
+                return prompt;
+              })()
             },
             {
               role: 'user',
@@ -355,12 +363,22 @@ Create a transformative 5-paragraph business intelligence summary where the fina
       const data = await response.json();
       const content = data.choices[0]?.message?.content || 'Summary generation failed';
       
+      console.log(`📝 xAI Generated Content Length: ${content.length} characters`);
+      console.log(`📋 First 200 characters: ${content.substring(0, 200)}...`);
+      
       // Check if response appears truncated (incomplete sentence or section)
       const lastChar = content.trim().slice(-1);
       const endsWithPunctuation = ['.', '!', '?', ':'].includes(lastChar);
       const hasCompleteStructure = summaryType === 'brief' 
         ? content.includes('[') && content.length > 200  // Brief mode: check for subheader and minimum length
         : content.split('\n\n').length >= 4; // Normal mode: check for multiple paragraphs
+      
+      console.log(`🔍 Content Analysis: Ends with punctuation: ${endsWithPunctuation}, Has complete structure: ${hasCompleteStructure}`);
+      
+      if (summaryType === 'brief') {
+        const paragraphCount = content.split('\n\n').filter(p => p.trim().length > 0).length;
+        console.log(`📊 Brief Mode Analysis: Paragraph count: ${paragraphCount}, Has bracket header: ${content.includes('[')}`);
+      }
       
       if (!endsWithPunctuation || !hasCompleteStructure) {
         console.warn('Summary appears truncated, attempting to regenerate with lower token count...');
