@@ -189,6 +189,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Extract summaryType from form data
       const summaryType = req.body.summaryType || 'normal';
+      console.log(`🚀 Upload Route Debug: Received summaryType = '${summaryType}'`);
+      console.log(`📋 Upload Route Debug: req.body =`, req.body);
 
       // Create document record with agent association
       const documentData = {
@@ -206,6 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const document = await storage.createPolicyDocument(documentData);
 
       // Start processing in background with summaryType
+      console.log(`🔧 Upload Route: Starting processDocumentAsync with summaryType = '${summaryType}'`);
       processDocumentAsync(document.id, req.file.buffer, req.file.originalname, summaryType);
 
       res.json({ 
@@ -652,7 +655,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 // Background document processing
 async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string, summaryType: 'normal' | 'brief' = 'normal') {
   try {
+    console.log(`🔍 ProcessDocumentAsync: Starting with summaryType = '${summaryType}'`);
+    console.log(`🔍 ProcessDocumentAsync: Brief mode = ${summaryType === 'brief'}`);
+    
     const result = await documentProcessor.processDocument(buffer, filename, summaryType);
+    
+    console.log(`🔍 ProcessDocumentAsync: Generated summary length = ${result.summary.length} chars`);
+    console.log(`🔍 ProcessDocumentAsync: Summary paragraphs = ${result.summary.split('\n\n').length}`);
+    console.log(`🔍 ProcessDocumentAsync: First 100 chars = ${result.summary.substring(0, 100)}`);
     
     // Update the document
     await storage.updatePolicyDocument(documentId, {
