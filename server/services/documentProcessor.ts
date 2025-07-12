@@ -23,6 +23,7 @@ export class DocumentProcessor {
       console.log(`📋 Summary type: ${summaryType}`);
       
       const policyData = await xaiService.analyzePolicy(extractedText);
+      console.log(`🔧 DocumentProcessor: Passing summaryType '${summaryType}' to xAI service`);
       const summary = await xaiService.generateEnhancedSummary(policyData, summaryType);
       
       console.log('✅ xAI analysis completed with comprehensive results');

@@ -408,6 +408,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Brief summaries are 400-600 words in one flowing paragraph with subheader
   - Normal summaries maintain existing 5-paragraph structure with subheaders
   - Addresses user feedback about longer summaries being too lengthy for some clients
+- July 07, 2025: Fixed brief toggle functionality issue
+  - Identified and resolved critical bug in xAI service retry logic
+  - Retry logic was hardcoded to always generate 5-paragraph summaries regardless of user selection
+  - Updated retry logic to respect summaryType parameter for both brief and normal modes
+  - Fixed complete structure validation to properly handle brief mode (check for subheader and minimum length)
+  - Brief toggle now correctly generates single comprehensive paragraph with [Executive Policy Analysis] subheader
+  - Added comprehensive debugging throughout processing pipeline to track summaryType parameter flow
 
 ## Changelog
 - July 01, 2025. Initial setup
