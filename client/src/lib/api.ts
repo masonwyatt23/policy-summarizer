@@ -62,6 +62,7 @@ export const api = {
     
     // Add processing options if provided
     if (options) {
+      console.log('API uploadDocument - options:', options);
       formData.append('options', JSON.stringify(options));
     }
     

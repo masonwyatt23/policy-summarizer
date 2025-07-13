@@ -189,10 +189,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Parse processing options from form data
       let processingOptions = {};
+      console.log("📋 Request body options:", req.body.options);
       if (req.body.options) {
         try {
           processingOptions = JSON.parse(req.body.options);
           console.log("📋 Processing options received:", processingOptions);
+          console.log("📋 Summary length:", processingOptions.summaryLength || 'not specified');
         } catch (e) {
           console.log("Failed to parse processing options:", e);
         }
