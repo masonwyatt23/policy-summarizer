@@ -1,14 +1,15 @@
-POLICY DOCUMENT - TEST FILE FOR BRIEF TOGGLE
 
-Policy Number: TEST-BRIEF-123
+POLICY DOCUMENT - BRIEF TOGGLE TEST
+
+Policy Number: TEST-BRIEF-001
 Insured: Test Business Company
 Policy Type: General Liability Insurance
-Insurance Company: Test Insurance Company
+Insurance Company: Valley Test Insurance
 Policy Period: 01/01/2025 - 01/01/2026
 
 COVERAGE DETAILS:
 - General Liability: $1,000,000 per occurrence
-- Property Damage: $500,000 per occurrence  
+- Property Damage: $500,000 per occurrence
 - Personal Injury: $100,000 per person
 - Business Interruption: $50,000 per month
 
@@ -18,6 +19,6 @@ EXCLUSIONS:
 - Cyber security breaches
 - Employee dishonesty
 
-This is a test policy document designed to verify that the brief toggle functionality works correctly and generates a single comprehensive paragraph instead of multiple paragraphs.
-
-The brief mode should produce one flowing paragraph with all essential information integrated naturally, while the normal mode should produce the standard 5-paragraph format.
+This is a test policy document designed to verify that the brief toggle functionality works correctly.
+The brief mode should produce one flowing paragraph with all essential information.
+The normal mode should produce the standard 5-paragraph format.

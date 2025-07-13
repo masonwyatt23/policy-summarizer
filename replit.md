@@ -415,6 +415,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Fixed complete structure validation to properly handle brief mode (check for subheader and minimum length)
   - Brief toggle now correctly generates single comprehensive paragraph with [Executive Policy Analysis] subheader
   - Added comprehensive debugging throughout processing pipeline to track summaryType parameter flow
+- July 07, 2025: Fixed critical timeout issues in PDF processing
+  - Added comprehensive timeout controls to prevent system hanging during document processing
+  - Implemented 2-minute overall timeout for PDF extraction with individual strategy timeouts
+  - Fixed OCR processing timeouts by limiting to 3 pages with 15-second per-page timeout
+  - Temporarily disabled OCR strategy to prevent timeout failures
+  - Enhanced error handling and logging for better debugging of processing issues
+  - Created test file and verification script for testing brief toggle functionality
 
 ## Changelog
 - July 01, 2025. Initial setup

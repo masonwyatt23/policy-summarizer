@@ -1,75 +1,65 @@
 // Test script to verify brief toggle functionality
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 async function testBriefToggle() {
-  console.log('Testing brief toggle functionality...');
+  console.log('🧪 Testing Brief Toggle Functionality');
+  console.log('=====================================');
   
-  // Create a test FormData with brief summaryType
-  const testFileContent = Buffer.from('Test policy document content');
-  const formData = new FormData();
-  formData.append('document', new Blob([testFileContent], { type: 'application/pdf' }), 'test.pdf');
-  formData.append('summaryType', 'brief');
+  // Create test file
+  const testContent = `
+POLICY DOCUMENT - BRIEF TOGGLE TEST
+
+Policy Number: TEST-BRIEF-001
+Insured: Test Business Company
+Policy Type: General Liability Insurance
+Insurance Company: Valley Test Insurance
+Policy Period: 01/01/2025 - 01/01/2026
+
+COVERAGE DETAILS:
+- General Liability: $1,000,000 per occurrence
+- Property Damage: $500,000 per occurrence
+- Personal Injury: $100,000 per person
+- Business Interruption: $50,000 per month
+
+EXCLUSIONS:
+- Intentional acts
+- Professional liability
+- Cyber security breaches
+- Employee dishonesty
+
+This is a test policy document designed to verify that the brief toggle functionality works correctly.
+The brief mode should produce one flowing paragraph with all essential information.
+The normal mode should produce the standard 5-paragraph format.
+`;
+
+  fs.writeFileSync('test-brief-file.txt', testContent);
+  console.log('✅ Test file created: test-brief-file.txt');
   
-  try {
-    const response = await fetch('http://localhost:5000/api/documents/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      console.error('Upload failed:', await response.text());
-      return;
-    }
-    
-    const result = await response.json();
-    console.log('Upload successful:', result);
-    
-    // Poll for processing completion
-    const documentId = result.documentId;
-    let processed = false;
-    let attempts = 0;
-    
-    while (!processed && attempts < 10) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const statusResponse = await fetch(`http://localhost:5000/api/documents/${documentId}/status`);
-      const status = await statusResponse.json();
-      
-      if (status.processed) {
-        processed = true;
-        console.log('Processing complete, fetching document...');
-        
-        const docResponse = await fetch(`http://localhost:5000/api/documents/${documentId}`);
-        const doc = await docResponse.json();
-        
-        console.log('Summary format check:');
-        console.log('Summary length:', doc.summary.length);
-        console.log('Number of paragraphs:', doc.summary.split('\n\n').length);
-        console.log('First 200 chars:', doc.summary.substring(0, 200));
-        
-        // Check if it's actually a single paragraph
-        const paragraphs = doc.summary.split('\n\n').filter(p => p.trim().length > 0);
-        console.log('Actual paragraph count:', paragraphs.length);
-        
-        if (paragraphs.length === 1) {
-          console.log('✅ Brief toggle working correctly - single paragraph generated');
-        } else {
-          console.log('❌ Brief toggle not working - multiple paragraphs generated');
-        }
-        
-        return;
-      }
-      
-      attempts++;
-    }
-    
-    console.log('Processing timeout');
-    
-  } catch (error) {
-    console.error('Test failed:', error);
-  }
+  console.log('\n📋 Test Instructions:');
+  console.log('1. Go to the Policy Summary Generator');
+  console.log('2. Toggle switch to "Brief" mode');
+  console.log('3. Upload test-brief-file.txt');
+  console.log('4. Verify output is ONE paragraph with [Executive Policy Analysis] header');
+  console.log('5. Switch to "Normal" mode and retest');
+  console.log('6. Verify output is FIVE paragraphs with different headers');
+  
+  console.log('\n🔍 Expected Brief Output:');
+  console.log('- Single comprehensive paragraph (400-600 words)');
+  console.log('- Starts with [Executive Policy Analysis] header');
+  console.log('- Flows seamlessly from topic to topic');
+  console.log('- No section breaks or bullet points');
+  
+  console.log('\n📊 Expected Normal Output:');
+  console.log('- Five distinct paragraphs with headers');
+  console.log('- Each paragraph 80-120 words');
+  console.log('- Structured format with clear sections');
+  
+  console.log('\n🚨 Watch for these issues:');
+  console.log('- Brief mode producing 5 paragraphs (BUG)');
+  console.log('- Normal mode producing 1 paragraph (BUG)');
+  console.log('- Missing headers in brief mode');
+  console.log('- Timeout errors during processing');
 }
 
-// Run the test
-testBriefToggle();
+testBriefToggle().catch(console.error);
