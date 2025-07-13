@@ -51,9 +51,13 @@ export interface ExportOptions {
 }
 
 export const api = {
-  async uploadDocument(file: File): Promise<UploadResponse> {
+  async uploadDocument(file: File, options?: { isBriefMode?: boolean }): Promise<UploadResponse> {
     const formData = new FormData();
     formData.append('document', file);
+    
+    if (options) {
+      formData.append('options', JSON.stringify(options));
+    }
     
     const response = await fetch('/api/documents/upload', {
       method: 'POST',

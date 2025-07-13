@@ -187,6 +187,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "No file uploaded" });
       }
 
+      // Parse options if provided
+      let options: { isBriefMode?: boolean } = {};
+      if (req.body.options) {
+        try {
+          options = JSON.parse(req.body.options);
+        } catch (e) {
+          console.log('Failed to parse options:', e);
+        }
+      }
+
       // Create document record with agent association
       const documentData = {
         agentId: req.session.agentId!,
@@ -202,8 +212,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const document = await storage.createPolicyDocument(documentData);
 
-      // Start processing in background
-      processDocumentAsync(document.id, req.file.buffer, req.file.originalname);
+      // Start processing in background with options
+      processDocumentAsync(document.id, req.file.buffer, req.file.originalname, options);
 
       res.json({ 
         documentId: document.id,
@@ -647,9 +657,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 }
 
 // Background document processing
-async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string) {
+async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string, options: { isBriefMode?: boolean } = {}) {
   try {
-    const result = await documentProcessor.processDocument(buffer, filename);
+    const result = await documentProcessor.processDocument(buffer, filename, options);
     
     // Update the document
     await storage.updatePolicyDocument(documentId, {
@@ -666,7 +676,7 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
         summary: result.summary,
         version: 1, // First version
         isActive: true,
-        processingOptions: {}
+        processingOptions: options
       });
     }
   } catch (error) {

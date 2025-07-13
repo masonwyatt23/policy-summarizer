@@ -398,6 +398,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Changed collapse button position from top-2 to bottom-2 when sidebar is collapsed
   - Prevents overlap with document icon in the collapsed sidebar header
   - Maintains proper functionality while improving visual layout
+- July 06, 2025: Added brief summary option for concise single-paragraph summaries
+  - Added brief/detailed toggle in FileUpload component before document upload
+  - Created new xAI generateBriefSummary method for 150-200 word concise summaries
+  - Updated API and processing pipeline to support brief mode option
+  - Brief mode focuses on key coverage highlights, limits, and essential business value
+  - Maintains professional tone while delivering maximum value in minimum words
+  - Improved policy type extraction and essential information capture
 
 ## Changelog
 - July 01, 2025. Initial setup

@@ -4,6 +4,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { FileText, Upload, CheckCircle, AlertCircle, Loader2, RefreshCw, Clock } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
@@ -24,6 +26,7 @@ interface UploadingFile {
 
 export function FileUpload({ onUploadSuccess }: FileUploadProps) {
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
+  const [isBriefMode, setIsBriefMode] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -48,7 +51,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
           ));
         }, 200);
 
-        const result = await api.uploadDocument(fileData.file);
+        const result = await api.uploadDocument(fileData.file, { isBriefMode });
         
         clearInterval(progressInterval);
         
@@ -85,7 +88,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
     ));
 
     try {
-      const result = await api.uploadDocument(file);
+      const result = await api.uploadDocument(file, { isBriefMode });
       
       setUploadingFiles(prev => prev.map(f => 
         f.file === file 
@@ -201,6 +204,37 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
           <Upload className="w-5 h-5 text-valley-primary mr-2" />
           Upload Policy Document
         </h2>
+        
+        {/* Summary Mode Toggle */}
+        <div className="mb-4">
+          <Label className="text-sm font-medium text-foreground mb-2 block">
+            Summary Format
+          </Label>
+          <div className="flex gap-2">
+            <Button
+              variant={!isBriefMode ? "default" : "outline"}
+              size="sm"
+              onClick={() => setIsBriefMode(false)}
+              className="flex-1"
+            >
+              Detailed Analysis
+            </Button>
+            <Button
+              variant={isBriefMode ? "default" : "outline"}
+              size="sm"
+              onClick={() => setIsBriefMode(true)}
+              className="flex-1"
+            >
+              Brief Summary
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            {isBriefMode 
+              ? "Generate a concise single-paragraph summary focusing on key coverage highlights"
+              : "Generate a comprehensive analysis with detailed coverage breakdown and explanations"
+            }
+          </p>
+        </div>
         
         {/* File Upload Area */}
         <div

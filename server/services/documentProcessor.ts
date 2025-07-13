@@ -5,7 +5,7 @@ import { xaiService } from './xai';
 import { pdfExtractor } from './pdfExtractor';
 
 export class DocumentProcessor {
-  async processDocument(buffer: Buffer, filename: string): Promise<{
+  async processDocument(buffer: Buffer, filename: string, options: { isBriefMode?: boolean } = {}): Promise<{
     extractedText: string;
     policyData: PolicyData;
     summary: string;
@@ -22,9 +22,12 @@ export class DocumentProcessor {
       // Use xAI exclusively for superior policy analysis and summaries
       console.log('🚀 Using xAI (Grok) for comprehensive policy analysis...');
       console.log(`📄 Processing ${extractedText.length} characters of document text`);
+      console.log(`📋 Brief mode: ${options.isBriefMode ? 'enabled' : 'disabled'}`);
       
       const policyData = await xaiService.analyzePolicy(extractedText);
-      const summary = await xaiService.generateEnhancedSummary(policyData);
+      const summary = options.isBriefMode 
+        ? await xaiService.generateBriefSummary(policyData, extractedText)
+        : await xaiService.generateEnhancedSummary(policyData);
       
       console.log('✅ xAI analysis completed with comprehensive results');
 

@@ -369,6 +369,90 @@ Create a transformative 5-paragraph business intelligence summary where the fina
     }
   }
 
+  async generateBriefSummary(policyData: PolicyData, documentText: string): Promise<string> {
+    console.log('🚀 xAI Brief Summary: Creating concise single-paragraph summary');
+
+    try {
+      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'grok-2-1212',
+          messages: [
+            {
+              role: 'system',
+              content: `You are an expert insurance consultant creating concise, high-impact policy summaries for busy business owners. Your goal is to deliver maximum value in minimum words.
+
+BRIEF SUMMARY REQUIREMENTS:
+• Create ONE comprehensive paragraph (150-200 words maximum)
+• Focus on the most critical coverage highlights and business value
+• Include specific dollar amounts and key protection types
+• Mention the most important exclusions or limitations
+• End with clear next steps and contact information
+• Use professional, confident language that builds trust
+• Make it immediately actionable and valuable
+
+CONTENT PRIORITIES:
+1. Policy type and insurer
+2. Key coverage types with limits
+3. Most important benefits for business operations
+4. Critical exclusions to be aware of
+5. Contact information and next steps
+
+TONE: Professional, confident, and solution-focused. Write like a trusted insurance advisor explaining the essentials to a busy business owner.`
+            },
+            {
+              role: 'user',
+              content: `Create a concise, high-impact single paragraph summary (150-200 words) that captures the essential value of this policy for the business owner:
+
+POLICY DATA:
+${JSON.stringify(policyData, null, 2)}
+
+DOCUMENT CONTEXT:
+${documentText.substring(0, 2000)}
+
+Focus on:
+- Core coverage types and limits
+- Key business benefits and protection
+- Most important exclusions to know
+- Clear next steps and contact info
+- Professional tone that builds confidence
+
+Create a paragraph that a busy business owner can read in 30 seconds and immediately understand the value and protection they have.`
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 400
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`xAI API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0]?.message?.content || 'Brief summary generation failed';
+      
+      console.log('✅ xAI Brief Summary: Generated concise summary');
+      return content;
+
+    } catch (error) {
+      console.error('xAI brief summary generation failed:', error);
+      return this.generateFallbackBriefSummary(policyData);
+    }
+  }
+
+  private generateFallbackBriefSummary(policyData: PolicyData): string {
+    const coverageHighlights = policyData.verifiedCoverageDetails?.slice(0, 3).map(c => `${c.type} (${c.limit})`).join(', ') || 'comprehensive business protection';
+    const policyType = policyData.policyType || 'Business Insurance Policy';
+    const insurer = policyData.insurer || 'your insurance provider';
+    
+    return `Your ${policyType} from ${insurer} provides essential business protection including ${coverageHighlights}, safeguarding your operations against customer injuries, property damage, and business interruption. This coverage enables confident business operations with key benefits like ${policyData.keyBenefits?.slice(0, 2).map(b => typeof b === 'string' ? b : b.benefit).join(' and ') || 'liability protection and asset coverage'}. Important exclusions may apply, so review your complete policy documentation for specific terms and conditions. For questions about your coverage or to optimize your protection, contact Valley Trust Insurance at (540) 885-5531 or jake@valleytrustinsurance.com to ensure your policy aligns with your business needs.`;
+  }
+
   private generateFallbackSummary(policyData: PolicyData): string {
     return `Your ${policyData.policyType} policy from ${policyData.insurer} delivers comprehensive business protection combining ${policyData.coverageDetails?.slice(0, 3).map(c => `${c.type} (${c.limit})`).join(', ') || 'essential coverage types'} to safeguard your operations against customer injuries, property damage, employment disputes, and business interruption. This integrated coverage approach means your general liability protection works seamlessly with specialized coverages including ${policyData.coverageDetails?.find(c => c.type.toLowerCase().includes('liquor'))?.type || 'liquor liability'} for alcohol-related incidents and employment practices coverage for workplace disputes, creating a unified shield for your business assets and income.
 
