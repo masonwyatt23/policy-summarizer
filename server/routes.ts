@@ -7,7 +7,7 @@ import { z } from "zod";
 import { storage } from "./storage";
 import { documentProcessor } from "./services/documentProcessor";
 import { pdfGenerator } from "./services/pdfGenerator";
-import * as xaiService from "./services/xai";
+import { xaiService } from "./services/xai";
 import { insertPolicyDocumentSchema, PolicyDataSchema, insertAgentSchema } from "@shared/schema";
 
 // Extend Express session to include agent
