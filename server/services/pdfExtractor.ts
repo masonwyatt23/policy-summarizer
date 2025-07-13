@@ -6,33 +6,57 @@ import path from 'path';
 
 export class PDFExtractor {
   async extractText(buffer: Buffer): Promise<string> {
-    console.log('Starting PDF text extraction...');
+    console.log('Starting optimized PDF text extraction...');
     
-    // Try multiple extraction strategies
-    const strategies = [
+    // Fast strategies first (skip OCR unless necessary)
+    const fastStrategies = [
       () => this.extractWithAdvancedPdfjs(buffer),
       () => this.extractWithBasicPdfjs(buffer),
-      () => this.extractWithLenientOptions(buffer),
-      () => this.extractWithOCR(buffer)
+      () => this.extractWithLenientOptions(buffer)
     ];
 
-    for (let i = 0; i < strategies.length; i++) {
+    for (let i = 0; i < fastStrategies.length; i++) {
       try {
-        console.log(`Trying extraction strategy ${i + 1}...`);
-        const text = await strategies[i]();
+        console.log(`Trying fast extraction strategy ${i + 1}...`);
+        const text = await Promise.race([
+          fastStrategies[i](),
+          new Promise<string>((_, reject) => 
+            setTimeout(() => reject(new Error('PDF extraction timeout')), 15000)
+          )
+        ]);
         
         if (text && text.trim().length >= 20) {
-          console.log(`Strategy ${i + 1} succeeded, extracted ${text.length} characters`);
+          console.log(`Fast strategy ${i + 1} succeeded, extracted ${text.length} characters`);
           return this.cleanText(text);
         }
-        console.log(`Strategy ${i + 1} produced insufficient text (${text?.length || 0} chars)`);
+        console.log(`Fast strategy ${i + 1} produced insufficient text (${text?.length || 0} chars)`);
       } catch (error) {
-        console.log(`Strategy ${i + 1} failed:`, error instanceof Error ? error.message : String(error));
+        console.log(`Fast strategy ${i + 1} failed:`, error instanceof Error ? error.message : String(error));
         continue;
       }
     }
 
-    throw new Error('Document appears to be image-based or contains no readable text. This may be a scanned document that requires OCR processing.');
+    // Only try OCR if fast strategies fail and document is small enough
+    if (buffer.length < 5 * 1024 * 1024) { // 5MB limit for OCR
+      try {
+        console.log('Attempting OCR extraction as fallback...');
+        const ocrText = await Promise.race([
+          this.extractWithOCR(buffer),
+          new Promise<string>((_, reject) => 
+            setTimeout(() => reject(new Error('OCR timeout')), 30000)
+          )
+        ]);
+        
+        if (ocrText && ocrText.trim().length >= 20) {
+          console.log(`OCR succeeded, extracted ${ocrText.length} characters`);
+          return this.cleanText(ocrText);
+        }
+      } catch (error) {
+        console.log('OCR extraction failed:', error instanceof Error ? error.message : String(error));
+      }
+    }
+
+    throw new Error('Document appears to be image-based or contains no readable text. Please ensure the document contains readable text and try again.');
   }
 
   private async extractWithAdvancedPdfjs(buffer: Buffer): Promise<string> {
@@ -47,7 +71,10 @@ export class PDFExtractor {
     const pdfDocument = await loadingTask.promise;
     let fullText = '';
     
-    for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
+    // Limit to first 50 pages for faster processing
+    const maxPages = Math.min(pdfDocument.numPages, 50);
+    
+    for (let pageNumber = 1; pageNumber <= maxPages; pageNumber++) {
       try {
         const page = await pdfDocument.getPage(pageNumber);
         const textContent = await page.getTextContent();
@@ -65,6 +92,12 @@ export class PDFExtractor {
         
         if (pageText.trim().length > 0) {
           fullText += `${pageText}\n\n`;
+        }
+        
+        // Stop if we have enough text for analysis
+        if (fullText.length > 50000) {
+          console.log(`Stopping at page ${pageNumber} - sufficient text extracted`);
+          break;
         }
       } catch (pageError) {
         console.warn(`Failed to extract page ${pageNumber}:`, pageError instanceof Error ? pageError.message : String(pageError));
@@ -86,7 +119,10 @@ export class PDFExtractor {
     const pdfDocument = await loadingTask.promise;
     let fullText = '';
     
-    for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
+    // Limit to first 50 pages for faster processing
+    const maxPages = Math.min(pdfDocument.numPages, 50);
+    
+    for (let pageNumber = 1; pageNumber <= maxPages; pageNumber++) {
       try {
         const page = await pdfDocument.getPage(pageNumber);
         const textContent = await page.getTextContent();
@@ -98,6 +134,12 @@ export class PDFExtractor {
         
         if (pageText.trim()) {
           fullText += pageText + '\n\n';
+        }
+        
+        // Stop if we have enough text for analysis
+        if (fullText.length > 50000) {
+          console.log(`Stopping at page ${pageNumber} - sufficient text extracted`);
+          break;
         }
       } catch (pageError) {
         console.warn(`Basic extraction failed for page ${pageNumber}:`, pageError instanceof Error ? pageError.message : String(pageError));

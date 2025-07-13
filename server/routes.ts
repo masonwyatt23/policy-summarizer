@@ -656,35 +656,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// Background document processing
+// Background document processing with retry logic
 async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string, options: { isBriefMode?: boolean } = {}) {
-  try {
-    const result = await documentProcessor.processDocument(buffer, filename, options);
-    
-    // Update the document
-    await storage.updatePolicyDocument(documentId, {
-      processed: true,
-      extractedData: result.policyData as any,
-      summary: result.summary,
-      processingError: null,
-    });
-
-    // Create summary history entry
-    if (result.summary) {
-      await storage.createSummaryVersion({
-        documentId,
+  const maxRetries = 3;
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`📋 Processing document ${documentId} - Attempt ${attempt}/${maxRetries}`);
+      
+      // Add timeout to the entire processing operation
+      const result = await Promise.race([
+        documentProcessor.processDocument(buffer, filename, options),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Document processing timeout')), 120000) // 2 minutes
+        )
+      ]);
+      
+      console.log(`✅ Document ${documentId} processed successfully on attempt ${attempt}`);
+      
+      // Update the document
+      await storage.updatePolicyDocument(documentId, {
+        processed: true,
+        extractedData: result.policyData as any,
         summary: result.summary,
-        version: 1, // First version
-        isActive: true,
-        processingOptions: options
+        processingError: null,
       });
+
+      // Create summary history entry
+      if (result.summary) {
+        await storage.createSummaryVersion({
+          documentId,
+          summary: result.summary,
+          version: 1, // First version
+          isActive: true,
+          processingOptions: options
+        });
+      }
+      
+      return; // Success - exit retry loop
+      
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Processing failed');
+      console.error(`❌ Processing error for document ${documentId} (attempt ${attempt}/${maxRetries}):`, lastError.message);
+      
+      // Wait before retry (exponential backoff)
+      if (attempt < maxRetries) {
+        const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+        console.log(`⏳ Retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
     }
-  } catch (error) {
-    console.error(`Processing error for document ${documentId}:`, error);
-    
-    await storage.updatePolicyDocument(documentId, {
-      processed: true,
-      processingError: error instanceof Error ? error.message : 'Processing failed',
-    });
   }
+  
+  // All retries failed
+  console.error(`💥 Document ${documentId} processing failed after ${maxRetries} attempts`);
+  await storage.updatePolicyDocument(documentId, {
+    processed: true,
+    processingError: lastError ? lastError.message : 'Processing failed after multiple attempts',
+  });
 }

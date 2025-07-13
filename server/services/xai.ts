@@ -15,8 +15,14 @@ export class XAIService {
   async analyzePolicy(documentText: string): Promise<PolicyData> {
     console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok`);
 
+    // Truncate text if too long to prevent timeouts
+    const maxLength = 150000; // 150k chars limit
+    const processedText = documentText.length > maxLength 
+      ? documentText.substring(0, maxLength) + '\n\n[DOCUMENT TRUNCATED FOR PROCESSING]'
+      : documentText;
+
     try {
-      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+      const fetchPromise = fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -103,7 +109,7 @@ RESPONSE FORMAT: Return a complete JSON object with this exact structure:
               content: `Please analyze this insurance policy document with extreme care for accuracy. I need a conservative, factual analysis that only reports verifiable information.
 
 DOCUMENT TEXT:
-${documentText}
+${processedText}
 
 CRITICAL ACCURACY REQUIREMENTS:
 • ONLY extract information that is explicitly written in the document
@@ -130,6 +136,12 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
           max_tokens: 8000
         })
       });
+
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('xAI API timeout')), 45000)
+      );
+
+      const response = await Promise.race([fetchPromise, timeoutPromise]);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -170,7 +182,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
 
   async generateEnhancedSummary(policyData: PolicyData, clientContext?: string): Promise<string> {
     try {
-      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+      const fetchPromise = fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -312,6 +324,12 @@ Create a transformative 5-paragraph business intelligence summary where the fina
         })
       });
 
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('xAI summary timeout')), 45000)
+      );
+
+      const response = await Promise.race([fetchPromise, timeoutPromise]);
+
       if (!response.ok) {
         throw new Error(`xAI API error: ${response.status}`);
       }
@@ -373,7 +391,7 @@ Create a transformative 5-paragraph business intelligence summary where the fina
     console.log('🚀 xAI Brief Summary: Creating concise single-paragraph summary');
 
     try {
-      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+      const fetchPromise = fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -428,6 +446,12 @@ Create a paragraph that a busy business owner can read in 30 seconds and immedia
           max_tokens: 400
         })
       });
+
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('xAI brief summary timeout')), 30000)
+      );
+
+      const response = await Promise.race([fetchPromise, timeoutPromise]);
 
       if (!response.ok) {
         throw new Error(`xAI API error: ${response.status}`);
