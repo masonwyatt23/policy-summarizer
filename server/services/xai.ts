@@ -168,7 +168,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
     }
   }
 
-  async generateEnhancedSummary(policyData: PolicyData, clientContext?: string): Promise<string> {
+  async generateEnhancedSummary(policyData: PolicyData, clientContext?: string, summaryLength: 'short' | 'detailed' = 'detailed'): Promise<string> {
     try {
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -181,7 +181,33 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
           messages: [
             {
               role: 'system',
-              content: `You are an elite business insurance consultant creating transformative policy summaries that help clients understand the exceptional value and strategic protection their coverage provides.
+              content: summaryLength === 'short' ? 
+                `You are an elite business insurance consultant creating concise, high-value policy summaries that help clients quickly understand their coverage benefits and strategic protection.
+
+MISSION: Create an exceptional single-paragraph summary that demonstrates ROI, builds confidence, and provides actionable business intelligence while maintaining perfect accuracy.
+
+**ENHANCED 1-PARAGRAPH BUSINESS INTELLIGENCE SUMMARY**:
+Create an exceptional single paragraph (150-250 words) that reads like premium business consulting. It should be rich with insights, practical value, and actionable intelligence.
+
+**Single Paragraph Structure:**
+Combine all essential elements into one cohesive, powerful paragraph that includes:
+- Strategic policy foundation and insurer strength
+- Key coverage details with specific amounts and scenarios
+- Business benefits and competitive advantages
+- Operational protection and continuity assurance
+- Strategic insights from coverage boundaries
+- Valley Trust partnership value and support
+
+VALUE-FOCUSED ENHANCEMENTS:
+- Emphasize financial protection amounts and business impact
+- Include specific industry scenarios and practical applications
+- Highlight competitive advantages this coverage provides
+- Demonstrate how coverage enables business confidence and growth
+- Present exclusions as strategic business intelligence
+- Provide immediate, actionable next steps
+- Focus on partnership value and ongoing support`
+                :
+                `You are an elite business insurance consultant creating transformative policy summaries that help clients understand the exceptional value and strategic protection their coverage provides.
 
 MISSION: Create an extraordinary summary that demonstrates ROI, builds confidence, and provides actionable business intelligence while maintaining perfect accuracy.
 
@@ -217,7 +243,54 @@ VALUE-FOCUSED ENHANCEMENTS:
             },
             {
               role: 'user',
-              content: `Create an EXTRAORDINARY, transformative policy summary that demonstrates exceptional business value and provides strategic insights that will genuinely impact this client's success. This should read like premium business consulting that builds confidence and drives action.
+              content: summaryLength === 'short' ?
+                `Create an EXCEPTIONAL, transformative single-paragraph policy summary that demonstrates exceptional business value and provides strategic insights that will genuinely impact this client's success. This should read like premium business consulting that builds confidence and drives action.
+
+POLICY ANALYSIS DATA:
+${JSON.stringify(policyData, null, 2)}
+
+CLIENT BUSINESS INTELLIGENCE:
+• Business Type: ${policyData.insuredName?.includes('GRILLE') || policyData.insuredName?.includes('DEPOT') ? 'Restaurant/Bar operation with high-risk liquor service and customer interaction' : 'Business operation with customer-facing activities'}
+• Industry Success Factors: Customer confidence, operational continuity, financial protection, reputation management
+• Strategic Protection Needs: Comprehensive liability shield, asset protection, income continuity, competitive advantages
+• Business Growth Enablers: Risk management that allows confident expansion and customer-facing operations
+
+ENHANCED SUMMARY REQUIREMENTS:
+• CREATE exactly 1 exceptional paragraph demonstrating substantial business value and strategic protection (150-250 words total)
+• WRITE with executive-level sophistication and actionable business intelligence
+• START with compelling subheader in brackets [Strategic Protection Excellence] that captures business value
+• QUANTIFY financial protection and demonstrate ROI wherever possible
+• ILLUSTRATE coverage with specific, relatable business scenarios that show real-world impact
+• EMPHASIZE competitive advantages and confidence this coverage provides
+• TRANSFORM exclusions into strategic business intelligence and operational guidance
+• INCLUDE Valley Trust partnership value and support information
+
+EXCEPTIONAL CLIENT VALUE FEATURES:
+• Demonstrate how this policy enables business confidence and growth
+• Quantify the financial protection and competitive advantages provided
+• Present practical scenarios that show coverage impact on daily operations
+• Transform technical details into clear business benefits and strategic advantages
+• Provide immediate, actionable insights that improve business operations
+• Show how this coverage positions the business for success and expansion
+• Include contact information and partnership reassurance
+
+KEY BUSINESS BENEFITS TO HIGHLIGHT:
+${policyData.keyBenefits?.map(b => `- ${typeof b === 'string' ? b : b.benefit}${b.description ? ': ' + b.description : ''}`).join('\n')}
+
+${clientContext ? `ADDITIONAL CLIENT CONTEXT: ${clientContext}` : ''}
+
+EXCEPTIONAL BUSINESS INTELLIGENCE REQUIREMENTS:
+• Write 1 substantial paragraph with executive-level business insights (150-250 words)
+• Start with a descriptive subheader in bracket format [Strategic Protection Excellence]
+• Demonstrate tangible business value and competitive advantages throughout
+• Include specific financial protection amounts and practical business scenarios
+• Present coverage as strategic business intelligence that drives operational success
+• Build confidence through expert analysis and actionable recommendations
+• End with supportive contact information and partnership reassurance
+
+Create a transformative single-paragraph business intelligence summary that delivers exceptional client value with actionable insights and immediate business benefits that drive real operational improvements and partnership engagement.`
+                :
+                `Create an EXTRAORDINARY, transformative policy summary that demonstrates exceptional business value and provides strategic insights that will genuinely impact this client's success. This should read like premium business consulting that builds confidence and drives action.
 
 POLICY ANALYSIS DATA:
 ${JSON.stringify(policyData, null, 2)}
@@ -308,7 +381,7 @@ Create a transformative 5-paragraph business intelligence summary where the fina
             }
           ],
           temperature: 0.3,
-          max_tokens: 3000
+          max_tokens: summaryLength === 'short' ? 1000 : 3000
         })
       });
 

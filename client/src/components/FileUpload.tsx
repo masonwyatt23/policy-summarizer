@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface FileUploadProps {
   onUploadSuccess: (documentId: number) => void;
+  summaryLength?: 'short' | 'detailed';
 }
 
 interface UploadingFile {
@@ -22,7 +23,7 @@ interface UploadingFile {
   processingStage?: string;
 }
 
-export function FileUpload({ onUploadSuccess }: FileUploadProps) {
+export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: FileUploadProps) {
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -48,7 +49,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
           ));
         }, 200);
 
-        const result = await api.uploadDocument(fileData.file);
+        const result = await api.uploadDocument(fileData.file, { summaryLength });
         
         clearInterval(progressInterval);
         
@@ -85,7 +86,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
     ));
 
     try {
-      const result = await api.uploadDocument(file);
+      const result = await api.uploadDocument(file, { summaryLength });
       
       setUploadingFiles(prev => prev.map(f => 
         f.file === file 

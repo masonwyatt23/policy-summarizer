@@ -398,6 +398,14 @@ This is a full-stack policy document processing application built for Valley Tru
   - Changed collapse button position from top-2 to bottom-2 when sidebar is collapsed
   - Prevents overlap with document icon in the collapsed sidebar header
   - Maintains proper functionality while improving visual layout
+- July 13, 2025: Implemented dual summary length options for flexible policy summaries
+  - Added summaryLength parameter to ProcessingOptions schema with 'short' and 'detailed' options
+  - Updated xAI service with different prompts for concise 1-paragraph vs comprehensive 5-paragraph summaries
+  - Enhanced FileUpload component to accept and pass summary length options to backend
+  - Modified document processor and upload route to handle summary length preferences
+  - Added UI controls in PolicySummaryGenerator for users to select between summary formats
+  - Short summaries: 150-200 words in single paragraph with [bracketed header]
+  - Detailed summaries: 400-600 words in five paragraphs with [bracketed headers]
 
 ## Changelog
 - July 01, 2025. Initial setup

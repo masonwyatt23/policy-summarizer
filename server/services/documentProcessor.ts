@@ -1,11 +1,11 @@
 import mammoth from 'mammoth';
-import { PolicyData, PolicyDataSchema } from '@shared/schema';
+import { PolicyData, PolicyDataSchema, ProcessingOptions } from '@shared/schema';
 import { extractPolicyData } from './openai-simplified';
 import { xaiService } from './xai';
 import { pdfExtractor } from './pdfExtractor';
 
 export class DocumentProcessor {
-  async processDocument(buffer: Buffer, filename: string): Promise<{
+  async processDocument(buffer: Buffer, filename: string, options?: ProcessingOptions): Promise<{
     extractedText: string;
     policyData: PolicyData;
     summary: string;
@@ -24,7 +24,7 @@ export class DocumentProcessor {
       console.log(`📄 Processing ${extractedText.length} characters of document text`);
       
       const policyData = await xaiService.analyzePolicy(extractedText);
-      const summary = await xaiService.generateEnhancedSummary(policyData);
+      const summary = await xaiService.generateEnhancedSummary(policyData, '', options?.summaryLength || 'detailed');
       
       console.log('✅ xAI analysis completed with comprehensive results');
 

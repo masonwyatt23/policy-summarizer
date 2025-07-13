@@ -179,6 +179,7 @@ export const ProcessingOptionsSchema = z.object({
   generateRecommendations: z.boolean().default(false),
   highlightRisks: z.boolean().default(true),
   includeScenarios: z.boolean().default(false),
+  summaryLength: z.enum(["short", "detailed"]).default("detailed"),
 });
 
 export type ProcessingOptions = z.infer<typeof ProcessingOptionsSchema>;

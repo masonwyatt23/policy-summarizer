@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileUpload } from '@/components/FileUpload';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { SummaryEditor } from '@/components/SummaryEditor';
@@ -34,6 +35,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const [clientName, setClientName] = useState<string>('');
   const [clientLogo, setClientLogo] = useState<string>('');
   const [logoPreview, setLogoPreview] = useState<string>('');
+  const [summaryLength, setSummaryLength] = useState<'short' | 'detailed'>('detailed');
   const { toast } = useToast();
   const { agent, logout, isLoggingOut } = useAuth();
   const queryClient = useQueryClient();
@@ -211,7 +213,10 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Upload Section */}
         <div className="mb-8">
-          <FileUpload onUploadSuccess={handleUploadSuccess} />
+          <FileUpload 
+            onUploadSuccess={handleUploadSuccess} 
+            summaryLength={summaryLength}
+          />
         </div>
 
         {/* Summary Tabs Section */}
@@ -252,16 +257,31 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
           </Tabs>
         </div>
 
-        {/* Client Information Section */}
+        {/* Summary & Client Options Section */}
         {isDocumentReady && (
           <div className="mt-6 bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="flex items-center space-x-2 mb-4">
               <User className="w-5 h-5 text-valley-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Client Information (Optional)</h3>
-              <span className="text-sm text-muted-foreground">- Personalize your PDF export</span>
+              <h3 className="text-lg font-semibold text-foreground">Summary & Client Options</h3>
+              <span className="text-sm text-muted-foreground">- Customize your PDF export</span>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Summary Length Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="summaryLength" className="text-sm font-medium">
+                  Summary Length
+                </Label>
+                <Select value={summaryLength} onValueChange={(value: 'short' | 'detailed') => setSummaryLength(value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select summary length" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="short">Concise (1 paragraph)</SelectItem>
+                    <SelectItem value="detailed">Detailed (5 paragraphs)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {/* Client Name */}
               <div className="space-y-2">
                 <Label htmlFor="clientName" className="text-sm font-medium">

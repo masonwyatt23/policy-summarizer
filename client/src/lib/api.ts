@@ -50,10 +50,19 @@ export interface ExportOptions {
   customSummary?: string;
 }
 
+interface UploadOptions {
+  summaryLength?: 'short' | 'detailed';
+}
+
 export const api = {
-  async uploadDocument(file: File): Promise<UploadResponse> {
+  async uploadDocument(file: File, options?: UploadOptions): Promise<UploadResponse> {
     const formData = new FormData();
     formData.append('document', file);
+    
+    // Add processing options if provided
+    if (options) {
+      formData.append('options', JSON.stringify(options));
+    }
     
     const response = await fetch('/api/documents/upload', {
       method: 'POST',
