@@ -15,14 +15,8 @@ export class XAIService {
   async analyzePolicy(documentText: string): Promise<PolicyData> {
     console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok`);
 
-    // Truncate text if too long to prevent timeouts
-    const maxLength = 150000; // 150k chars limit
-    const processedText = documentText.length > maxLength 
-      ? documentText.substring(0, maxLength) + '\n\n[DOCUMENT TRUNCATED FOR PROCESSING]'
-      : documentText;
-
     try {
-      const fetchPromise = fetch(`${this.baseUrl}/chat/completions`, {
+      const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -33,114 +27,109 @@ export class XAIService {
           messages: [
             {
               role: 'system',
-              content: `You are an expert insurance document analyzer who extracts key policy information accurately and thoroughly. Your goal is to find and extract all important policy details that are present in the document.
+              content: `You are a precise insurance document analyzer who creates accurate, conservative policy summaries for professional insurance agents. Your analysis must be completely factual and verifiable.
 
-INFORMATION EXTRACTION PRIORITIES:
-• ALWAYS extract basic policy information: insured name, policy number, policy period, insurer name
-• THOROUGHLY scan for coverage types, limits, deductibles, and key benefits
-• IDENTIFY all exclusions and limitations mentioned in the document
-• EXTRACT contact information for agents, companies, and customer service
-• FIND business details, addresses, and operational information
-• LOCATE policy effective dates, renewal dates, and billing information
+CRITICAL ACCURACY REQUIREMENTS:
+• ONLY report information that is explicitly stated in the document
+• NEVER make assumptions or fill in missing details
+• ACKNOWLEDGE inconsistencies and discrepancies in the document
+• CLEARLY indicate when information is missing or unclear
+• INCLUDE ALL exclusions and limitations found in the document
+• IDENTIFY and NOTE any contradictory information
+• EXPLICITLY STATE when details cannot be verified from the provided text
 
-EXTRACTION APPROACH:
-• Search the entire document systematically for key information
-• Look for information in headers, footers, declaration pages, and coverage sections
-• Extract business names from "Named Insured", "Insured", or company name fields
-• Find policy numbers from document headers, footers, or identification sections
-• Identify policy periods from effective dates and expiration dates
-• Extract coverage limits from declarations, schedules, or coverage sections
+DOCUMENT ANALYSIS APPROACH:
+• Extract ONLY what is explicitly written in the document
+• Note inconsistencies in names, numbers, dates, or terms
+• Include ALL exclusions and limitations mentioned
+• Identify coverage forms and endorsements by their exact codes
+• Report contact information ONLY if clearly stated
+• Acknowledge incomplete or unclear information
+• Do not assume standard policy terms or industry defaults
 
 ACCURACY STANDARDS:
-• Extract information exactly as written in the document
-• Note variations if the same information appears differently in multiple places
-• Include all exclusions and limitations found
-• Report missing information only when truly not present anywhere
-• Provide comprehensive coverage details when available
+• Use ONLY information that appears verbatim in the document
+• Flag any inconsistencies or unclear information
+• Include exclusions as prominently as coverage details
+• Clearly distinguish between verified facts and unclear information
+• Never extrapolate beyond what is explicitly stated
 
 RESPONSE FORMAT: Return a complete JSON object with this exact structure:
 {
-  "policyType": "string - type of insurance policy (e.g., 'Business General Liability', 'Commercial Auto')",
-  "insurer": "string - insurance company name as written",
-  "policyNumber": "string - policy number as found in document",
-  "policyPeriod": "string - policy effective dates",
-  "insuredName": "string - business/person name being insured",
+  "policyType": "string - actual policy type found in document or 'Not clearly specified'",
+  "insurer": "string - actual insurance company name as written",
+  "policyNumber": "string - policy number as written or 'Inconsistent - see documentInconsistencies'",
+  "policyPeriod": "string - policy dates as written or 'Inconsistent - see documentInconsistencies'",
+  "insuredName": "string - insured name as written or 'Inconsistent - see documentInconsistencies'",
   "documentInconsistencies": [
     {
-      "field": "string - field name if inconsistent",
-      "variations": ["string - different values found"],
+      "field": "string - field name (e.g., 'Policy Number', 'Insured Name')",
+      "variations": ["string - different values found in document"],
       "recommendation": "string - what should be verified"
     }
   ],
   "verifiedCoverageDetails": [
     {
-      "type": "string - coverage type",
-      "formCode": "string - form code if mentioned",
-      "limit": "string - coverage amount",
-      "deductible": "string - deductible amount"
+      "type": "string - coverage type from document",
+      "formCode": "string - actual form code if mentioned",
+      "limit": "string - coverage amount if explicitly stated or 'Not specified in excerpt'",
+      "deductible": "string - deductible if mentioned or 'Not specified in excerpt'"
     }
   ],
   "unverifiedInformation": [
-    "string - information that appears unclear or incomplete"
+    "string - information that cannot be confirmed from the provided document excerpt"
   ],
   "exclusions": [
     {
-      "description": "string - exclusion description",
+      "description": "string - actual exclusion text from document",
       "formCode": "string - exclusion form code if mentioned"
     }
   ],
   "missingInformation": [
-    "string - critical information not found in document"
+    "string - critical information not found in the document excerpt"
   ],
   "importantContacts": [
     {
       "type": "string - contact type",
-      "details": "string - contact information"
+      "details": "string - contact information exactly as written in document"
     }
   ],
-  "documentAccuracyNotes": "string - overall assessment of document quality",
-  "recommendedVerifications": ["string - items that should be verified"]
+  "documentAccuracyNotes": "string - overall assessment of document quality and any OCR or clarity issues",
+  "recommendedVerifications": ["string - items that should be verified with the complete policy"]
 }`
             },
             {
               role: 'user',
-              content: `Please analyze this insurance policy document and extract all key policy information. I need a thorough analysis that finds all available information in the document.
+              content: `Please analyze this insurance policy document with extreme care for accuracy. I need a conservative, factual analysis that only reports verifiable information.
 
 DOCUMENT TEXT:
-${processedText}
+${documentText}
 
-EXTRACTION REQUIREMENTS:
-• FIND and extract the insured business name - look in headers, "Named Insured" fields, or company information
-• LOCATE the policy number - check headers, footers, or identification sections
-• IDENTIFY policy effective dates and periods
-• EXTRACT all coverage types and limits mentioned
-• FIND the insurance company name
-• LOCATE any agent or contact information
-• IDENTIFY all exclusions and limitations
-• EXTRACT deductibles and coverage amounts
-• FIND business addresses and operational details
+CRITICAL ACCURACY REQUIREMENTS:
+• ONLY extract information that is explicitly written in the document
+• IDENTIFY and REPORT any inconsistencies you find (different policy numbers, names, dates, etc.)
+• INCLUDE ALL exclusions and limitations mentioned in the document
+• DO NOT assume or infer coverage limits, deductibles, or terms not explicitly stated
+• CLEARLY mark information as "Not specified in excerpt" when details are missing
+• ACKNOWLEDGE when the document appears to have OCR errors or unclear text
+• REPORT contradictory information instead of trying to resolve it
+• LIST all exclusion forms and endorsements by their exact codes
 
-SEARCH STRATEGY:
-• Scan the entire document systematically for key information
-• Look for information in multiple locations (headers, footers, declarations, schedules)
-• Extract business names from any mention of "Named Insured", "Insured", or company references
-• Find policy numbers from any identification or reference sections
-• Identify dates from effective date fields, renewal information, or term specifications
-• Extract coverage details from schedules, declarations, or coverage sections
+VERIFICATION FOCUS:
+• Extract the insured name exactly as written (note if it appears differently in different places)
+• Extract policy numbers exactly as written (note if they vary across pages)
+• Extract policy periods exactly as written (note if incomplete or inconsistent)
+• Only report coverage limits that are explicitly stated in the text
+• Include ALL exclusions found in the document
+• Note any missing critical information that would typically be in a complete policy
 
-Be thorough and comprehensive - extract all information that is present in the document.`
+Be extremely conservative - it's better to say "Not specified in excerpt" than to make assumptions based on industry standards.`
             }
           ],
           temperature: 0.1,
           max_tokens: 8000
         })
       });
-
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('xAI API timeout')), 45000)
-      );
-
-      const response = await Promise.race([fetchPromise, timeoutPromise]);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -181,7 +170,7 @@ Be thorough and comprehensive - extract all information that is present in the d
 
   async generateEnhancedSummary(policyData: PolicyData, clientContext?: string): Promise<string> {
     try {
-      const fetchPromise = fetch(`${this.baseUrl}/chat/completions`, {
+      const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -323,12 +312,6 @@ Create a transformative 5-paragraph business intelligence summary where the fina
         })
       });
 
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('xAI summary timeout')), 45000)
-      );
-
-      const response = await Promise.race([fetchPromise, timeoutPromise]);
-
       if (!response.ok) {
         throw new Error(`xAI API error: ${response.status}`);
       }
@@ -384,102 +367,6 @@ Create a transformative 5-paragraph business intelligence summary where the fina
       console.error('xAI summary generation failed:', error);
       return this.generateFallbackSummary(policyData);
     }
-  }
-
-  async generateBriefSummary(policyData: PolicyData, documentText: string): Promise<string> {
-    console.log('🚀 xAI Brief Summary: Creating concise single-paragraph summary');
-
-    try {
-      const fetchPromise = fetch(`${this.baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'grok-2-1212',
-          messages: [
-            {
-              role: 'system',
-              content: `You are an expert insurance consultant creating ultra-concise policy summaries for busy business owners. Your goal is to deliver maximum value in minimum words.
-
-BRIEF SUMMARY REQUIREMENTS:
-• Create ONE comprehensive paragraph (150-200 words MAXIMUM)
-• Focus on the most critical coverage highlights and business value
-• Include essential policy details: insured name, policy type, key limits
-• Highlight the most important exclusions that could impact the business
-• Provide actionable insights about coverage value and protection
-• Use clear, professional language that busy owners can quickly understand
-• ABSOLUTELY NO section headers, bullet points, or formatting - just flowing narrative text
-• STRICTLY LIMIT to 150-200 words - be concise and impactful
-
-CONTENT PRIORITIES:
-1. Business name and policy type identification
-2. Most significant coverage protections and limits
-3. Critical exclusions or limitations to be aware of
-4. Key business value and protection benefits
-5. Brief mention of contact information if available
-
-WRITING STYLE:
-• Professional yet accessible tone
-• Clear, concise sentences
-• Focus on practical business impact
-• Avoid insurance jargon
-• Emphasize value and protection
-• KEEP IT SHORT - maximum 200 words
-
-Create a paragraph that a busy business owner can read in 30 seconds and immediately understand the value and protection they have.`
-            },
-            {
-              role: 'user',
-              content: `Based on the following policy analysis, create a concise single-paragraph summary:
-
-POLICY ANALYSIS:
-Insured Name: ${policyData.insuredName}
-Policy Type: ${policyData.policyType}
-Insurer: ${policyData.insurer}
-Policy Number: ${policyData.policyNumber}
-Policy Period: ${policyData.policyPeriod}
-
-Coverage Details: ${policyData.verifiedCoverageDetails?.map(c => `${c.type}: ${c.limit}`).join(', ')}
-Key Exclusions: ${policyData.exclusions?.map(e => e.description).join(', ')}
-
-Create a brief, comprehensive paragraph that captures the essential coverage details and business value in exactly 150-200 words. Focus on what matters most to the business owner.`
-            }
-          ],
-          temperature: 0.3,
-          max_tokens: 300
-        })
-      });
-
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('xAI brief summary timeout')), 30000)
-      );
-
-      const response = await Promise.race([fetchPromise, timeoutPromise]);
-
-      if (!response.ok) {
-        throw new Error(`xAI API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const content = data.choices[0]?.message?.content || 'Brief summary generation failed';
-      
-      console.log('✅ xAI Brief Summary: Generated concise summary');
-      return content;
-
-    } catch (error) {
-      console.error('xAI brief summary generation failed:', error);
-      return this.generateFallbackBriefSummary(policyData);
-    }
-  }
-
-  private generateFallbackBriefSummary(policyData: PolicyData): string {
-    const coverageHighlights = policyData.verifiedCoverageDetails?.slice(0, 3).map(c => `${c.type} (${c.limit})`).join(', ') || 'comprehensive business protection';
-    const policyType = policyData.policyType || 'Business Insurance Policy';
-    const insurer = policyData.insurer || 'your insurance provider';
-    
-    return `Your ${policyType} from ${insurer} provides essential business protection including ${coverageHighlights}, safeguarding your operations against customer injuries, property damage, and business interruption. This coverage enables confident business operations with key benefits like ${policyData.keyBenefits?.slice(0, 2).map(b => typeof b === 'string' ? b : b.benefit).join(' and ') || 'liability protection and asset coverage'}. Important exclusions may apply, so review your complete policy documentation for specific terms and conditions. For questions about your coverage or to optimize your protection, contact Valley Trust Insurance at (540) 885-5531 or jake@valleytrustinsurance.com to ensure your policy aligns with your business needs.`;
   }
 
   private generateFallbackSummary(policyData: PolicyData): string {
