@@ -415,6 +415,15 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added comprehensive error logging and processing status tracking
   - Improved brief summary timeout handling (30s) for faster processing
   - Processing now completes in under 2 minutes even for complex documents
+- July 13, 2025: Fixed information extraction regression and brief summary functionality
+  - Completely overhauled xAI analysis prompts to be much more effective at extracting basic information
+  - Enhanced prompts to systematically search for business names, policy numbers, and coverage details
+  - Changed from overly conservative "don't assume anything" to "extract all available information"
+  - Added specific instructions to find information in headers, footers, declarations, and schedules
+  - Fixed brief summary toggle - now properly generates 150-200 word concise summaries
+  - Enhanced brief summary prompts with strict word limits and better structure
+  - Improved token limits for brief summaries (300 tokens) for more concise output
+  - System now correctly extracts policy information and generates appropriate summary length
 
 ## Changelog
 - July 01, 2025. Initial setup

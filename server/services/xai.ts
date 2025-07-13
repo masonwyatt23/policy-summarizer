@@ -33,103 +33,102 @@ export class XAIService {
           messages: [
             {
               role: 'system',
-              content: `You are a precise insurance document analyzer who creates accurate, conservative policy summaries for professional insurance agents. Your analysis must be completely factual and verifiable.
+              content: `You are an expert insurance document analyzer who extracts key policy information accurately and thoroughly. Your goal is to find and extract all important policy details that are present in the document.
 
-CRITICAL ACCURACY REQUIREMENTS:
-• ONLY report information that is explicitly stated in the document
-• NEVER make assumptions or fill in missing details
-• ACKNOWLEDGE inconsistencies and discrepancies in the document
-• CLEARLY indicate when information is missing or unclear
-• INCLUDE ALL exclusions and limitations found in the document
-• IDENTIFY and NOTE any contradictory information
-• EXPLICITLY STATE when details cannot be verified from the provided text
+INFORMATION EXTRACTION PRIORITIES:
+• ALWAYS extract basic policy information: insured name, policy number, policy period, insurer name
+• THOROUGHLY scan for coverage types, limits, deductibles, and key benefits
+• IDENTIFY all exclusions and limitations mentioned in the document
+• EXTRACT contact information for agents, companies, and customer service
+• FIND business details, addresses, and operational information
+• LOCATE policy effective dates, renewal dates, and billing information
 
-DOCUMENT ANALYSIS APPROACH:
-• Extract ONLY what is explicitly written in the document
-• Note inconsistencies in names, numbers, dates, or terms
-• Include ALL exclusions and limitations mentioned
-• Identify coverage forms and endorsements by their exact codes
-• Report contact information ONLY if clearly stated
-• Acknowledge incomplete or unclear information
-• Do not assume standard policy terms or industry defaults
+EXTRACTION APPROACH:
+• Search the entire document systematically for key information
+• Look for information in headers, footers, declaration pages, and coverage sections
+• Extract business names from "Named Insured", "Insured", or company name fields
+• Find policy numbers from document headers, footers, or identification sections
+• Identify policy periods from effective dates and expiration dates
+• Extract coverage limits from declarations, schedules, or coverage sections
 
 ACCURACY STANDARDS:
-• Use ONLY information that appears verbatim in the document
-• Flag any inconsistencies or unclear information
-• Include exclusions as prominently as coverage details
-• Clearly distinguish between verified facts and unclear information
-• Never extrapolate beyond what is explicitly stated
+• Extract information exactly as written in the document
+• Note variations if the same information appears differently in multiple places
+• Include all exclusions and limitations found
+• Report missing information only when truly not present anywhere
+• Provide comprehensive coverage details when available
 
 RESPONSE FORMAT: Return a complete JSON object with this exact structure:
 {
-  "policyType": "string - actual policy type found in document or 'Not clearly specified'",
-  "insurer": "string - actual insurance company name as written",
-  "policyNumber": "string - policy number as written or 'Inconsistent - see documentInconsistencies'",
-  "policyPeriod": "string - policy dates as written or 'Inconsistent - see documentInconsistencies'",
-  "insuredName": "string - insured name as written or 'Inconsistent - see documentInconsistencies'",
+  "policyType": "string - type of insurance policy (e.g., 'Business General Liability', 'Commercial Auto')",
+  "insurer": "string - insurance company name as written",
+  "policyNumber": "string - policy number as found in document",
+  "policyPeriod": "string - policy effective dates",
+  "insuredName": "string - business/person name being insured",
   "documentInconsistencies": [
     {
-      "field": "string - field name (e.g., 'Policy Number', 'Insured Name')",
-      "variations": ["string - different values found in document"],
+      "field": "string - field name if inconsistent",
+      "variations": ["string - different values found"],
       "recommendation": "string - what should be verified"
     }
   ],
   "verifiedCoverageDetails": [
     {
-      "type": "string - coverage type from document",
-      "formCode": "string - actual form code if mentioned",
-      "limit": "string - coverage amount if explicitly stated or 'Not specified in excerpt'",
-      "deductible": "string - deductible if mentioned or 'Not specified in excerpt'"
+      "type": "string - coverage type",
+      "formCode": "string - form code if mentioned",
+      "limit": "string - coverage amount",
+      "deductible": "string - deductible amount"
     }
   ],
   "unverifiedInformation": [
-    "string - information that cannot be confirmed from the provided document excerpt"
+    "string - information that appears unclear or incomplete"
   ],
   "exclusions": [
     {
-      "description": "string - actual exclusion text from document",
+      "description": "string - exclusion description",
       "formCode": "string - exclusion form code if mentioned"
     }
   ],
   "missingInformation": [
-    "string - critical information not found in the document excerpt"
+    "string - critical information not found in document"
   ],
   "importantContacts": [
     {
       "type": "string - contact type",
-      "details": "string - contact information exactly as written in document"
+      "details": "string - contact information"
     }
   ],
-  "documentAccuracyNotes": "string - overall assessment of document quality and any OCR or clarity issues",
-  "recommendedVerifications": ["string - items that should be verified with the complete policy"]
+  "documentAccuracyNotes": "string - overall assessment of document quality",
+  "recommendedVerifications": ["string - items that should be verified"]
 }`
             },
             {
               role: 'user',
-              content: `Please analyze this insurance policy document with extreme care for accuracy. I need a conservative, factual analysis that only reports verifiable information.
+              content: `Please analyze this insurance policy document and extract all key policy information. I need a thorough analysis that finds all available information in the document.
 
 DOCUMENT TEXT:
 ${processedText}
 
-CRITICAL ACCURACY REQUIREMENTS:
-• ONLY extract information that is explicitly written in the document
-• IDENTIFY and REPORT any inconsistencies you find (different policy numbers, names, dates, etc.)
-• INCLUDE ALL exclusions and limitations mentioned in the document
-• DO NOT assume or infer coverage limits, deductibles, or terms not explicitly stated
-• CLEARLY mark information as "Not specified in excerpt" when details are missing
-• ACKNOWLEDGE when the document appears to have OCR errors or unclear text
-• REPORT contradictory information instead of trying to resolve it
-• LIST all exclusion forms and endorsements by their exact codes
+EXTRACTION REQUIREMENTS:
+• FIND and extract the insured business name - look in headers, "Named Insured" fields, or company information
+• LOCATE the policy number - check headers, footers, or identification sections
+• IDENTIFY policy effective dates and periods
+• EXTRACT all coverage types and limits mentioned
+• FIND the insurance company name
+• LOCATE any agent or contact information
+• IDENTIFY all exclusions and limitations
+• EXTRACT deductibles and coverage amounts
+• FIND business addresses and operational details
 
-VERIFICATION FOCUS:
-• Extract the insured name exactly as written (note if it appears differently in different places)
-• Extract policy numbers exactly as written (note if they vary across pages)
-• Extract policy periods exactly as written (note if incomplete or inconsistent)
-• Only report coverage limits that are explicitly stated in the text
-• Include ALL exclusions found in the document
-• Note any missing critical information that would typically be in a complete policy
+SEARCH STRATEGY:
+• Scan the entire document systematically for key information
+• Look for information in multiple locations (headers, footers, declarations, schedules)
+• Extract business names from any mention of "Named Insured", "Insured", or company references
+• Find policy numbers from any identification or reference sections
+• Identify dates from effective date fields, renewal information, or term specifications
+• Extract coverage details from schedules, declarations, or coverage sections
 
-Be extremely conservative - it's better to say "Not specified in excerpt" than to make assumptions based on industry standards.`
+Be thorough and comprehensive - extract all information that is present in the document.`
             }
           ],
           temperature: 0.1,
@@ -402,48 +401,54 @@ Create a transformative 5-paragraph business intelligence summary where the fina
           messages: [
             {
               role: 'system',
-              content: `You are an expert insurance consultant creating concise, high-impact policy summaries for busy business owners. Your goal is to deliver maximum value in minimum words.
+              content: `You are an expert insurance consultant creating ultra-concise policy summaries for busy business owners. Your goal is to deliver maximum value in minimum words.
 
 BRIEF SUMMARY REQUIREMENTS:
-• Create ONE comprehensive paragraph (150-200 words maximum)
+• Create ONE comprehensive paragraph (150-200 words MAXIMUM)
 • Focus on the most critical coverage highlights and business value
-• Include specific dollar amounts and key protection types
-• Mention the most important exclusions or limitations
-• End with clear next steps and contact information
-• Use professional, confident language that builds trust
-• Make it immediately actionable and valuable
+• Include essential policy details: insured name, policy type, key limits
+• Highlight the most important exclusions that could impact the business
+• Provide actionable insights about coverage value and protection
+• Use clear, professional language that busy owners can quickly understand
+• ABSOLUTELY NO section headers, bullet points, or formatting - just flowing narrative text
+• STRICTLY LIMIT to 150-200 words - be concise and impactful
 
 CONTENT PRIORITIES:
-1. Policy type and insurer
-2. Key coverage types with limits
-3. Most important benefits for business operations
-4. Critical exclusions to be aware of
-5. Contact information and next steps
+1. Business name and policy type identification
+2. Most significant coverage protections and limits
+3. Critical exclusions or limitations to be aware of
+4. Key business value and protection benefits
+5. Brief mention of contact information if available
 
-TONE: Professional, confident, and solution-focused. Write like a trusted insurance advisor explaining the essentials to a busy business owner.`
+WRITING STYLE:
+• Professional yet accessible tone
+• Clear, concise sentences
+• Focus on practical business impact
+• Avoid insurance jargon
+• Emphasize value and protection
+• KEEP IT SHORT - maximum 200 words
+
+Create a paragraph that a busy business owner can read in 30 seconds and immediately understand the value and protection they have.`
             },
             {
               role: 'user',
-              content: `Create a concise, high-impact single paragraph summary (150-200 words) that captures the essential value of this policy for the business owner:
+              content: `Based on the following policy analysis, create a concise single-paragraph summary:
 
-POLICY DATA:
-${JSON.stringify(policyData, null, 2)}
+POLICY ANALYSIS:
+Insured Name: ${policyData.insuredName}
+Policy Type: ${policyData.policyType}
+Insurer: ${policyData.insurer}
+Policy Number: ${policyData.policyNumber}
+Policy Period: ${policyData.policyPeriod}
 
-DOCUMENT CONTEXT:
-${documentText.substring(0, 2000)}
+Coverage Details: ${policyData.verifiedCoverageDetails?.map(c => `${c.type}: ${c.limit}`).join(', ')}
+Key Exclusions: ${policyData.exclusions?.map(e => e.description).join(', ')}
 
-Focus on:
-- Core coverage types and limits
-- Key business benefits and protection
-- Most important exclusions to know
-- Clear next steps and contact info
-- Professional tone that builds confidence
-
-Create a paragraph that a busy business owner can read in 30 seconds and immediately understand the value and protection they have.`
+Create a brief, comprehensive paragraph that captures the essential coverage details and business value in exactly 150-200 words. Focus on what matters most to the business owner.`
             }
           ],
           temperature: 0.3,
-          max_tokens: 400
+          max_tokens: 300
         })
       });
 
