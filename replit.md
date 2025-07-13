@@ -414,6 +414,7 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added UI notification when document summary format doesn't match selected format
   - Implemented automatic detection of document's original processing options
   - Enhanced backend to return processingOptions field for format comparison
+  - Fixed issue where processingOptions weren't being saved to database - now documents properly remember their processing format
 
 ## Changelog
 - July 01, 2025. Initial setup

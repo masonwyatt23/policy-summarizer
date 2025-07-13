@@ -725,6 +725,7 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
       extractedData: result.policyData as any,
       summary: result.summary,
       processingError: null,
+      processingOptions: JSON.stringify(options || {}),
     });
 
     // Create summary history entry
