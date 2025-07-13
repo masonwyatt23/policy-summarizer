@@ -192,9 +192,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.body.options) {
         try {
           processingOptions = JSON.parse(req.body.options);
+          console.log("📋 Processing options received:", processingOptions);
         } catch (e) {
           console.log("Failed to parse processing options:", e);
         }
+      } else {
+        console.log("📋 No processing options provided, using defaults");
       }
 
       // Create document record with agent association

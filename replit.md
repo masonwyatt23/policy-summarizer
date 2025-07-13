@@ -406,6 +406,9 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added UI controls in PolicySummaryGenerator for users to select between summary formats
   - Short summaries: 150-200 words in single paragraph with [bracketed header]
   - Detailed summaries: 400-600 words in five paragraphs with [bracketed headers]
+  - Fixed summary length selection workflow: moved selector above upload section for pre-processing selection
+  - Enhanced debugging throughout pipeline to track summary length preferences
+  - Fixed retry mechanism in xAI service to respect original summaryLength parameter
 
 ## Changelog
 - July 01, 2025. Initial setup

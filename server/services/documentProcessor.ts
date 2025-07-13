@@ -22,11 +22,16 @@ export class DocumentProcessor {
       // Use xAI exclusively for superior policy analysis and summaries
       console.log('🚀 Using xAI (Grok) for comprehensive policy analysis...');
       console.log(`📄 Processing ${extractedText.length} characters of document text`);
+      console.log(`📋 Summary length requested: ${options?.summaryLength || 'detailed'}`);
       
       const policyData = await xaiService.analyzePolicy(extractedText);
-      const summary = await xaiService.generateEnhancedSummary(policyData, '', options?.summaryLength || 'detailed');
+      const summaryLength = options?.summaryLength || 'detailed';
+      
+      console.log(`📝 Generating ${summaryLength} summary...`);
+      const summary = await xaiService.generateEnhancedSummary(policyData, '', summaryLength);
       
       console.log('✅ xAI analysis completed with comprehensive results');
+      console.log(`📊 Summary format: ${summaryLength}, Length: ${summary.length} characters`);
 
       return {
         extractedText,

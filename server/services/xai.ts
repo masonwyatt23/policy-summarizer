@@ -170,6 +170,8 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
 
   async generateEnhancedSummary(policyData: PolicyData, clientContext?: string, summaryLength: 'short' | 'detailed' = 'detailed'): Promise<string> {
     try {
+      console.log(`📝 xAI generating ${summaryLength} summary for ${policyData.policyType || 'unknown'} policy`);
+      
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -395,10 +397,12 @@ Create a transformative 5-paragraph business intelligence summary where the fina
       // Check if response appears truncated (incomplete sentence or section)
       const lastChar = content.trim().slice(-1);
       const endsWithPunctuation = ['.', '!', '?', ':'].includes(lastChar);
-      const hasCompleteStructure = content.split('\n\n').length >= 4; // Check for multiple paragraphs
+      const hasCompleteStructure = summaryLength === 'short' ? 
+        content.split('\n').length >= 1 : // Short format needs at least 1 paragraph
+        content.split('\n\n').length >= 4; // Detailed format needs multiple paragraphs
       
       if (!endsWithPunctuation || !hasCompleteStructure) {
-        console.warn('Summary appears truncated, attempting to regenerate with lower token count...');
+        console.warn(`${summaryLength} summary appears truncated, attempting to regenerate...`);
         
         // Try again with explicit instruction to complete the summary
         const retryResponse = await fetch(`${this.baseUrl}/chat/completions`, {
@@ -412,15 +416,19 @@ Create a transformative 5-paragraph business intelligence summary where the fina
             messages: [
               {
                 role: 'system',
-                content: 'Create a cohesive 5-paragraph narrative summary. No formatting, headers, or bullets. Target 400-600 words of flowing prose.'
+                content: summaryLength === 'short' ?
+                  'Create a cohesive single-paragraph summary. No formatting, headers, or bullets. Target 150-250 words of flowing prose.' :
+                  'Create a cohesive 5-paragraph narrative summary. No formatting, headers, or bullets. Target 400-600 words of flowing prose.'
               },
               {
                 role: 'user',
-                content: `Create a cohesive 5-paragraph professional summary (400-600 words, no formatting): ${JSON.stringify(policyData, null, 2)}`
+                content: summaryLength === 'short' ?
+                  `Create a cohesive single-paragraph professional summary (150-250 words, no formatting): ${JSON.stringify(policyData, null, 2)}` :
+                  `Create a cohesive 5-paragraph professional summary (400-600 words, no formatting): ${JSON.stringify(policyData, null, 2)}`
               }
             ],
             temperature: 0.3,
-            max_tokens: 3000
+            max_tokens: summaryLength === 'short' ? 1000 : 3000
           })
         });
         
@@ -428,7 +436,7 @@ Create a transformative 5-paragraph business intelligence summary where the fina
           const retryData = await retryResponse.json();
           const retryContent = retryData.choices[0]?.message?.content;
           if (retryContent && retryContent.length > content.length) {
-            console.log('Successfully generated complete summary on retry');
+            console.log(`Successfully generated complete ${summaryLength} summary on retry`);
             return retryContent;
           }
         }

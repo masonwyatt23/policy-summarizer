@@ -211,6 +211,51 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Summary Length Selection - Before Upload */}
+        <div className="mb-6">
+          <Card className="bg-card border border-border shadow-sm">
+            <div className="p-4">
+              <div className="flex items-center space-x-2 mb-3">
+                <FileText className="w-5 h-5 text-valley-primary" />
+                <h3 className="text-lg font-semibold text-foreground">Summary Format</h3>
+                <span className="text-sm text-muted-foreground">- Choose your preferred summary length</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="summaryLength" className="text-sm font-medium">
+                    Select Summary Length
+                  </Label>
+                  <Select value={summaryLength} onValueChange={(value: 'short' | 'detailed') => setSummaryLength(value)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select summary length" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="short">Concise (1 paragraph, 150-200 words)</SelectItem>
+                      <SelectItem value="detailed">Detailed (5 paragraphs, 400-600 words)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">
+                    Selected Format
+                  </Label>
+                  <div className="p-3 bg-muted rounded-lg">
+                    <div className="text-sm font-medium text-foreground">
+                      {summaryLength === 'short' ? 'Concise Summary' : 'Detailed Summary'}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {summaryLength === 'short' 
+                        ? 'Single paragraph format ideal for quick reviews and executive briefings'
+                        : 'Comprehensive 5-paragraph format with detailed analysis and recommendations'
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+
         {/* Upload Section */}
         <div className="mb-8">
           <FileUpload 
@@ -257,31 +302,16 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
           </Tabs>
         </div>
 
-        {/* Summary & Client Options Section */}
+        {/* Client Options Section */}
         {isDocumentReady && (
           <div className="mt-6 bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="flex items-center space-x-2 mb-4">
               <User className="w-5 h-5 text-valley-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Summary & Client Options</h3>
-              <span className="text-sm text-muted-foreground">- Customize your PDF export</span>
+              <h3 className="text-lg font-semibold text-foreground">Client Information (Optional)</h3>
+              <span className="text-sm text-muted-foreground">- Personalize your PDF export</span>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Summary Length Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="summaryLength" className="text-sm font-medium">
-                  Summary Length
-                </Label>
-                <Select value={summaryLength} onValueChange={(value: 'short' | 'detailed') => setSummaryLength(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select summary length" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="short">Concise (1 paragraph)</SelectItem>
-                    <SelectItem value="detailed">Detailed (5 paragraphs)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Client Name */}
               <div className="space-y-2">
                 <Label htmlFor="clientName" className="text-sm font-medium">
