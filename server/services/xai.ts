@@ -168,11 +168,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
     }
   }
 
-  async generateEnhancedSummary(policyData: PolicyData, summaryType: 'normal' | 'brief' = 'normal', clientContext?: string): Promise<string> {
-    console.log(`🔍 xAI Summary Generation: Using ${summaryType} format`);
-    console.log(`📋 Brief mode active: ${summaryType === 'brief'}`);
-    console.log(`🎯 Expected output: ${summaryType === 'brief' ? 'Single paragraph with [Executive Policy Analysis] header' : '5-paragraph structured summary'}`);
-    
+  async generateEnhancedSummary(policyData: PolicyData, clientContext?: string): Promise<string> {
     try {
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -185,39 +181,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
           messages: [
             {
               role: 'system',
-              content: (() => {
-                const prompt = summaryType === 'brief' 
-                  ? `You are an elite business insurance consultant creating a concise, comprehensive policy summary that delivers maximum value in minimal space.
-
-MISSION: Create an exceptional single-paragraph summary that demonstrates ROI, builds confidence, and provides actionable business intelligence while maintaining perfect accuracy.
-
-**BRIEF COMPREHENSIVE BUSINESS INTELLIGENCE SUMMARY**:
-Create a comprehensive single paragraph (400-600 words) that reads like premium business consulting. The paragraph should be rich with insights, practical value, and actionable intelligence that flows naturally from one topic to the next.
-
-**Content Structure (all within one flowing paragraph):**
-- Begin with strategic policy foundation and executive-level overview
-- Seamlessly transition into liability protection with specific dollar amounts and real-world scenarios
-- Flow into asset protection and continuity assurance with practical examples
-- Naturally incorporate coverage boundaries as strategic business intelligence
-- Conclude with expert recommendations and partnership value
-
-**Enhanced Brief Format Requirements:**
-- ONE comprehensive paragraph containing all essential information
-- 400-600 words of dense, valuable content
-- Seamless flow between topics without section breaks
-- Integration of all coverage types within natural narrative
-- Professional business consulting tone throughout
-- Include subheader in brackets [Executive Policy Analysis] at the beginning
-
-VALUE-FOCUSED ENHANCEMENTS:
-- Emphasize financial protection amounts and business impact
-- Include specific industry scenarios and practical applications  
-- Highlight competitive advantages this coverage provides
-- Demonstrate how coverage enables business confidence and growth
-- Present exclusions as strategic business intelligence
-- Provide immediate, actionable next steps
-- Focus on partnership value and ongoing support`
-                : `You are an elite business insurance consultant creating transformative policy summaries that help clients understand the exceptional value and strategic protection their coverage provides.
+              content: `You are an elite business insurance consultant creating transformative policy summaries that help clients understand the exceptional value and strategic protection their coverage provides.
 
 MISSION: Create an extraordinary summary that demonstrates ROI, builds confidence, and provides actionable business intelligence while maintaining perfect accuracy.
 
@@ -249,19 +213,11 @@ VALUE-FOCUSED ENHANCEMENTS:
 - Demonstrate how coverage enables business confidence and growth
 - Present exclusions as strategic business intelligence
 - Provide immediate, actionable next steps
-- Focus on partnership value and ongoing support`;
-                
-                console.log(`🎯 Selected Prompt Type: ${summaryType}`);
-                console.log(`📝 Prompt Preview: ${prompt.substring(0, 100)}...`);
-                
-                return prompt;
-              })()
+- Focus on partnership value and ongoing support`
             },
             {
               role: 'user',
               content: `Create an EXTRAORDINARY, transformative policy summary that demonstrates exceptional business value and provides strategic insights that will genuinely impact this client's success. This should read like premium business consulting that builds confidence and drives action.
-
-SUMMARY TYPE: ${summaryType.toUpperCase()}
 
 POLICY ANALYSIS DATA:
 ${JSON.stringify(policyData, null, 2)}
@@ -363,27 +319,15 @@ Create a transformative 5-paragraph business intelligence summary where the fina
       const data = await response.json();
       const content = data.choices[0]?.message?.content || 'Summary generation failed';
       
-      console.log(`📝 xAI Generated Content Length: ${content.length} characters`);
-      console.log(`📋 First 200 characters: ${content.substring(0, 200)}...`);
-      
       // Check if response appears truncated (incomplete sentence or section)
       const lastChar = content.trim().slice(-1);
       const endsWithPunctuation = ['.', '!', '?', ':'].includes(lastChar);
-      const hasCompleteStructure = summaryType === 'brief' 
-        ? content.includes('[') && content.length > 200  // Brief mode: check for subheader and minimum length
-        : content.split('\n\n').length >= 4; // Normal mode: check for multiple paragraphs
-      
-      console.log(`🔍 Content Analysis: Ends with punctuation: ${endsWithPunctuation}, Has complete structure: ${hasCompleteStructure}`);
-      
-      if (summaryType === 'brief') {
-        const paragraphCount = content.split('\n\n').filter(p => p.trim().length > 0).length;
-        console.log(`📊 Brief Mode Analysis: Paragraph count: ${paragraphCount}, Has bracket header: ${content.includes('[')}`);
-      }
+      const hasCompleteStructure = content.split('\n\n').length >= 4; // Check for multiple paragraphs
       
       if (!endsWithPunctuation || !hasCompleteStructure) {
         console.warn('Summary appears truncated, attempting to regenerate with lower token count...');
         
-        // Try again with explicit instruction to complete the summary (respecting summaryType)
+        // Try again with explicit instruction to complete the summary
         const retryResponse = await fetch(`${this.baseUrl}/chat/completions`, {
           method: 'POST',
           headers: {
@@ -395,15 +339,11 @@ Create a transformative 5-paragraph business intelligence summary where the fina
             messages: [
               {
                 role: 'system',
-                content: summaryType === 'brief' 
-                  ? 'Create a cohesive single-paragraph summary with [Executive Policy Analysis] subheader. Target 400-600 words of flowing prose in one comprehensive paragraph.'
-                  : 'Create a cohesive 5-paragraph narrative summary. No formatting, headers, or bullets. Target 400-600 words of flowing prose.'
+                content: 'Create a cohesive 5-paragraph narrative summary. No formatting, headers, or bullets. Target 400-600 words of flowing prose.'
               },
               {
                 role: 'user',
-                content: summaryType === 'brief'
-                  ? `Create a single comprehensive paragraph professional summary (400-600 words) with [Executive Policy Analysis] subheader: ${JSON.stringify(policyData, null, 2)}`
-                  : `Create a cohesive 5-paragraph professional summary (400-600 words, no formatting): ${JSON.stringify(policyData, null, 2)}`
+                content: `Create a cohesive 5-paragraph professional summary (400-600 words, no formatting): ${JSON.stringify(policyData, null, 2)}`
               }
             ],
             temperature: 0.3,

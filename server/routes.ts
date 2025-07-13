@@ -187,9 +187,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "No file uploaded" });
       }
 
-      // Extract summaryType from form data
-      const summaryType = req.body.summaryType || 'normal';
-
       // Create document record with agent association
       const documentData = {
         agentId: req.session.agentId!,
@@ -205,8 +202,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const document = await storage.createPolicyDocument(documentData);
 
-      // Start processing in background with summaryType
-      processDocumentAsync(document.id, req.file.buffer, req.file.originalname, summaryType);
+      // Start processing in background
+      processDocumentAsync(document.id, req.file.buffer, req.file.originalname);
 
       res.json({ 
         documentId: document.id,
@@ -650,9 +647,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 }
 
 // Background document processing
-async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string, summaryType: 'normal' | 'brief' = 'normal') {
+async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string) {
   try {
-    const result = await documentProcessor.processDocument(buffer, filename, summaryType);
+    const result = await documentProcessor.processDocument(buffer, filename);
     
     // Update the document
     await storage.updatePolicyDocument(documentId, {
@@ -669,7 +666,7 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
         summary: result.summary,
         version: 1, // First version
         isActive: true,
-        processingOptions: { summaryType }
+        processingOptions: {}
       });
     }
   } catch (error) {

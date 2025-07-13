@@ -8,42 +8,18 @@ export class PDFExtractor {
   async extractText(buffer: Buffer): Promise<string> {
     console.log('Starting PDF text extraction...');
     
-    // Add overall timeout to prevent hanging
-    const extractionTimeout = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('PDF extraction timeout - process took too long')), 120000); // 2 minutes max
-    });
-    
-    const extractionProcess = this.performExtraction(buffer);
-    
-    try {
-      return await Promise.race([extractionProcess, extractionTimeout]);
-    } catch (error) {
-      console.error('PDF extraction failed:', error);
-      throw error;
-    }
-  }
-
-  private async performExtraction(buffer: Buffer): Promise<string> {
-    // Try multiple extraction strategies (OCR disabled to prevent timeout)
+    // Try multiple extraction strategies
     const strategies = [
       () => this.extractWithAdvancedPdfjs(buffer),
       () => this.extractWithBasicPdfjs(buffer),
       () => this.extractWithLenientOptions(buffer),
-      // OCR disabled temporarily to prevent timeout issues
-      // () => this.extractWithOCR(buffer)
+      () => this.extractWithOCR(buffer)
     ];
 
     for (let i = 0; i < strategies.length; i++) {
       try {
         console.log(`Trying extraction strategy ${i + 1}...`);
-        
-        // Add timeout for each strategy to prevent hanging
-        const strategyTimeout = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error(`Strategy ${i + 1} timeout`)), 
-            i < 3 ? 30000 : 60000); // 30s for regular strategies, 60s for OCR
-        });
-        
-        const text = await Promise.race([strategies[i](), strategyTimeout]);
+        const text = await strategies[i]();
         
         if (text && text.trim().length >= 20) {
           console.log(`Strategy ${i + 1} succeeded, extracted ${text.length} characters`);
@@ -233,31 +209,22 @@ export class PDFExtractor {
         throw new Error('No images generated from PDF');
       }
       
-      // Limit OCR processing to first 3 pages to prevent timeout
-      const maxPages = Math.min(imageFiles.length, 3);
-      console.log(`Processing ${maxPages} pages with OCR (limited to prevent timeout)...`);
+      console.log(`Processing ${imageFiles.length} pages with OCR...`);
       
-      // Extract text from each image using Tesseract with timeout
+      // Extract text from each image using Tesseract
       const extractedTexts = [];
       
-      for (let i = 0; i < maxPages; i++) {
-        const imageFile = imageFiles[i];
+      for (const imageFile of imageFiles) {
         const imagePath = path.join(tempDir, imageFile);
         
         try {
           console.log(`OCR processing page: ${imageFile}`);
           
-          // Add timeout wrapper for OCR processing
-          const text = await Promise.race([
-            tesseract.recognize(imagePath, {
-              lang: 'eng',
-              oem: 1,
-              psm: 6
-            }),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('OCR timeout')), 15000)
-            )
-          ]);
+          const text = await tesseract.recognize(imagePath, {
+            lang: 'eng',
+            oem: 1,
+            psm: 6
+          });
           
           if (text && text.trim().length > 10) {
             extractedTexts.push(text.trim());

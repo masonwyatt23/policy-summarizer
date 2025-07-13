@@ -5,7 +5,7 @@ import { xaiService } from './xai';
 import { pdfExtractor } from './pdfExtractor';
 
 export class DocumentProcessor {
-  async processDocument(buffer: Buffer, filename: string, summaryType: 'normal' | 'brief' = 'normal'): Promise<{
+  async processDocument(buffer: Buffer, filename: string): Promise<{
     extractedText: string;
     policyData: PolicyData;
     summary: string;
@@ -17,14 +17,14 @@ export class DocumentProcessor {
         throw new Error('No text content could be extracted from the document');
       }
 
+
+
       // Use xAI exclusively for superior policy analysis and summaries
       console.log('🚀 Using xAI (Grok) for comprehensive policy analysis...');
       console.log(`📄 Processing ${extractedText.length} characters of document text`);
-      console.log(`📋 Summary type: ${summaryType}`);
       
       const policyData = await xaiService.analyzePolicy(extractedText);
-      console.log(`🔧 DocumentProcessor: Passing summaryType '${summaryType}' to xAI service`);
-      const summary = await xaiService.generateEnhancedSummary(policyData, summaryType);
+      const summary = await xaiService.generateEnhancedSummary(policyData);
       
       console.log('✅ xAI analysis completed with comprehensive results');
 
