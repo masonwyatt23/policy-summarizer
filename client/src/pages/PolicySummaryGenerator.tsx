@@ -11,7 +11,7 @@ import { FileUpload } from '@/components/FileUpload';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { SummaryEditor } from '@/components/SummaryEditor';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
-import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download, Image, X, Upload, LogOut } from 'lucide-react';
+import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download, Image, X, Upload, LogOut, RefreshCw } from 'lucide-react';
 import { api, type ProcessedDocument, type DocumentListItem } from '@/lib/api';
 
 import { useToast } from '@/hooks/use-toast';
@@ -60,6 +60,47 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
 
   const { data: documentsList } = useQuery<DocumentListItem[]>({
     queryKey: ['/api/documents'],
+  });
+
+  // Check if document's summary format differs from selected format
+  const getDocumentSummaryLength = (): 'short' | 'detailed' | undefined => {
+    if (!document?.processingOptions) return undefined;
+    try {
+      const options = typeof document.processingOptions === 'string' 
+        ? JSON.parse(document.processingOptions) 
+        : document.processingOptions;
+      return options.summaryLength || 'detailed';
+    } catch {
+      return 'detailed';
+    }
+  };
+
+  const documentSummaryLength = getDocumentSummaryLength();
+  const needsRegeneration = document && documentSummaryLength && documentSummaryLength !== summaryLength;
+
+  // Regenerate summary mutation
+  const regenerateSummaryMutation = useMutation({
+    mutationFn: async () => {
+      if (!currentDocumentId) throw new Error('No document selected');
+      return api.regenerateSummary(currentDocumentId, summaryLength);
+    },
+    onSuccess: (result) => {
+      toast({
+        title: "Summary Regenerated",
+        description: `Successfully generated ${summaryLength === 'short' ? 'concise' : 'detailed'} summary.`,
+      });
+      // Update the query cache with the new document data
+      queryClient.setQueryData([`/api/documents/${currentDocumentId}`], result.document);
+      // Clear edited summary since we have a new one
+      setEditedSummary('');
+    },
+    onError: (error) => {
+      toast({
+        title: "Regeneration Failed",
+        description: error instanceof Error ? error.message : "Failed to regenerate summary",
+        variant: "destructive",
+      });
+    },
   });
 
   // PDF Export mutation
@@ -263,6 +304,40 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
             summaryLength={summaryLength}
           />
         </div>
+
+        {/* Regeneration Notice */}
+        {needsRegeneration && (
+          <div className="mb-6">
+            <Card className="bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
+              <div className="p-4">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0">
+                    <RefreshCw className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                      Summary Format Mismatch
+                    </h4>
+                    <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                      This document was processed with a {documentSummaryLength === 'short' ? 'concise' : 'detailed'} summary, 
+                      but you've selected {summaryLength === 'short' ? 'concise' : 'detailed'} format. 
+                      Would you like to regenerate the summary?
+                    </p>
+                    <Button
+                      size="sm"
+                      onClick={() => regenerateSummaryMutation.mutate()}
+                      disabled={regenerateSummaryMutation.isPending}
+                      className="mt-3"
+                    >
+                      <RefreshCw className={`w-4 h-4 mr-2 ${regenerateSummaryMutation.isPending ? 'animate-spin' : ''}`} />
+                      {regenerateSummaryMutation.isPending ? 'Regenerating...' : 'Regenerate Summary'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
 
         {/* Summary Tabs Section */}
         <div className="w-full">

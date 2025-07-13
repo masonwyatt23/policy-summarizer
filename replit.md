@@ -409,6 +409,11 @@ This is a full-stack policy document processing application built for Valley Tru
   - Fixed summary length selection workflow: moved selector above upload section for pre-processing selection
   - Enhanced debugging throughout pipeline to track summary length preferences
   - Fixed retry mechanism in xAI service to respect original summaryLength parameter
+  - Added summary regeneration functionality for changing between formats after initial processing
+  - Created regenerate endpoint that allows re-processing documents with different summary lengths
+  - Added UI notification when document summary format doesn't match selected format
+  - Implemented automatic detection of document's original processing options
+  - Enhanced backend to return processingOptions field for format comparison
 
 ## Changelog
 - July 01, 2025. Initial setup

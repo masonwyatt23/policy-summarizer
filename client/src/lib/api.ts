@@ -21,6 +21,7 @@ export interface ProcessedDocument {
   summary: string;
   processed: boolean;
   uploadedAt: string;
+  processingOptions?: any;
 }
 
 export interface DocumentListItem {
@@ -116,6 +117,13 @@ export const api = {
   async updateDocumentSummary(id: number, summary: string): Promise<ProcessedDocument> {
     const response = await apiRequest('PATCH', `/api/documents/${id}/summary`, {
       summary
+    });
+    return response.json();
+  },
+
+  async regenerateSummary(id: number, summaryLength: 'short' | 'detailed'): Promise<{ success: boolean; document: ProcessedDocument }> {
+    const response = await apiRequest('POST', `/api/documents/${id}/regenerate`, {
+      summaryLength
     });
     return response.json();
   },

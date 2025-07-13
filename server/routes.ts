@@ -285,6 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         summary: document.summary,
         processed: document.processed,
         uploadedAt: document.uploadedAt,
+        processingOptions: document.processingOptions,
       });
     } catch (error) {
       console.error("Get document error:", error);
@@ -320,6 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         summary: updatedDocument.summary,
         processed: updatedDocument.processed,
         uploadedAt: updatedDocument.uploadedAt,
+        processingOptions: updatedDocument.processingOptions,
       });
     } catch (error) {
       console.error("Update summary error:", error);
@@ -454,6 +456,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("List documents error:", error);
       res.status(500).json({ error: error instanceof Error ? error.message : 'List documents failed' });
+    }
+  });
+
+  // Regenerate document summary with different options
+  app.post("/api/documents/:id/regenerate", requireAuth, async (req, res) => {
+    try {
+      const documentId = parseInt(req.params.id);
+      const agentId = req.session.agentId!;
+      const { summaryLength = 'detailed' } = req.body;
+      
+      console.log(`📋 Regenerating summary for document ${documentId} with length: ${summaryLength}`);
+      
+      // Get the existing document
+      const document = await storage.getPolicyDocument(documentId, agentId);
+      
+      if (!document) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+      
+      if (!document.extractedData) {
+        return res.status(400).json({ error: "Document has no extracted data to regenerate summary from" });
+      }
+      
+      // Process the document again with new options
+      try {
+        console.log(`🔄 Regenerating ${summaryLength} summary for document ${documentId}`);
+        
+        // Use the existing extracted data and generate new summary
+        const existingData = typeof document.extractedData === 'string' 
+          ? JSON.parse(document.extractedData) 
+          : document.extractedData;
+          
+        const newSummary = await xaiService.generateEnhancedSummary(existingData, '', summaryLength);
+        
+        // Update the document with new summary and processing options
+        const updatedDocument = await storage.updatePolicyDocument(documentId, {
+          summary: newSummary,
+          processingOptions: JSON.stringify({ ...JSON.parse(document.processingOptions || '{}'), summaryLength })
+        }, agentId);
+        
+        res.json({
+          success: true,
+          document: updatedDocument
+        });
+        
+      } catch (processingError) {
+        console.error("Error regenerating summary:", processingError);
+        res.status(500).json({ error: "Failed to regenerate summary" });
+      }
+      
+    } catch (error) {
+      console.error("Error in regenerate endpoint:", error);
+      res.status(500).json({ error: "Failed to regenerate document summary" });
     }
   });
 
