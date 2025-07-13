@@ -27,8 +27,6 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
-  console.log('FileUpload component - summaryLength prop:', summaryLength);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map(file => ({

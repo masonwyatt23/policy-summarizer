@@ -266,10 +266,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
                   <Label htmlFor="summaryLength" className="text-sm font-medium">
                     Select Summary Length
                   </Label>
-                  <Select value={summaryLength} onValueChange={(value: 'short' | 'detailed') => {
-                    console.log('Select onValueChange called with:', value);
-                    setSummaryLength(value);
-                  }}>
+                  <Select value={summaryLength} onValueChange={(value: 'short' | 'detailed') => setSummaryLength(value)}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select summary length" />
                     </SelectTrigger>
@@ -302,7 +299,6 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
 
         {/* Upload Section */}
         <div className="mb-8">
-          {console.log('Passing summaryLength to FileUpload:', summaryLength)}
           <FileUpload 
             onUploadSuccess={handleUploadSuccess} 
             summaryLength={summaryLength}
