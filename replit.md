@@ -415,6 +415,8 @@ This is a full-stack policy document processing application built for Valley Tru
   - Implemented automatic detection of document's original processing options
   - Enhanced backend to return processingOptions field for format comparison
   - Fixed issue where processingOptions weren't being saved to database - now documents properly remember their processing format
+  - Fixed regeneration JSON parsing error by properly handling processingOptions as both string and object types
+  - Corrected xaiService import and function call for regeneration endpoint
 
 ## Changelog
 - July 01, 2025. Initial setup

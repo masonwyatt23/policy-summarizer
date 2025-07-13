@@ -494,9 +494,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const newSummary = await xaiService.generateEnhancedSummary(existingData, '', summaryLength);
         
         // Update the document with new summary and processing options
+        const existingOptions = typeof document.processingOptions === 'string' 
+          ? JSON.parse(document.processingOptions || '{}') 
+          : (document.processingOptions || {});
+          
         const updatedDocument = await storage.updatePolicyDocument(documentId, {
           summary: newSummary,
-          processingOptions: JSON.stringify({ ...JSON.parse(document.processingOptions || '{}'), summaryLength })
+          processingOptions: JSON.stringify({ ...existingOptions, summaryLength })
         }, agentId);
         
         res.json({
