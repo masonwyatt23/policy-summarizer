@@ -427,6 +427,10 @@ This is a full-stack policy document processing application built for Valley Tru
   - Optimized subheader styling from 16px to 14px and reduced spacing between sections
   - Streamlined footer and agent signature sections for better space efficiency
   - Enhanced overall PDF layout to be more client-friendly and professional while using space more effectively
+  - Fixed brief summary format to generate exactly ONE paragraph instead of multiple paragraphs
+  - Updated prompts to emphasize experienced insurance agent perspective (20+ years experience)
+  - Added critical instructions to prevent AI from generating multiple sections or bullet points
+  - Ensured brief summaries follow format: [Your Coverage Summary] followed by single continuous paragraph
 
 ## Changelog
 - July 01, 2025. Initial setup
