@@ -450,6 +450,10 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enlarged agent signature section with increased padding (12px) and font sizes (h3: 15px, content: 13px)
   - Enhanced footer with larger padding (12px/8px) and font sizes (12px main, 11px signature)
   - Increased client logo size to 50px height for better visual balance with enlarged header sections
+- Fixed footer positioning to prevent it from appearing on separate page
+- Constrained PDF layout to single page with `height: 100vh` and `max-height: 100vh`
+- Reduced content margins and padding to maximize space utilization within single page bounds
+- Added overflow handling to content area to ensure footer stays at bottom of first page
 
 ## Changelog
 - July 01, 2025. Initial setup

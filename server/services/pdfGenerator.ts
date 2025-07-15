@@ -106,9 +106,11 @@ export class PDFGenerator {
             max-width: 210mm;
             margin: 0 auto;
             padding: 0;
-            min-height: 100vh;
+            height: 100vh;
+            max-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         
         .header {
@@ -206,13 +208,15 @@ export class PDFGenerator {
         }
         
         .summary-content {
-            padding: 15px 0;
+            padding: 10px 0;
             background: white;
-            margin: 15px 0;
+            margin: 10px 0;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            overflow-y: auto;
+            min-height: 0;
         }
         
         .summary-wrapper {
@@ -220,7 +224,7 @@ export class PDFGenerator {
         }
         
         .section-block {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             page-break-inside: avoid;
         }
         
@@ -248,7 +252,7 @@ export class PDFGenerator {
             font-size: 14px;
             line-height: 1.7;
             color: #1e293b;
-            margin: 0 0 12px 0;
+            margin: 0 0 8px 0;
             text-align: justify;
             hyphens: auto;
         }
@@ -269,7 +273,7 @@ export class PDFGenerator {
             font-size: 14px;
             line-height: 1.7;
             color: #1e293b;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
             text-align: justify;
             hyphens: auto;
             text-indent: 0;
