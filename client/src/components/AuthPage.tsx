@@ -43,7 +43,8 @@ export function AuthPage() {
         // Small delay to ensure state is updated before redirect
         setTimeout(() => {
           console.log('Redirecting to home page');
-          setLocation("/");
+          // Force page reload to ensure authentication state is properly loaded
+          window.location.href = "/";
         }, 100);
       } catch (error) {
         console.error('Login success handler error:', error);
@@ -84,7 +85,8 @@ export function AuthPage() {
       
       // Small delay to ensure state is updated before redirect
       setTimeout(() => {
-        setLocation("/");
+        // Force page reload to ensure authentication state is properly loaded
+        window.location.href = "/";
       }, 100);
     },
     onError: (error: any) => {

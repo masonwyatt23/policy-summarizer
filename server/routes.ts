@@ -9,6 +9,7 @@ import { documentProcessor } from "./services/documentProcessor";
 import { pdfGenerator } from "./services/pdfGenerator";
 import { xaiService } from "./services/xai";
 import { insertPolicyDocumentSchema, PolicyDataSchema, insertAgentSchema } from "@shared/schema";
+import memorystore from "memorystore";
 
 // Extend Express session to include agent
 declare module 'express-session' {
@@ -51,21 +52,32 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Configure session middleware
+  // Configure session middleware with memory store for Replit deployment
   const isProduction = process.env.NODE_ENV === 'production';
+  const isDeployed = process.env.REPL_ID !== undefined;
+  
   console.log('Session config - Environment:', process.env.NODE_ENV);
   console.log('Session config - isProduction:', isProduction);
+  console.log('Session config - isDeployed:', isDeployed);
+  
+  // Use MemoryStore for sessions (works better in Replit deployments)
+  const MemoryStore = memorystore(session);
   
   app.use(session({
     secret: process.env.SESSION_SECRET || 'your-development-secret-here',
     resave: false,
     saveUninitialized: false,
+    store: new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    }),
     cookie: {
-      secure: isProduction, // Use secure cookies in production
+      secure: false, // Replit uses internal HTTP
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: isProduction ? 'strict' : 'lax' // Adjust for deployment
-    }
+      sameSite: 'lax'
+    },
+    name: 'valley.sid',
+    proxy: true
   }));
 
   // Agent registration route
