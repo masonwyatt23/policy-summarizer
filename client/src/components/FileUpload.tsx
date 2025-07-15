@@ -308,7 +308,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
                                   )}
                                 </div>
                                 <span className={`text-xs mt-1 transition-all duration-300 ${
-                                  isCurrentStep ? 'text-blue-600 font-semibold animate-pulse' : 
+                                  isCurrentStep ? 'text-blue-700 font-semibold' : 
                                   isActive ? 'text-blue-600 font-medium' : 
                                   'text-gray-400'
                                 }`}>
