@@ -19,12 +19,15 @@ export function useAuth() {
         if (!response.ok) {
           if (response.status === 401) {
             // User is not authenticated
+            console.log("User not authenticated (401)");
             return null;
           }
           throw new Error(`Auth check failed: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log("Auth check response:", data);
+        
         // Handle different response formats from backend
         if (data.agent) {
           return data.agent;
@@ -39,7 +42,8 @@ export function useAuth() {
       }
     },
     retry: false,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 30, // 30 seconds
+    refetchOnWindowFocus: true,
   });
 
   const logoutMutation = useMutation({

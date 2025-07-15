@@ -36,9 +36,12 @@ const upload = multer({
 
 // Authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
+  console.log(`🔍 Auth check - Session ID: ${req.sessionID}, Agent ID: ${req.session.agentId}`);
   if (!req.session.agentId) {
+    console.log(`❌ No agent ID in session`);
     return res.status(401).json({ error: "Authentication required" });
   }
+  console.log(`✅ Auth check passed for agent ${req.session.agentId}`);
   next();
 }
 
@@ -84,6 +87,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.agentId = agent.id;
       req.session.agentUsername = agent.username;
 
+      console.log(`✅ Registration successful for agent ${agent.id} (${agent.username})`);
+      console.log(`🔑 Session ID: ${req.sessionID}`);
+
       res.status(201).json({ 
         success: true, 
         agent: { 
@@ -123,6 +129,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create session
       req.session.agentId = agent.id;
       req.session.agentUsername = agent.username;
+
+      console.log(`✅ Login successful for agent ${agent.id} (${agent.username})`);
+      console.log(`🔑 Session ID: ${req.sessionID}`);
 
       res.json({ 
         success: true, 

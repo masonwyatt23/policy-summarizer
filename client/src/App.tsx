@@ -309,7 +309,9 @@ function AuthenticatedApp({ isSidebarCollapsed, setIsSidebarCollapsed }: {
 
 function AppContent() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, agent } = useAuth();
+
+  console.log("App auth state:", { isAuthenticated, isLoading, agent });
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -325,6 +327,7 @@ function AppContent() {
 
   // Show appropriate content based on authentication status
   if (isAuthenticated) {
+    console.log("Rendering authenticated app");
     return (
       <AuthenticatedApp 
         isSidebarCollapsed={isSidebarCollapsed}
@@ -332,6 +335,7 @@ function AppContent() {
       />
     );
   } else {
+    console.log("Rendering auth page");
     return <AuthPage />;
   }
 }

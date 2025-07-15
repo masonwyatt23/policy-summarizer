@@ -24,21 +24,24 @@ export function AuthPage() {
     },
     onSuccess: async (data) => {
       try {
+        console.log("Login success, received data:", data);
+        
         // Set the agent data immediately in the query cache
         queryClient.setQueryData(['/api/auth/me'], data.agent);
-        
-        // Also invalidate to ensure fresh data on next query
-        await queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
         
         toast({
           title: "Success",
           description: "Logged in successfully!",
         });
         
-        // Use setTimeout to ensure the auth state is fully updated before redirect
-        setTimeout(() => {
-          setLocation("/");
-        }, 100);
+        // Force a refetch to ensure the auth state is properly updated
+        await queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
+        
+        // Small delay to ensure state is fully updated
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        console.log("Redirecting to main app...");
+        setLocation("/");
       } catch (error) {
         console.error("Login success handler error:", error);
         setLocation("/");
@@ -60,21 +63,24 @@ export function AuthPage() {
     },
     onSuccess: async (data) => {
       try {
+        console.log("Registration success, received data:", data);
+        
         // Set the agent data immediately in the query cache
         queryClient.setQueryData(['/api/auth/me'], data.agent);
-        
-        // Also invalidate to ensure fresh data on next query
-        await queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
         
         toast({
           title: "Success",
           description: "Account created successfully!",
         });
         
-        // Use setTimeout to ensure the auth state is fully updated before redirect
-        setTimeout(() => {
-          setLocation("/");
-        }, 100);
+        // Force a refetch to ensure the auth state is properly updated
+        await queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
+        
+        // Small delay to ensure state is fully updated
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        console.log("Redirecting to main app...");
+        setLocation("/");
       } catch (error) {
         console.error("Registration success handler error:", error);
         setLocation("/");
