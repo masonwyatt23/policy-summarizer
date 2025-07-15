@@ -19,13 +19,23 @@ export class XAIService {
     console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok`);
 
     try {
-      const response = await fetch(`${this.baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      console.log(`🔌 Making XAI API request to: ${this.baseUrl}/chat/completions`);
+      console.log(`🔌 Environment: ${process.env.NODE_ENV}, Deployed: ${!!process.env.REPL_ID}`);
+      
+      // Add timeout to prevent hanging requests in deployment
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      
+      let response;
+      try {
+        response = await fetch(`${this.baseUrl}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
           model: 'grok-2-1212',
           messages: [
             {
@@ -134,10 +144,30 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
         })
       });
 
+        clearTimeout(timeout);
+      } catch (fetchError) {
+        clearTimeout(timeout);
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+          console.error('🔴 XAI request timed out after 60 seconds');
+          throw new Error('AI service request timed out. This may be a temporary network issue. Please try again.');
+        }
+        console.error('🔴 XAI fetch error:', fetchError);
+        throw new Error(`AI service connection failed: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
+      }
+
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('xAI API error:', response.status, errorText);
-        throw new Error(`xAI API error: ${response.status}`);
+        console.error('🔴 xAI API error:', response.status, errorText);
+        
+        if (response.status === 401) {
+          throw new Error('AI service authentication failed. Please check that XAI_API_KEY is correctly set.');
+        } else if (response.status === 429) {
+          throw new Error('AI service rate limit exceeded. Please wait a moment and try again.');
+        } else if (response.status >= 500) {
+          throw new Error('AI service is temporarily unavailable. Please try again in a few moments.');
+        }
+        
+        throw new Error(`AI service error: ${response.status} - ${errorText || 'Unknown error'}`);
       }
 
       const data = await response.json();
@@ -174,14 +204,23 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
   async generateEnhancedSummary(policyData: PolicyData, clientContext?: string, summaryLength: 'short' | 'detailed' = 'detailed'): Promise<string> {
     try {
       console.log(`📝 xAI generating ${summaryLength} summary for ${policyData.policyType || 'unknown'} policy`);
+      console.log(`🔌 Making XAI API request to: ${this.baseUrl}/chat/completions`);
+      console.log(`🔌 Environment: ${process.env.NODE_ENV}, Deployed: ${!!process.env.REPL_ID}`);
       
-      const response = await fetch(`${this.baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Add timeout to prevent hanging requests in deployment
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      
+      let response;
+      try {
+        response = await fetch(`${this.baseUrl}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
           model: 'grok-2-1212',
           messages: [
             {
@@ -377,9 +416,31 @@ Create a transformative 5-paragraph business intelligence summary where the fina
           max_tokens: summaryLength === 'short' ? 1000 : 3000
         })
       });
+        
+        clearTimeout(timeout);
+      } catch (fetchError) {
+        clearTimeout(timeout);
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+          console.error('🔴 XAI request timed out after 60 seconds');
+          throw new Error('AI service request timed out. This may be a temporary network issue. Please try again.');
+        }
+        console.error('🔴 XAI fetch error:', fetchError);
+        throw new Error(`AI service connection failed: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
+      }
 
       if (!response.ok) {
-        throw new Error(`xAI API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('🔴 xAI API error:', response.status, errorText);
+        
+        if (response.status === 401) {
+          throw new Error('AI service authentication failed. Please check that XAI_API_KEY is correctly set.');
+        } else if (response.status === 429) {
+          throw new Error('AI service rate limit exceeded. Please wait a moment and try again.');
+        } else if (response.status >= 500) {
+          throw new Error('AI service is temporarily unavailable. Please try again in a few moments.');
+        }
+        
+        throw new Error(`AI service error: ${response.status} - ${errorText || 'Unknown error'}`);
       }
 
       const data = await response.json();

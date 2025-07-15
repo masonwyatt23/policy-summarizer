@@ -498,6 +498,14 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced XAI service initialization with better error messages for missing API keys
   - Added client-side debugging for upload failures with detailed console logging
   - Improved error messages to help diagnose deployment-specific issues (API keys, network, file size)
+- July 15, 2025: Fixed deployment connection and authentication issues
+  - Added timeout handling (60 seconds) to prevent hanging XAI API requests in deployment
+  - Enhanced session persistence with resave: true and rolling: true for better cookie management
+  - Added comprehensive error handling for XAI API calls with specific messages for different error types
+  - Added AbortController to handle network timeouts gracefully
+  - Enhanced error messages to distinguish between auth failures, rate limits, and service availability
+  - Added credentials: 'same-origin' to PDF export requests
+  - Enhanced debugging throughout XAI service and upload pipeline for deployment diagnostics
 
 ## Changelog
 - July 01, 2025. Initial setup

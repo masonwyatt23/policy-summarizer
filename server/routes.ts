@@ -65,8 +65,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.use(session({
     secret: process.env.SESSION_SECRET || 'your-development-secret-here',
-    resave: false,
+    resave: true, // Changed to true for better session persistence
     saveUninitialized: false,
+    rolling: true, // Reset the cookie Max-Age on every request
     store: new MemoryStore({
       checkPeriod: 86400000 // prune expired entries every 24h
     }),

@@ -109,6 +109,7 @@ export const api = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(options),
+      credentials: 'same-origin', // Ensure cookies are sent
     });
     
     if (!response.ok) {
@@ -136,9 +137,12 @@ export const api = {
   },
 
   async regenerateSummary(id: number, summaryLength: 'short' | 'detailed'): Promise<{ success: boolean; document: ProcessedDocument }> {
+    console.log(`🔄 Regenerating summary for document ${id} with length: ${summaryLength}`);
     const response = await apiRequest('POST', `/api/documents/${id}/regenerate`, {
       summaryLength
     });
-    return response.json();
+    const result = await response.json();
+    console.log('🔄 Regeneration successful:', result);
+    return result;
   },
 };
