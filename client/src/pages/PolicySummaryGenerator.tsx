@@ -224,8 +224,8 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
             <div className="flex items-center space-x-4">
               <img src={logoPath} alt="Valley Trust Insurance" className="h-10 w-auto" />
               <div className="hidden sm:block">
-                <h1 className="text-xl font-semibold text-foreground">Policy Summary Generator</h1>
-                <p className="text-sm text-muted-foreground">Internal Agent Tool</p>
+                <h1 className="text-2xl font-semibold text-foreground">Policy Summary Generator</h1>
+                <p className="text-base text-muted-foreground">Internal Agent Tool</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -258,12 +258,12 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
             <div className="p-4">
               <div className="flex items-center space-x-2 mb-3">
                 <FileText className="w-5 h-5 text-valley-primary" />
-                <h3 className="text-lg font-semibold text-foreground">Summary Format</h3>
-                <span className="text-sm text-muted-foreground">- Choose your preferred summary length</span>
+                <h3 className="text-xl font-semibold text-foreground">Summary Format</h3>
+                <span className="text-base text-muted-foreground">- Choose your preferred summary length</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="summaryLength" className="text-sm font-medium">
+                  <Label htmlFor="summaryLength" className="text-base font-medium">
                     Select Summary Length
                   </Label>
                   <Select value={summaryLength} onValueChange={(value: 'short' | 'detailed') => setSummaryLength(value)}>
@@ -271,20 +271,20 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
                       <SelectValue placeholder="Select summary length" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="short">Concise (1 paragraph, 150-200 words)</SelectItem>
+                      <SelectItem value="short">Concise (1 paragraph, 100-150 words)</SelectItem>
                       <SelectItem value="detailed">Detailed (5 paragraphs, 400-600 words)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className="text-base font-medium text-muted-foreground">
                     Selected Format
                   </Label>
                   <div className="p-3 bg-muted rounded-lg">
-                    <div className="text-sm font-medium text-foreground">
+                    <div className="text-base font-medium text-foreground">
                       {summaryLength === 'short' ? 'Concise Summary' : 'Detailed Summary'}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">
+                    <div className="text-sm text-muted-foreground mt-1">
                       {summaryLength === 'short' 
                         ? 'Single paragraph format ideal for quick reviews and executive briefings'
                         : 'Comprehensive 5-paragraph format with detailed analysis and recommendations'

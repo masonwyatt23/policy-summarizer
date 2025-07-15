@@ -190,15 +190,108 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
       // Parse the JSON response
       let policyData: PolicyData;
       try {
-        policyData = JSON.parse(content);
+        // First, try to clean the content by removing any trailing incomplete JSON
+        let cleanedContent = content.trim();
+        
+        // If content seems truncated (doesn't end with }), try to fix it
+        if (!cleanedContent.endsWith('}')) {
+          console.warn('⚠️ JSON response appears truncated, attempting to repair...');
+          
+          // Find the last complete closing bracket
+          let lastValidPosition = cleanedContent.length;
+          let openBrackets = 0;
+          let inString = false;
+          let escapeNext = false;
+          
+          for (let i = 0; i < cleanedContent.length; i++) {
+            const char = cleanedContent[i];
+            
+            if (escapeNext) {
+              escapeNext = false;
+              continue;
+            }
+            
+            if (char === '\\') {
+              escapeNext = true;
+              continue;
+            }
+            
+            if (char === '"' && !escapeNext) {
+              inString = !inString;
+              continue;
+            }
+            
+            if (!inString) {
+              if (char === '{' || char === '[') openBrackets++;
+              else if (char === '}' || char === ']') {
+                openBrackets--;
+                if (openBrackets === 0) {
+                  lastValidPosition = i + 1;
+                }
+              }
+            }
+          }
+          
+          // Truncate to last valid position and close any open arrays/objects
+          cleanedContent = cleanedContent.substring(0, lastValidPosition);
+          
+          // Count unclosed brackets and close them
+          openBrackets = 0;
+          const openTypes: string[] = [];
+          inString = false;
+          escapeNext = false;
+          
+          for (let i = 0; i < cleanedContent.length; i++) {
+            const char = cleanedContent[i];
+            
+            if (escapeNext) {
+              escapeNext = false;
+              continue;
+            }
+            
+            if (char === '\\') {
+              escapeNext = true;
+              continue;
+            }
+            
+            if (char === '"' && !escapeNext) {
+              inString = !inString;
+              continue;
+            }
+            
+            if (!inString) {
+              if (char === '{') openTypes.push('}');
+              else if (char === '[') openTypes.push(']');
+              else if (char === '}' || char === ']') openTypes.pop();
+            }
+          }
+          
+          // Close any remaining open brackets
+          while (openTypes.length > 0) {
+            cleanedContent += openTypes.pop();
+          }
+          
+          console.log(`✅ Repaired JSON by adding closing brackets: ${openTypes.length}`);
+        }
+        
+        policyData = JSON.parse(cleanedContent);
       } catch (parseError) {
-        console.error('Failed to parse xAI response as JSON:', content);
+        console.error('Failed to parse xAI response as JSON. Content length:', content.length);
+        console.error('Parse error:', parseError);
+        console.error('Content preview (first 500 chars):', content.substring(0, 500));
+        console.error('Content preview (last 500 chars):', content.substring(content.length - 500));
+        
         // Fallback: try to extract JSON from the response
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
-          policyData = JSON.parse(jsonMatch[0]);
+          try {
+            policyData = JSON.parse(jsonMatch[0]);
+          } catch (fallbackError) {
+            console.error('Fallback JSON extraction also failed:', fallbackError);
+            throw new Error(`Could not parse xAI response: ${parseError.message}`);
+          }
         } else {
-          throw new Error('Could not parse xAI response');
+          throw new Error(`Could not parse xAI response: ${parseError.message}`);
         }
       }
 

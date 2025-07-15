@@ -153,42 +153,44 @@ export function AuthPage() {
           <div className="flex justify-center lg:justify-start">
             <Card className="w-full max-w-md bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-2xl border-0">
               <CardHeader>
-                <CardTitle className="text-center">Valley Trust Insurance</CardTitle>
-                <p className="text-center text-sm text-muted-foreground">
+                <CardTitle className="text-3xl text-center">Valley Trust Insurance</CardTitle>
+                <p className="text-center text-lg text-muted-foreground">
                   Agent Portal
                 </p>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="login" className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="login">Login</TabsTrigger>
-                    <TabsTrigger value="register">Register</TabsTrigger>
+                    <TabsTrigger value="login" className="text-base">Login</TabsTrigger>
+                    <TabsTrigger value="register" className="text-base">Register</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="login" className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="login-username">Username</Label>
+                      <Label htmlFor="login-username" className="text-base">Username</Label>
                       <Input
                         id="login-username"
                         type="text"
                         value={loginData.username}
+                        className="text-base h-12"
                         onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
                         placeholder="Enter your username"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="login-password">Password</Label>
+                      <Label htmlFor="login-password" className="text-base">Password</Label>
                       <Input
                         id="login-password"
                         type="password"
                         value={loginData.password}
+                        className="text-base h-12"
                         onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
                         placeholder="Enter your password"
                       />
                     </div>
                     <Button 
                       onClick={handleLogin} 
-                      className="w-full"
+                      className="w-full h-12 text-base"
                       disabled={loginMutation.isPending}
                     >
                       {loginMutation.isPending ? "Logging in..." : "Login"}
@@ -197,58 +199,63 @@ export function AuthPage() {
                   
                   <TabsContent value="register" className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="register-fullname">Full Name</Label>
+                      <Label htmlFor="register-fullname" className="text-base">Full Name</Label>
                       <Input
                         id="register-fullname"
                         type="text"
                         value={registerData.fullName}
+                        className="text-base h-12"
                         onChange={(e) => setRegisterData(prev => ({ ...prev, fullName: e.target.value }))}
                         placeholder="Enter your full name"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
+                      <Label htmlFor="register-email" className="text-base">Email</Label>
                       <Input
                         id="register-email"
                         type="email"
                         value={registerData.email}
+                        className="text-base h-12"
                         onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
                         placeholder="Enter your email address"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-username">Username</Label>
+                      <Label htmlFor="register-username" className="text-base">Username</Label>
                       <Input
                         id="register-username"
                         type="text"
                         value={registerData.username}
+                        className="text-base h-12"
                         onChange={(e) => setRegisterData(prev => ({ ...prev, username: e.target.value }))}
                         placeholder="Choose a username"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-password">Password</Label>
+                      <Label htmlFor="register-password" className="text-base">Password</Label>
                       <Input
                         id="register-password"
                         type="password"
                         value={registerData.password}
+                        className="text-base h-12"
                         onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
                         placeholder="Choose a password"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-confirm">Confirm Password</Label>
+                      <Label htmlFor="register-confirm" className="text-base">Confirm Password</Label>
                       <Input
                         id="register-confirm"
                         type="password"
                         value={registerData.confirmPassword}
+                        className="text-base h-12"
                         onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                         placeholder="Confirm your password"
                       />
                     </div>
                     <Button 
                       onClick={handleRegister} 
-                      className="w-full"
+                      className="w-full h-12 text-base"
                       disabled={registerMutation.isPending}
                     >
                       {registerMutation.isPending ? "Creating Account..." : "Create Account"}
@@ -290,8 +297,8 @@ export function AuthPage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">AI-Powered Analysis</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Intelligent document processing</p>
+                    <p className="font-medium text-gray-900 dark:text-white text-base">AI-Powered Analysis</p>
+                    <p className="text-base text-gray-600 dark:text-gray-400">Intelligent document processing</p>
                   </div>
                 </div>
                 
@@ -302,8 +309,8 @@ export function AuthPage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">Professional PDFs</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Branded summary exports</p>
+                    <p className="font-medium text-gray-900 dark:text-white text-base">Professional PDFs</p>
+                    <p className="text-base text-gray-600 dark:text-gray-400">Branded summary exports</p>
                   </div>
                 </div>
                 
@@ -314,8 +321,8 @@ export function AuthPage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">Client-Focused</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Clear, actionable insights</p>
+                    <p className="font-medium text-gray-900 dark:text-white text-base">Client-Focused</p>
+                    <p className="text-base text-gray-600 dark:text-gray-400">Clear, actionable insights</p>
                   </div>
                 </div>
               </div>

@@ -199,8 +199,8 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
   return (
     <Card className="bg-card">
       <CardContent className="p-6">
-        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
-          <Upload className="w-5 h-5 text-valley-primary mr-2" />
+        <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
+          <Upload className="w-6 h-6 text-valley-primary mr-2" />
           Upload Policy Document
         </h2>
         
@@ -219,10 +219,10 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
               <FileText className="w-4 h-4 text-valley-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">
+              <p className="text-base font-medium text-foreground">
                 {isDragActive ? 'Drop files here' : 'Drop files here or click to browse'}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 PDF and DOCX files up to 10MB
               </p>
             </div>
@@ -253,29 +253,29 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">
+                  <p className="text-base font-medium text-foreground truncate">
                     {fileData.file.name}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     {(fileData.file.size / 1024 / 1024).toFixed(1)} MB
                   </p>
                   {fileData.status === 'uploading' && (
                     <Progress value={fileData.progress} className="mt-2 h-2" />
                   )}
                   {fileData.status === 'processing' && (
-                    <p className="text-xs text-blue-600 mt-1 flex items-center">
-                      <Clock className="w-3 h-3 mr-1" />
+                    <p className="text-sm text-blue-600 mt-1 flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
                       {fileData.processingStage || 'Processing document...'}
                     </p>
                   )}
                   {fileData.status === 'retrying' && (
-                    <p className="text-xs text-blue-600 mt-1">
+                    <p className="text-sm text-blue-600 mt-1">
                       Retrying... (Attempt {fileData.retryCount || 1})
                     </p>
                   )}
                   {fileData.status === 'error' && fileData.error && (
                     <div className="mt-1">
-                      <p className="text-xs text-red-600">{fileData.error}</p>
+                      <p className="text-sm text-red-600">{fileData.error}</p>
                       {(fileData.retryCount || 0) < 3 && (
                         <Button
                           variant="outline"
