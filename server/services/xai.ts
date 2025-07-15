@@ -58,6 +58,13 @@ CRITICAL ACCURACY REQUIREMENTS:
 • IDENTIFY and NOTE any contradictory information
 • EXPLICITLY STATE when details cannot be verified from the provided text
 
+POLICY NUMBER IDENTIFICATION:
+• Look for numbers labeled as "Policy Number", "Policy No.", or similar
+• Distinguish between agency license numbers (typically shorter, often with state codes like DD####) and actual policy numbers
+• Agency license numbers are usually 5-7 characters (e.g., DD2089)
+• Policy numbers are typically longer and may include letters and numbers (e.g., Q61 0413185, BP 01 23 45 67)
+• If multiple numbers exist, identify which is the policy number vs agency/producer numbers
+
 DOCUMENT ANALYSIS APPROACH:
 • Extract ONLY what is explicitly written in the document
 • Note inconsistencies in names, numbers, dates, or terms
@@ -147,7 +154,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
             }
           ],
           temperature: 0.1,
-          max_tokens: 8000
+          max_tokens: 4000
         })
       }).catch(error => {
         clearTimeout(timeoutId);
@@ -249,32 +256,30 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
             {
               role: 'system',
               content: summaryLength === 'short' ? 
-                `You are a highly intelligent, experienced insurance agent with 20+ years of experience who specializes in explaining complex insurance policies to business owners in simple, clear terms.
+                `You are explaining an insurance policy in simple, everyday language that anyone can understand.
 
-MISSION: Write ONE single paragraph that explains this policy professionally to the client, helping them understand their coverage in plain English.
+MISSION: Write ONE concise paragraph that clearly explains what this policy covers and why it matters.
 
-**CRITICAL REQUIREMENT: EXACTLY ONE PARAGRAPH ONLY**
-- Write ONLY one continuous paragraph (150-200 words)
-- Do NOT create multiple paragraphs or sections
-- Do NOT use bullet points or lists
-- Do NOT include multiple headers or subheadings
+**CRITICAL REQUIREMENTS:**
+- Write ONLY one continuous paragraph (100-150 words maximum)
 - Start with the simple header [Your Coverage Summary] then write ONE flowing paragraph
+- Do NOT say phrases like "As your insurance agent" or mention your experience
+- Do NOT create multiple paragraphs, sections, bullet points, or lists
+- Get straight to the point - no introductory phrases
 
-**What to Include in Your Single Paragraph:**
-- What type of policy this is and who provides it
-- What specific things are covered (with dollar amounts)
-- 1-2 real examples of when this coverage would help their business
-- Any important limitations they should know about
-- How this protects their business day-to-day
-- Contact information for questions
+**What to Include:**
+- Policy type and insurance company name
+- Main coverage amounts (use specific dollar amounts)
+- 1-2 practical examples of when coverage applies
+- Any major exclusions or limitations in simple terms
+- Valley Trust contact: (540) 885-5531
 
 **Writing Style:**
-- Write like an experienced agent explaining to a valued client
-- Use conversational, reassuring tone
-- Avoid insurance jargon completely
-- Give specific examples they can relate to
-- Keep sentences clear and easy to understand
-- Make them feel confident about their coverage`
+- Write in third person, not first person
+- Use clear, simple language a business owner would understand
+- Focus on practical value and real-world applications
+- Make every word count - be concise and direct
+- Avoid all insurance jargon and technical terms`
                 :
                 `You are an elite business insurance consultant creating transformative policy summaries that help clients understand the exceptional value and strategic protection their coverage provides.
 
@@ -439,8 +444,8 @@ ENHANCED PARAGRAPH 5 EXAMPLES OF SUPPORT MESSAGING:
 Create a transformative 5-paragraph business intelligence summary where the final two paragraphs deliver exceptional client value with actionable insights and immediate business benefits that drive real operational improvements and partnership engagement.`
             }
           ],
-          temperature: 0.3,
-          max_tokens: summaryLength === 'short' ? 1000 : 3000
+          temperature: 0.2,
+          max_tokens: summaryLength === 'short' ? 800 : 2500
         })
       }).catch(error => {
         clearTimeout(timeoutId);
@@ -496,18 +501,18 @@ Create a transformative 5-paragraph business intelligence summary where the fina
               {
                 role: 'system',
                 content: summaryLength === 'short' ?
-                  'Create a cohesive single-paragraph summary. No formatting, headers, or bullets. Target 150-250 words of flowing prose.' :
+                  'Create a cohesive single-paragraph summary. No formatting, headers, or bullets. Target 100-150 words of flowing prose.' :
                   'Create a cohesive 5-paragraph narrative summary. No formatting, headers, or bullets. Target 400-600 words of flowing prose.'
               },
               {
                 role: 'user',
                 content: summaryLength === 'short' ?
-                  `Create a cohesive single-paragraph professional summary (150-250 words, no formatting): ${JSON.stringify(policyData, null, 2)}` :
+                  `Create a cohesive single-paragraph professional summary (100-150 words, no formatting): ${JSON.stringify(policyData, null, 2)}` :
                   `Create a cohesive 5-paragraph professional summary (400-600 words, no formatting): ${JSON.stringify(policyData, null, 2)}`
               }
             ],
-            temperature: 0.3,
-            max_tokens: summaryLength === 'short' ? 1000 : 3000
+            temperature: 0.2,
+            max_tokens: summaryLength === 'short' ? 800 : 2500
           })
         });
         
