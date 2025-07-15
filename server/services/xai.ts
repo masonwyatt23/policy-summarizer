@@ -1,4 +1,5 @@
 import type { PolicyData } from '@shared/schema';
+import { getDeploymentConfig } from './deploymentConfig';
 
 // xAI service for intelligent policy analysis
 export class XAIService {
@@ -17,19 +18,100 @@ export class XAIService {
   }
 
   async analyzePolicy(documentText: string): Promise<PolicyData> {
-    const isDeployed = !!process.env.REPL_ID;
-    console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok in ${isDeployed ? 'DEPLOYED' : 'PREVIEW'} environment`);
+    const config = getDeploymentConfig();
+    console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok in ${config.environment} environment`);
+
+    // For deployment, use chunked processing for large documents
+    if (config.processing.useChunking && documentText.length > config.textLimits.chunkSize) {
+      console.log(`📦 Using chunked processing for large document (${documentText.length} chars)`);
+      return await this.analyzeWithChunking(documentText);
+    }
+
+    return await this.performAnalysis(documentText);
+  }
+
+  private async analyzeWithChunking(documentText: string): Promise<PolicyData> {
+    const config = getDeploymentConfig();
+    const chunks = this.splitIntoChunks(documentText, config.textLimits.chunkSize);
+    console.log(`📦 Split document into ${chunks.length} chunks`);
+
+    const results = [];
+    for (let i = 0; i < chunks.length; i++) {
+      console.log(`📦 Processing chunk ${i + 1}/${chunks.length} (${chunks[i].length} chars)`);
+      try {
+        const chunkResult = await this.performAnalysis(chunks[i], true);
+        results.push(chunkResult);
+        
+        // Add delay between chunks to avoid rate limiting
+        if (i < chunks.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      } catch (error) {
+        console.error(`❌ Chunk ${i + 1} failed:`, error);
+        // Continue with other chunks
+      }
+    }
+
+    // Merge results from all chunks
+    return this.mergeChunkResults(results);
+  }
+
+  private splitIntoChunks(text: string, chunkSize: number): string[] {
+    const chunks = [];
+    for (let i = 0; i < text.length; i += chunkSize) {
+      chunks.push(text.substring(i, i + chunkSize));
+    }
+    return chunks;
+  }
+
+  private mergeChunkResults(results: PolicyData[]): PolicyData {
+    if (results.length === 0) {
+      return this.getDefaultPolicyData();
+    }
+
+    const merged = results[0];
+    for (let i = 1; i < results.length; i++) {
+      const result = results[i];
+      // Merge coverage details
+      if (result.coverage) {
+        merged.coverage = [...(merged.coverage || []), ...result.coverage];
+      }
+      // Merge benefits
+      if (result.benefits) {
+        merged.benefits = [...(merged.benefits || []), ...result.benefits];
+      }
+      // Merge exclusions
+      if (result.exclusions) {
+        merged.exclusions = [...(merged.exclusions || []), ...result.exclusions];
+      }
+      // Take the longer explanation
+      if (result.explanation && result.explanation.length > merged.explanation.length) {
+        merged.explanation = result.explanation;
+      }
+    }
+
+    return merged;
+  }
+
+  private async performAnalysis(documentText: string, isChunk: boolean = false): Promise<PolicyData> {
+    const config = getDeploymentConfig();
 
     try {
       console.log(`🔌 Making XAI API request to: ${this.baseUrl}/chat/completions`);
-      console.log(`🔌 Environment: ${process.env.NODE_ENV}, Deployed: ${!!process.env.REPL_ID}`);
+      console.log(`🔌 Environment: ${config.environment}, Text length: ${documentText.length}`);
       
-      // Add timeout to prevent hanging requests in deployment
+      // Aggressive timeout for deployment
+      const timeoutDuration = config.timeouts.xaiRequest;
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      const timeout = setTimeout(() => controller.abort(), timeoutDuration);
+      console.log(`⏱️ XAI request timeout set to ${timeoutDuration/1000} seconds`);
       
       let response;
       try {
+        const systemPrompt = config.processing.simplifiedPrompts ? 
+          this.getSimplifiedSystemPrompt(isChunk) : 
+          this.getFullSystemPrompt(isChunk);
+
         response = await fetch(`${this.baseUrl}/chat/completions`, {
           method: 'POST',
           headers: {
@@ -42,7 +124,95 @@ export class XAIService {
           messages: [
             {
               role: 'system',
-              content: `You are a precise insurance document analyzer who creates accurate, conservative policy summaries for professional insurance agents. Your analysis must be completely factual and verifiable.
+              content: systemPrompt
+            },
+            {
+              role: 'user',
+              content: `Analyze this insurance policy document and extract key information in JSON format:\n\n${documentText}`
+            }
+          ],
+          max_tokens: config.processing.simplifiedPrompts ? 4000 : 8000,
+          temperature: 0.1
+        })
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`❌ XAI API error: ${response.status} ${response.statusText}`, errorText);
+        throw new Error(`XAI API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log(`✅ XAI API response received (${data.usage?.total_tokens || 'unknown'} tokens)`);
+
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        console.error('❌ Invalid XAI response structure:', data);
+        throw new Error('Invalid response structure from XAI API');
+      }
+
+      const content = data.choices[0].message.content;
+      console.log(`📝 XAI response content length: ${content.length}`);
+
+      // Parse the JSON response
+      let policyData: PolicyData;
+      try {
+        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          policyData = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+        } else {
+          policyData = JSON.parse(content);
+        }
+      } catch (parseError) {
+        console.error('❌ Failed to parse XAI response as JSON:', parseError);
+        console.error('❌ Raw content:', content);
+        throw new Error('Failed to parse XAI response as JSON');
+      }
+
+      console.log(`✅ Successfully parsed policy data with ${policyData.coverage?.length || 0} coverage items`);
+      return policyData;
+
+    } catch (error) {
+      console.error('❌ XAI analysis failed:', error);
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new Error(`XAI request timed out after ${config.timeouts.xaiRequest/1000} seconds`);
+        }
+        if (error.message.includes('fetch failed')) {
+          throw new Error('Network connection failed while calling XAI API');
+        }
+      }
+      
+      throw error;
+    }
+  }
+
+  private getSimplifiedSystemPrompt(isChunk: boolean): string {
+    const chunkInstructions = isChunk ? 
+      'IMPORTANT: You are analyzing a CHUNK of a larger document. Focus only on the information present in this chunk.' : 
+      '';
+
+    return `You are an insurance document analyzer. Extract key information and return it in JSON format.
+
+${chunkInstructions}
+
+CRITICAL ACCURACY REQUIREMENTS:
+• ONLY report information that is explicitly stated in the document
+• NEVER make assumptions or fill in missing details
+• ACKNOWLEDGE inconsistencies and discrepancies in the document
+• CLEARLY indicate when information is missing or unclear
+• INCLUDE ALL exclusions and limitations found in the document
+• IDENTIFY and NOTE any contradictory information
+• EXPLICITLY STATE when details cannot be verified from the provided text
+
+DOCUMENT ANALYSIS APPROACH:
+• Extract ONLY what is explicitly written in the document
+• Note inconsistencies in names, numbers, dates, or terms
+• Include ALL exclusions and limitations mentioned
+• Identify coverage forms and endorsements by their exact codes
 
 CRITICAL ACCURACY REQUIREMENTS:
 • ONLY report information that is explicitly stated in the document

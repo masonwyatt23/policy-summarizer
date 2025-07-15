@@ -7,7 +7,7 @@ import { z } from "zod";
 import { storage } from "./storage";
 import { documentProcessor } from "./services/documentProcessor";
 import { pdfGenerator } from "./services/pdfGenerator";
-import { xaiService } from "./services/xai";
+import { xaiService } from "./services/xai-optimized";
 import { insertPolicyDocumentSchema, PolicyDataSchema, insertAgentSchema } from "@shared/schema";
 import memorystore from "memorystore";
 

@@ -205,11 +205,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
         </h2>
         <p className="text-sm text-muted-foreground mb-4">
           AI policy analysis may take 1-3 minutes to complete. Please be patient while we process your document. 
-          {process.env.NODE_ENV === 'production' && (
-            <span className="block mt-1 text-xs text-yellow-600 dark:text-yellow-400">
-              Note: If processing times out in the deployed version, please try using the Replit preview environment for larger files.
-            </span>
-          )}
+          The system automatically optimizes processing for the deployment environment.
         </p>
         
         {/* File Upload Area */}
