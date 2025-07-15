@@ -19,16 +19,30 @@ export function AuthPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
-      return await apiRequest("POST", "/api/auth/login", credentials);
+      const response = await apiRequest("POST", "/api/auth/login", credentials);
+      return response.json();
     },
-    onSuccess: () => {
-      // Invalidate auth query to refetch user data
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      toast({
-        title: "Success",
-        description: "Logged in successfully!",
-      });
-      setLocation("/");
+    onSuccess: async (data) => {
+      try {
+        // Set the agent data immediately in the query cache
+        queryClient.setQueryData(['/api/auth/me'], data.agent);
+        
+        // Also invalidate to ensure fresh data on next query
+        await queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+        
+        toast({
+          title: "Success",
+          description: "Logged in successfully!",
+        });
+        
+        // Use setTimeout to ensure the auth state is fully updated before redirect
+        setTimeout(() => {
+          setLocation("/");
+        }, 100);
+      } catch (error) {
+        console.error("Login success handler error:", error);
+        setLocation("/");
+      }
     },
     onError: (error: any) => {
       toast({
@@ -41,16 +55,30 @@ export function AuthPage() {
 
   const registerMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string; fullName: string; email: string }) => {
-      return await apiRequest("POST", "/api/auth/register", credentials);
+      const response = await apiRequest("POST", "/api/auth/register", credentials);
+      return response.json();
     },
-    onSuccess: () => {
-      // Invalidate auth query to refetch user data
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      toast({
-        title: "Success",
-        description: "Account created successfully!",
-      });
-      setLocation("/");
+    onSuccess: async (data) => {
+      try {
+        // Set the agent data immediately in the query cache
+        queryClient.setQueryData(['/api/auth/me'], data.agent);
+        
+        // Also invalidate to ensure fresh data on next query
+        await queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+        
+        toast({
+          title: "Success",
+          description: "Account created successfully!",
+        });
+        
+        // Use setTimeout to ensure the auth state is fully updated before redirect
+        setTimeout(() => {
+          setLocation("/");
+        }, 100);
+      } catch (error) {
+        console.error("Registration success handler error:", error);
+        setLocation("/");
+      }
     },
     onError: (error: any) => {
       toast({

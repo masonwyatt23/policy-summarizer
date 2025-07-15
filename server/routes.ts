@@ -162,6 +162,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Agent not found" });
       }
 
+      // Return same format as login endpoint for consistency
       res.json({ 
         id: agent.id, 
         username: agent.username, 
@@ -597,93 +598,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Authentication routes
-  app.post("/api/auth/register", async (req, res) => {
-    try {
-      const { username, password } = req.body;
-      
-      // Check if agent already exists
-      const existingAgent = await storage.getAgentByUsername(username);
-      if (existingAgent) {
-        return res.status(400).json({ error: "Username already exists" });
-      }
-      
-      // Create new agent
-      const agent = await storage.createAgent({ 
-        username, 
-        password,
-        fullName: username, // Default to username
-        email: `${username}@example.com` // Default email
-      });
-      
-      // Set session
-      req.session.agentId = agent.id;
-      req.session.agentUsername = agent.username;
-      
-      res.json({ success: true, agent: { id: agent.id, username: agent.username } });
-    } catch (error) {
-      console.error("Registration error:", error);
-      res.status(500).json({ error: "Registration failed" });
-    }
-  });
 
-  app.post("/api/auth/login", async (req, res) => {
-    try {
-      const { username, password } = req.body;
-      
-      const agent = await storage.getAgentByUsername(username);
-      if (!agent) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-      
-      // TODO: Add proper password verification with bcrypt
-      if (agent.password !== password) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-      
-      // Set session
-      req.session.agentId = agent.id;
-      req.session.agentUsername = agent.username;
-      
-      res.json({ success: true, agent: { id: agent.id, username: agent.username } });
-    } catch (error) {
-      console.error("Login error:", error);
-      res.status(500).json({ error: "Login failed" });
-    }
-  });
-
-  app.post("/api/auth/logout", async (req, res) => {
-    try {
-      req.session.destroy((err) => {
-        if (err) {
-          console.error("Logout error:", err);
-          return res.status(500).json({ error: "Logout failed" });
-        }
-        res.json({ success: true });
-      });
-    } catch (error) {
-      console.error("Logout error:", error);
-      res.status(500).json({ error: "Logout failed" });
-    }
-  });
-
-  app.get("/api/auth/me", async (req, res) => {
-    try {
-      if (!req.session.agentId) {
-        return res.status(401).json({ error: "Not authenticated" });
-      }
-      
-      const agent = await storage.getAgent(req.session.agentId);
-      if (!agent) {
-        return res.status(401).json({ error: "Agent not found" });
-      }
-      
-      res.json({ agent: { id: agent.id, username: agent.username } });
-    } catch (error) {
-      console.error("Auth check error:", error);
-      res.status(500).json({ error: "Authentication check failed" });
-    }
-  });
 
   // Settings routes
   app.get("/api/settings", async (req, res) => {
