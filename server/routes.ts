@@ -36,23 +36,35 @@ const upload = multer({
 
 // Authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
+  console.log('Auth check - Session ID:', req.sessionID);
+  console.log('Auth check - Agent ID:', req.session.agentId);
+  console.log('Auth check - Session data:', req.session);
+  
   if (!req.session.agentId) {
+    console.log('Auth check FAILED - No agent ID in session');
     return res.status(401).json({ error: "Authentication required" });
   }
+  
+  console.log('Auth check PASSED - Agent ID found:', req.session.agentId);
   next();
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Configure session middleware
+  const isProduction = process.env.NODE_ENV === 'production';
+  console.log('Session config - Environment:', process.env.NODE_ENV);
+  console.log('Session config - isProduction:', isProduction);
+  
   app.use(session({
     secret: process.env.SESSION_SECRET || 'your-development-secret-here',
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // Set to true in production with HTTPS
+      secure: isProduction, // Use secure cookies in production
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: isProduction ? 'strict' : 'lax' // Adjust for deployment
     }
   }));
 
@@ -115,6 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { username, password } = req.body;
+      console.log('Login attempt for username:', username);
       
       if (!username || !password) {
         return res.status(400).json({ error: "Username and password required" });
@@ -123,27 +136,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Find agent
       const agent = await storage.getAgentByUsername(username);
       if (!agent) {
+        console.log('Agent not found for username:', username);
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
       // Verify password
       const isValidPassword = await bcrypt.compare(password, agent.password);
       if (!isValidPassword) {
+        console.log('Invalid password for username:', username);
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
       // Create session
       req.session.agentId = agent.id;
       req.session.agentUsername = agent.username;
+      
+      console.log('Session created for agent:', agent.id, 'Username:', agent.username);
+      console.log('Session ID:', req.sessionID);
 
-      res.json({ 
-        success: true, 
-        agent: { 
-          id: agent.id, 
-          username: agent.username, 
-          fullName: agent.fullName,
-          email: agent.email 
-        } 
+      // Save session explicitly 
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ error: "Session save failed" });
+        }
+        
+        console.log('Session saved successfully');
+        res.json({ 
+          success: true, 
+          agent: { 
+            id: agent.id, 
+            username: agent.username, 
+            fullName: agent.fullName,
+            email: agent.email 
+          } 
+        });
       });
     } catch (error) {
       console.error("Login error:", error);
@@ -164,11 +191,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current agent route
   app.get("/api/auth/me", requireAuth, async (req, res) => {
     try {
+      console.log('Getting agent for ID:', req.session.agentId);
       const agent = await storage.getAgent(req.session.agentId!);
       if (!agent) {
+        console.log('Agent not found in storage for ID:', req.session.agentId);
         return res.status(404).json({ error: "Agent not found" });
       }
 
+      console.log('Agent found:', agent.username);
       res.json({ 
         id: agent.id, 
         username: agent.username, 

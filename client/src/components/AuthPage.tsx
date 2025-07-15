@@ -22,24 +22,37 @@ export function AuthPage() {
       return await apiRequest("POST", "/api/auth/login", credentials);
     },
     onSuccess: async (response) => {
-      // Parse the response to get the agent data
-      const data = await response.json();
-      
-      // Directly set the auth query data to immediately update authentication state
-      queryClient.setQueryData(['/api/auth/me'], data.agent);
-      
-      // Also invalidate to ensure fresh data
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      
-      toast({
-        title: "Success",
-        description: "Logged in successfully!",
-      });
-      
-      // Small delay to ensure state is updated before redirect
-      setTimeout(() => {
-        setLocation("/");
-      }, 100);
+      try {
+        // Parse the response to get the agent data
+        const data = await response.json();
+        console.log('Login success response:', data);
+        
+        // Directly set the auth query data to immediately update authentication state
+        queryClient.setQueryData(['/api/auth/me'], data.agent);
+        console.log('Set query data to:', data.agent);
+        
+        // Also invalidate to ensure fresh data
+        queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+        console.log('Invalidated auth queries');
+        
+        toast({
+          title: "Success",
+          description: "Logged in successfully!",
+        });
+        
+        // Small delay to ensure state is updated before redirect
+        setTimeout(() => {
+          console.log('Redirecting to home page');
+          setLocation("/");
+        }, 100);
+      } catch (error) {
+        console.error('Login success handler error:', error);
+        toast({
+          title: "Error",
+          description: "Login response parsing failed",
+          variant: "destructive",
+        });
+      }
     },
     onError: (error: any) => {
       toast({
