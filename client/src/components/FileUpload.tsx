@@ -272,6 +272,8 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
                             const stageLabels = ['Read', 'Extract', 'Analyze', 'Benefits', 'Summary', 'Bullets', 'Finalize'];
                             const stageIndex = stages.findIndex(stage => stage === currentStage);
                             const isActive = i <= stageIndex;
+                            const isCurrentStep = i === stageIndex;
+                            const isCompleted = i < stageIndex;
                             
                             return (
                               <div key={i} className="flex flex-col items-center">
@@ -283,18 +285,33 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
                                         : 'bg-gray-200 text-gray-500'
                                     }`}
                                   >
-                                    {isActive ? '✓' : i + 1}
+                                    {isCurrentStep ? (
+                                      <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : isCompleted ? (
+                                      '✓'
+                                    ) : (
+                                      i + 1
+                                    )}
                                   </div>
+                                  {isCurrentStep && (
+                                    <div className="absolute inset-0 rounded-full bg-blue-600 opacity-20 animate-ping" />
+                                  )}
                                   {i < 6 && (
                                     <div 
-                                      className={`absolute top-5 left-10 w-full h-0.5 transition-all duration-500 ${
-                                        i < stageIndex ? 'bg-blue-600' : 'bg-gray-300'
+                                      className={`absolute top-5 left-10 h-0.5 transition-all duration-500 ${
+                                        i < stageIndex ? 'bg-blue-600' : 
+                                        i === stageIndex ? 'bg-gray-300 animate-pulse' :
+                                        'bg-gray-300'
                                       }`}
                                       style={{ width: '40px' }}
                                     />
                                   )}
                                 </div>
-                                <span className={`text-xs mt-1 ${isActive ? 'text-blue-600 font-medium' : 'text-gray-400'}`}>
+                                <span className={`text-xs mt-1 transition-all duration-300 ${
+                                  isCurrentStep ? 'text-blue-600 font-semibold animate-pulse' : 
+                                  isActive ? 'text-blue-600 font-medium' : 
+                                  'text-gray-400'
+                                }`}>
                                   {stageLabels[i]}
                                 </span>
                               </div>
