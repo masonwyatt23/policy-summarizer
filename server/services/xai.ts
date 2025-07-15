@@ -17,7 +17,9 @@ export class XAIService {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutes timeout
+      // Increase timeout for deployed environments (5 minutes for analysis)
+      const analysisTimeout = process.env.NODE_ENV === 'production' ? 300000 : 180000;
+      const timeoutId = setTimeout(() => controller.abort(), analysisTimeout);
 
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -171,7 +173,8 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
     } catch (error) {
       console.error('xAI analysis failed:', error);
       if (error.name === 'AbortError') {
-        throw new Error('xAI analysis request timed out. Please try again.');
+        const timeoutMinutes = process.env.NODE_ENV === 'production' ? 5 : 3;
+        throw new Error(`Document analysis timed out after ${timeoutMinutes} minutes. This usually happens with very large documents. Please try again or contact support.`);
       }
       throw error;
     }
@@ -182,7 +185,9 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
       console.log(`📝 xAI generating ${summaryLength} summary for ${policyData.policyType || 'unknown'} policy`);
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 seconds timeout for summary generation
+      // Increase timeout for deployed environments (3 minutes for summary)
+      const summaryTimeout = process.env.NODE_ENV === 'production' ? 180000 : 120000;
+      const timeoutId = setTimeout(() => controller.abort(), summaryTimeout);
       
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',

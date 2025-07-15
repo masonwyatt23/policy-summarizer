@@ -684,8 +684,8 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
     // Wrap document processing with timeout for deployment environments
     const processingPromise = documentProcessor.processDocument(buffer, filename, options);
     
-    // Set timeout based on environment (longer for development, shorter for production)
-    const timeoutMs = process.env.NODE_ENV === 'production' ? 300000 : 600000; // 5 or 10 minutes
+    // Set timeout based on environment (longer for production to handle larger documents)
+    const timeoutMs = process.env.NODE_ENV === 'production' ? 900000 : 600000; // 15 or 10 minutes
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('Document processing timed out')), timeoutMs);
     });
@@ -723,11 +723,13 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
     // Provide more specific error messages for deployment troubleshooting
     let errorMessage = 'Processing failed';
     if (error.message.includes('timeout')) {
-      errorMessage = 'Document processing timed out - please try again or contact support';
+      errorMessage = 'Document processing timed out. This usually happens with very large documents (over 50 pages). Please try splitting the document into smaller sections or contact support.';
     } else if (error.message.includes('API') || error.message.includes('fetch')) {
-      errorMessage = 'External service unavailable - please try again in a few minutes';
+      errorMessage = 'External AI service temporarily unavailable. Please wait a few minutes and try again.';
     } else if (error.message.includes('extract')) {
-      errorMessage = 'Unable to extract text from document - please ensure it contains readable text';
+      errorMessage = 'Unable to extract text from document. Please ensure the PDF contains readable text (not just images).';
+    } else if (error.message.includes('xAI')) {
+      errorMessage = error.message; // Pass through xAI-specific error messages
     } else {
       errorMessage = error instanceof Error ? error.message : 'Processing failed';
     }

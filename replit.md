@@ -501,6 +501,14 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced login/register redirect logic with deployment-specific handling
   - Added longer delays (500ms) for session establishment in deployed environments
   - Implemented window.location.href redirect for Replit deployment domains
+- July 15, 2025: Fixed PDF processing timeouts for large documents in deployed environments
+  - Increased xAI analysis timeout from 2 minutes to 5 minutes for production
+  - Increased xAI summary generation timeout from 90 seconds to 3 minutes for production
+  - Increased overall document processing timeout from 5 minutes to 15 minutes for production
+  - Added text length warnings for documents over 100,000 characters
+  - Enhanced error messages to provide clearer guidance for timeout issues
+  - Added specific timeout messages that explain large document limitations
+  - Improved error handling to differentiate between different types of processing failures
 
 ## Changelog
 - July 01, 2025. Initial setup

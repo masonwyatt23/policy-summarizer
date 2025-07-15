@@ -24,6 +24,11 @@ export class DocumentProcessor {
       console.log(`📄 Processing ${extractedText.length} characters of document text`);
       console.log(`📋 Summary length requested: ${options?.summaryLength || 'detailed'}`);
       
+      // Add text length warning for large documents
+      if (extractedText.length > 100000) {
+        console.warn(`⚠️ Large document detected (${Math.round(extractedText.length/1000)}k characters) - processing may take longer`);
+      }
+      
       const policyData = await xaiService.analyzePolicy(extractedText);
       const summaryLength = options?.summaryLength || 'detailed';
       
