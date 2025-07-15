@@ -463,12 +463,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Describes platform as "Insurance Document Intelligence Platform" with clear value proposition
   - Added feature indicators for AI-Powered Analysis, Professional PDFs, and Client-Focused approach
 - July 15, 2025: Redesigned authentication page with professional two-column layout
-  - Created stunning two-column layout with description on left and login form on right
+  - Created stunning two-column layout with login form on left and description on right
   - Enhanced visual design with gradient background and professional styling
   - Removed DOCX references from description since testing only uses PDF files
   - Added beautiful feature cards with icons and descriptions for each platform capability
   - Improved responsive design with proper mobile and desktop layouts
   - Enhanced typography with large gradient text headings and professional card styling
+  - Swapped layout positioning per user preference: login card on left, description on right
 
 ## Changelog
 - July 01, 2025. Initial setup
