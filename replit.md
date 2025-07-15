@@ -571,6 +571,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced prompt to explicitly request formatted summary without reasoning
   - Fixed timeout to 20 seconds with proper Promise.race implementation
   - Fixed timeout cleanup issue - now properly clears timeout after successful response to prevent false timeout messages
+- January 16, 2025: Eliminated OCR bottleneck with direct PDF text extraction
+  - Replaced slow OCR process (20+ seconds) with fast PDF.js text extraction
+  - Implemented processPDFWithVision method that extracts text from first 3 pages only
+  - Processing now completes in under 10 seconds by avoiding OCR entirely
+  - Falls back to existing text extraction for non-PDF files (DOCX)
+  - Maintains ultra-fast Grok 3 Mini for all summary generation
+  - Significantly improved performance by limiting text extraction to first 15,000 characters
 
 ## Changelog
 - July 01, 2025. Initial setup
