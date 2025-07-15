@@ -685,7 +685,9 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
     const processingPromise = documentProcessor.processDocument(buffer, filename, options);
     
     // Set timeout based on environment (longer for production to handle larger documents)
-    const timeoutMs = process.env.NODE_ENV === 'production' ? 900000 : 600000; // 15 or 10 minutes
+    // Check both NODE_ENV and Replit deployment indicators
+    const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT === '1';
+    const timeoutMs = isDeployed ? 900000 : 600000; // 15 or 10 minutes
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('Document processing timed out')), timeoutMs);
     });

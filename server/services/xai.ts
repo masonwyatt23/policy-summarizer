@@ -10,16 +10,29 @@ export class XAIService {
     if (!this.apiKey) {
       throw new Error('XAI_API_KEY environment variable is required');
     }
+    console.log('🔑 xAI service initialized');
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔗 API endpoint: ${this.baseUrl}`);
   }
 
   async analyzePolicy(documentText: string): Promise<PolicyData> {
     console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok`);
+    console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
+    const startTime = Date.now();
 
     try {
       const controller = new AbortController();
       // Increase timeout for deployed environments (5 minutes for analysis)
-      const analysisTimeout = process.env.NODE_ENV === 'production' ? 300000 : 180000;
-      const timeoutId = setTimeout(() => controller.abort(), analysisTimeout);
+      // Check both NODE_ENV and Replit deployment indicators
+      const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT === '1';
+      const analysisTimeout = isDeployed ? 300000 : 180000;
+      const timeoutId = setTimeout(() => {
+        console.error(`⏱️ xAI analysis timeout after ${Date.now() - startTime}ms`);
+        controller.abort();
+      }, analysisTimeout);
+
+      console.log(`📤 Sending request to xAI API at ${new Date().toISOString()}`);
+      console.log(`⏱️ Timeout set to ${analysisTimeout}ms (${analysisTimeout/60000} minutes)`);
 
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -135,17 +148,31 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
           temperature: 0.1,
           max_tokens: 8000
         })
+      }).catch(error => {
+        clearTimeout(timeoutId);
+        console.error(`❌ Fetch error after ${Date.now() - startTime}ms:`, error);
+        throw error;
       });
 
       clearTimeout(timeoutId);
+      console.log(`📥 Received response from xAI API after ${Date.now() - startTime}ms`);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('xAI API error:', response.status, errorText);
-        throw new Error(`xAI API error: ${response.status}`);
+        console.error(`❌ xAI API error: ${response.status}`);
+        let errorText = '';
+        try {
+          errorText = await response.text();
+          console.error('Error details:', errorText);
+        } catch (e) {
+          console.error('Failed to read error response:', e);
+        }
+        throw new Error(`xAI API error: ${response.status} - ${errorText}`);
       }
 
+      console.log(`📊 Parsing response JSON...`);
       const data = await response.json();
+      console.log(`✅ Response parsed successfully after ${Date.now() - startTime}ms`);
+      
       const content = data.choices[0]?.message?.content;
       
       if (!content) {
@@ -167,27 +194,46 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
         }
       }
 
-      console.log('✅ xAI Analysis Complete:', policyData.policyType);
+      console.log(`✅ xAI Analysis Complete in ${Date.now() - startTime}ms:`, policyData.policyType);
       return policyData;
 
     } catch (error) {
-      console.error('xAI analysis failed:', error);
+      const elapsed = Date.now() - startTime;
+      console.error(`❌ xAI analysis failed after ${elapsed}ms:`, error);
+      
       if (error.name === 'AbortError') {
-        const timeoutMinutes = process.env.NODE_ENV === 'production' ? 5 : 3;
+        const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT === '1';
+        const timeoutMinutes = isDeployed ? 5 : 3;
         throw new Error(`Document analysis timed out after ${timeoutMinutes} minutes. This usually happens with very large documents. Please try again or contact support.`);
       }
+      
+      // Add more specific error handling for network issues
+      if (error.message.includes('fetch failed') || error.message.includes('ECONNREFUSED')) {
+        throw new Error('Unable to connect to AI service. Please check your internet connection and try again.');
+      }
+      
       throw error;
     }
   }
 
   async generateEnhancedSummary(policyData: PolicyData, clientContext?: string, summaryLength: 'short' | 'detailed' = 'detailed'): Promise<string> {
+    const startTime = Date.now();
+    
     try {
       console.log(`📝 xAI generating ${summaryLength} summary for ${policyData.policyType || 'unknown'} policy`);
+      console.log(`📊 Policy data size: ${JSON.stringify(policyData).length} characters`);
       
       const controller = new AbortController();
       // Increase timeout for deployed environments (3 minutes for summary)
-      const summaryTimeout = process.env.NODE_ENV === 'production' ? 180000 : 120000;
-      const timeoutId = setTimeout(() => controller.abort(), summaryTimeout);
+      // Check both NODE_ENV and Replit deployment indicators
+      const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT === '1';
+      const summaryTimeout = isDeployed ? 180000 : 120000;
+      const timeoutId = setTimeout(() => {
+        console.error(`⏱️ xAI summary timeout after ${Date.now() - startTime}ms`);
+        controller.abort();
+      }, summaryTimeout);
+      
+      console.log(`📤 Sending summary request to xAI API at ${new Date().toISOString()}`);
       
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -395,15 +441,31 @@ Create a transformative 5-paragraph business intelligence summary where the fina
           temperature: 0.3,
           max_tokens: summaryLength === 'short' ? 1000 : 3000
         })
+      }).catch(error => {
+        clearTimeout(timeoutId);
+        console.error(`❌ Summary fetch error after ${Date.now() - startTime}ms:`, error);
+        throw error;
       });
 
       clearTimeout(timeoutId);
+      console.log(`📥 Received summary response from xAI API after ${Date.now() - startTime}ms`);
 
       if (!response.ok) {
-        throw new Error(`xAI API error: ${response.status}`);
+        console.error(`❌ xAI summary API error: ${response.status}`);
+        let errorText = '';
+        try {
+          errorText = await response.text();
+          console.error('Summary error details:', errorText);
+        } catch (e) {
+          console.error('Failed to read summary error response:', e);
+        }
+        throw new Error(`xAI API error: ${response.status} - ${errorText}`);
       }
 
+      console.log(`📊 Parsing summary response JSON...`);
       const data = await response.json();
+      console.log(`✅ Summary response parsed successfully after ${Date.now() - startTime}ms`);
+      
       const content = data.choices[0]?.message?.content || 'Summary generation failed';
       
       // Check if response appears truncated (incomplete sentence or section)

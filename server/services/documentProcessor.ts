@@ -11,25 +11,34 @@ export class DocumentProcessor {
     summary: string;
   }> {
     try {
+      console.log(`📄 Starting document processing for: ${filename}`);
       const extractedText = await this.extractTextFromDocument(buffer, filename);
       
       if (!extractedText || extractedText.trim().length === 0) {
         throw new Error('No text content could be extracted from the document');
+      }
+      
+      // Truncate extremely large documents to prevent API issues
+      const maxTextLength = 150000; // ~50 pages of text
+      let processedText = extractedText;
+      if (extractedText.length > maxTextLength) {
+        console.warn(`⚠️ Document text truncated from ${extractedText.length} to ${maxTextLength} characters`);
+        processedText = extractedText.substring(0, maxTextLength);
       }
 
 
 
       // Use xAI exclusively for superior policy analysis and summaries
       console.log('🚀 Using xAI (Grok) for comprehensive policy analysis...');
-      console.log(`📄 Processing ${extractedText.length} characters of document text`);
+      console.log(`📄 Processing ${processedText.length} characters of document text`);
       console.log(`📋 Summary length requested: ${options?.summaryLength || 'detailed'}`);
       
       // Add text length warning for large documents
-      if (extractedText.length > 100000) {
-        console.warn(`⚠️ Large document detected (${Math.round(extractedText.length/1000)}k characters) - processing may take longer`);
+      if (processedText.length > 100000) {
+        console.warn(`⚠️ Large document detected (${Math.round(processedText.length/1000)}k characters) - processing may take longer`);
       }
       
-      const policyData = await xaiService.analyzePolicy(extractedText);
+      const policyData = await xaiService.analyzePolicy(processedText);
       const summaryLength = options?.summaryLength || 'detailed';
       
       console.log(`📝 Generating ${summaryLength} summary...`);
