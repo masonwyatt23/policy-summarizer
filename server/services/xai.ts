@@ -659,10 +659,11 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
     try {
       const controller = new AbortController();
       const timeout = 20000; // 20 second timeout for ultra-fast summaries with grok-3-mini-fast
+      let timeoutId: NodeJS.Timeout;
       
       // Create timeout promise that will resolve with error
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
           console.error(`⏱️ Quick summary timeout after ${Date.now() - startTime}ms`);
           controller.abort();
           reject(new Error('Summary generation timeout'));
@@ -711,6 +712,9 @@ Policy text: ${truncatedText}`
 
       // Race between fetch and timeout
       const response = await Promise.race([fetchPromise, timeoutPromise]);
+      
+      // Clear timeout since we got a response
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -740,6 +744,10 @@ Policy text: ${truncatedText}`
       return content.trim();
 
     } catch (error) {
+      // Clear timeout on error too
+      if (typeof timeoutId !== 'undefined') {
+        clearTimeout(timeoutId);
+      }
       console.error('Quick summary generation error:', error);
       if (error.name === 'AbortError') {
         return `[Your Coverage Summary]

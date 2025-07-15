@@ -570,6 +570,7 @@ This is a full-stack policy document processing application built for Valley Tru
   - Updated content extraction to check both 'content' and 'reasoning_content' fields
   - Enhanced prompt to explicitly request formatted summary without reasoning
   - Fixed timeout to 20 seconds with proper Promise.race implementation
+  - Fixed timeout cleanup issue - now properly clears timeout after successful response to prevent false timeout messages
 
 ## Changelog
 - July 01, 2025. Initial setup
