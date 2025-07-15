@@ -106,6 +106,9 @@ export class PDFGenerator {
             max-width: 210mm;
             margin: 0 auto;
             padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
         .header {
@@ -146,8 +149,8 @@ export class PDFGenerator {
         
         .policy-header {
             text-align: center;
-            margin: 8px 0;
-            padding: 8px;
+            margin: 6px 0;
+            padding: 6px;
             background: #f8f9fa;
             color: #000000;
             border: 1px solid #dee2e6;
@@ -156,7 +159,7 @@ export class PDFGenerator {
         
         .policy-header.with-client-logo {
             text-align: left;
-            padding: 10px;
+            padding: 6px;
         }
         
         .policy-header-with-logo {
@@ -172,15 +175,15 @@ export class PDFGenerator {
         }
         
         .policy-client-details {
-            padding-top: 10px;
-            margin-top: 10px;
+            padding-top: 6px;
+            margin-top: 6px;
             border-top: 1px solid #dee2e6;
-            font-size: 12px;
+            font-size: 10px;
             color: #333;
         }
         
         .policy-client-details div {
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         
         .policy-client-details strong {
@@ -189,23 +192,27 @@ export class PDFGenerator {
         }
         
         .policy-header h1 {
-            font-size: 14px;
-            margin-bottom: 3px;
+            font-size: 12px;
+            margin-bottom: 2px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
         .policy-header p {
-            font-size: 11px;
+            font-size: 10px;
             font-style: italic;
             font-weight: 500;
         }
         
         .summary-content {
-            padding: 10px 0;
+            padding: 15px 0;
             background: white;
-            margin: 10px 0;
+            margin: 15px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
         }
         
         .summary-wrapper {
@@ -222,10 +229,10 @@ export class PDFGenerator {
         }
         
         .subheader {
-            font-size: 12px;
+            font-size: 14px;
             color: #000000;
-            margin: 0 0 4px 0;
-            padding: 4px 0;
+            margin: 0 0 8px 0;
+            padding: 6px 0;
             border-bottom: 1px solid #000000;
             font-weight: 700;
             text-transform: uppercase;
@@ -238,10 +245,10 @@ export class PDFGenerator {
         }
         
         .section-paragraph {
-            font-size: 13px;
-            line-height: 1.5;
+            font-size: 14px;
+            line-height: 1.7;
             color: #1e293b;
-            margin: 0 0 8px 0;
+            margin: 0 0 12px 0;
             text-align: justify;
             hyphens: auto;
         }
@@ -259,10 +266,10 @@ export class PDFGenerator {
         }
         
         .regular-paragraph {
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 14px;
+            line-height: 1.7;
             color: #1e293b;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             text-align: justify;
             hyphens: auto;
             text-indent: 0;
@@ -370,12 +377,13 @@ export class PDFGenerator {
         }
         
         .footer {
-            margin-top: 15px;
+            margin-top: auto;
             padding: 8px 0 6px 0;
             text-align: center;
             background: #ffffff;
             border-top: 1px solid #000000;
             page-break-inside: avoid;
+            flex-shrink: 0;
         }
         
         .footer p {
@@ -402,11 +410,12 @@ export class PDFGenerator {
         }
         
         .agent-signature {
-            margin-top: 12px;
+            margin-top: auto;
             padding: 8px 0;
             background: #ffffff;
             text-align: left;
             border-top: 1px solid #000000;
+            flex-shrink: 0;
         }
         
         .agent-signature h3 {
@@ -485,7 +494,7 @@ export class PDFGenerator {
             ${options.clientLogo ? `
             <div class="policy-header-with-logo">
                 <div class="client-logo-section">
-                    <img src="${options.clientLogo}" alt="Client Logo" style="max-height: 60px; max-width: 150px; object-fit: contain; border: 1px solid #dee2e6; border-radius: 4px; padding: 6px; background: white;">
+                    <img src="${options.clientLogo}" alt="Client Logo" style="max-height: 40px; max-width: 100px; object-fit: contain; border: 1px solid #dee2e6; border-radius: 2px; padding: 4px; background: white;">
                 </div>
                 <div class="policy-main-section">
                     <h1>${policyData.policyType} Policy</h1>
