@@ -57,6 +57,8 @@ CRITICAL ACCURACY REQUIREMENTS:
 • INCLUDE ALL exclusions and limitations found in the document
 • IDENTIFY and NOTE any contradictory information
 • EXPLICITLY STATE when details cannot be verified from the provided text
+• NEVER mention OCR errors, scanning issues, or document quality problems
+• Focus only on the information that IS available, not what's missing
 
 POLICY NUMBER IDENTIFICATION:
 • Look for numbers labeled as "Policy Number", "Policy No.", or similar
@@ -351,28 +353,33 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
               content: summaryLength === 'short' ? 
                 `You are explaining an insurance policy in simple, everyday language that anyone can understand.
 
-MISSION: Write ONE concise paragraph that clearly explains what this policy covers and why it matters.
+MISSION: Create a brief, professional summary with key information in an easy-to-read format.
 
 **CRITICAL REQUIREMENTS:**
-- Write ONLY one continuous paragraph (100-150 words maximum)
-- Start with the simple header [Your Coverage Summary] then write ONE flowing paragraph
-- Do NOT say phrases like "As your insurance agent" or mention your experience
-- Do NOT create multiple paragraphs, sections, bullet points, or lists
-- Get straight to the point - no introductory phrases
+- Start with header [Your Coverage Summary]
+- Write a brief overview paragraph (50-75 words)
+- Follow with [Key Coverage Points] section with 4-5 bullet points
+- Never mention OCR errors, scanning issues, or document quality
+- Focus only on what the policy DOES cover, not what's missing
 
-**What to Include:**
+**Overview Paragraph Should Include:**
 - Policy type and insurance company name
-- Main coverage amounts (use specific dollar amounts)
-- 1-2 practical examples of when coverage applies
-- Any major exclusions or limitations in simple terms
-- Valley Trust contact: (540) 885-5531
+- Brief description of main protection provided
+- Total coverage value if available
+
+**Bullet Points Should Cover:**
+• Specific coverage amounts and limits
+• Main protections included (property, liability, etc.)
+• Important benefits or features
+• Any significant exclusions (briefly)
+• Valley Trust contact: (540) 885-5531
 
 **Writing Style:**
-- Write in third person, not first person
-- Use clear, simple language a business owner would understand
-- Focus on practical value and real-world applications
-- Make every word count - be concise and direct
-- Avoid all insurance jargon and technical terms`
+- Professional and client-ready
+- Clear, simple language
+- Focus on value and protection
+- No technical jargon
+- Ready to print and give to client`
                 :
                 `You are an elite business insurance consultant creating transformative policy summaries that help clients understand the exceptional value and strategic protection their coverage provides.
 
@@ -411,41 +418,47 @@ VALUE-FOCUSED ENHANCEMENTS:
             {
               role: 'user',
               content: summaryLength === 'short' ?
-                `As an experienced insurance agent, create a single paragraph summary that helps this business owner understand their coverage in simple, clear terms.
+                `Create a brief, professional policy summary that a business owner can quickly understand and share with their team.
 
 POLICY INFORMATION:
 ${JSON.stringify(policyData, null, 2)}
 
-CRITICAL INSTRUCTIONS:
-• Write EXACTLY ONE paragraph only (150-200 words)
-• Start with the header [Your Coverage Summary] followed by ONE continuous paragraph
-• Do NOT create multiple paragraphs, sections, or bullet points
-• Do NOT include any additional headers or subheadings
-• Write as if you're an experienced agent explaining professionally to a valued client
-• Do NOT use casual greetings like "Hey there", "Hi", "Hello", or other informal openings
-• Start directly with the policy information
+FORMAT REQUIREMENTS:
+• Start with header [Your Coverage Summary]
+• Write ONE brief overview paragraph (50-75 words)
+• Follow with header [Key Coverage Points]
+• List 4-5 clear bullet points with essential information
+• Total length: 150-200 words including bullets
 
-WHAT TO INCLUDE IN YOUR SINGLE PARAGRAPH:
-• What type of policy this is and the insurance company name
-• What specific things are covered with dollar amounts
-• 1-2 real examples of when this coverage would help their business
-• Any important limitations they should know about
-• How this protects their business day-to-day
-• Contact information for questions
+OVERVIEW PARAGRAPH MUST INCLUDE:
+• Insurance company name and policy type
+• Brief description of main protection
+• Total coverage value or primary limit
 
-WRITING STYLE:
-• Write like a knowledgeable, experienced insurance agent
-• Use conversational, reassuring tone
-• Avoid insurance jargon completely
-• Do NOT use casual greetings like "Hey there", "Hi", "Hello", or other informal openings
-• Start directly with the policy information
-• Give specific examples they can relate to
-• Make them feel confident and secure about their coverage
-• Keep sentences clear and easy to understand
+BULLET POINTS MUST COVER:
+• General liability limit (e.g., "$2 million per occurrence")
+• Property coverage amount if applicable
+• Key included protections (brief descriptions)
+• One major exclusion or limitation (if critical)
+• Valley Trust contact: (540) 885-5531
 
-REMEMBER: Output format should be:
+PROFESSIONAL STANDARDS:
+• Never mention document quality, OCR issues, or missing information
+• Focus only on what IS covered, not what's unclear
+• Use simple business language, no insurance jargon
+• Make it client-ready - suitable for printing and sharing
+• Be factual and specific with coverage amounts
+
+EXAMPLE OUTPUT:
 [Your Coverage Summary]
-[Single continuous paragraph explaining everything]`
+This ErieSecure Business policy from Erie Insurance provides comprehensive protection for your business operations. The policy combines general liability, property coverage, and business income protection with total coverage limits exceeding $3 million.
+
+[Key Coverage Points]
+• General Liability: $2 million per occurrence, $4 million aggregate
+• Building Coverage: $1.5 million replacement cost for your property
+• Business Income: 12 months coverage for lost income during repairs
+• Includes equipment breakdown and cyber liability protection
+• Questions? Contact Valley Trust Insurance at (540) 885-5531`
                 :
                 `Create an EXTRAORDINARY, transformative policy summary that demonstrates exceptional business value and provides strategic insights that will genuinely impact this client's success. This should read like premium business consulting that builds confidence and drives action.
 

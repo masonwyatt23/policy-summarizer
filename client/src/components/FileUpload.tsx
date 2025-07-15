@@ -56,7 +56,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
         
         setUploadingFiles(prev => prev.map(f => 
           f.file === fileData.file 
-            ? { ...f, progress: 100, status: 'processing', documentId: result.documentId }
+            ? { ...f, progress: 100, status: 'processing', documentId: result.documentId, processingStage: 'Initializing AI analysis...' }
             : f
         ));
 
@@ -109,11 +109,13 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
     const maxAttempts = 60; // 5 minutes with 5-second intervals
     let attempts = 0;
     const processingStages = [
-      'Extracting text...',
-      'Analyzing document structure...',
-      'Identifying key information...',
-      'Generating client summary...',
-      'Finalizing analysis...'
+      'Reading document content...',
+      'Extracting policy information...',
+      'Analyzing coverage details...',
+      'Identifying key benefits...',
+      'Creating professional summary...',
+      'Adding bullet points...',
+      'Finalizing client-ready document...'
     ];
 
     const pollInterval = setInterval(async () => {
@@ -122,7 +124,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
         const status = await api.getDocumentStatus(documentId);
         
         // Update processing stage for better user feedback
-        const stageIndex = Math.min(Math.floor(attempts / 3), processingStages.length - 1);
+        const stageIndex = Math.min(Math.floor(attempts / 2), processingStages.length - 1);
         setUploadingFiles(prev => prev.map(f => 
           f.file === file && f.status === 'processing'
             ? { ...f, processingStage: processingStages[stageIndex] }
@@ -263,10 +265,39 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: File
                     <Progress value={fileData.progress} className="mt-2 h-2" />
                   )}
                   {fileData.status === 'processing' && (
-                    <p className="text-sm text-blue-600 mt-1 flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      {fileData.processingStage || 'Processing document...'}
-                    </p>
+                    <div className="mt-2">
+                      <div className="flex items-center">
+                        <Clock className="w-4 h-4 mr-1 text-blue-600 animate-pulse" />
+                        <p className="text-sm text-blue-600 font-medium">
+                          {fileData.processingStage || 'Processing document...'}
+                        </p>
+                      </div>
+                      <div className="mt-2 flex items-center space-x-1">
+                        {[...Array(7)].map((_, i) => {
+                          const currentStage = fileData.processingStage || '';
+                          const stages = [
+                            'Reading document content...',
+                            'Extracting policy information...',
+                            'Analyzing coverage details...',
+                            'Identifying key benefits...',
+                            'Creating professional summary...',
+                            'Adding bullet points...',
+                            'Finalizing client-ready document...'
+                          ];
+                          const stageIndex = stages.findIndex(stage => stage === currentStage);
+                          return (
+                            <div 
+                              key={i}
+                              className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                                i <= stageIndex
+                                  ? 'bg-blue-600' 
+                                  : 'bg-gray-300'
+                              }`}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                   {fileData.status === 'retrying' && (
                     <p className="text-sm text-blue-600 mt-1">

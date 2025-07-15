@@ -56,6 +56,34 @@ export function CleanSummaryPreview({ document, isLoading, editedSummary }: Clea
               
               if (subheaderMatch) {
                 const [, subheader, content] = subheaderMatch;
+                
+                // Check if content contains bullet points
+                if (content.includes('\n•')) {
+                  const [intro, ...bullets] = content.split('\n•');
+                  return (
+                    <div key={index} className="space-y-3">
+                      <h3 className="text-xl font-semibold text-foreground border-b-2 border-valley-primary pb-2 mb-3 text-valley-primary">
+                        {subheader}
+                      </h3>
+                      {intro.trim() && (
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                          {intro.trim()}
+                        </p>
+                      )}
+                      <div className="space-y-2 ml-4">
+                        {bullets.map((bullet, bulletIndex) => (
+                          <div key={bulletIndex} className="flex items-start space-x-3">
+                            <span className="text-valley-primary mt-1 font-semibold">•</span>
+                            <span className="text-lg text-muted-foreground flex-1">
+                              {bullet.trim()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                
                 return (
                   <div key={index} className="space-y-3">
                     <h3 className="text-xl font-semibold text-foreground border-b-2 border-valley-primary pb-2 mb-3 text-valley-primary">
