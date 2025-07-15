@@ -186,7 +186,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
               content: summaryLength === 'short' ? 
                 `You are a highly intelligent, experienced insurance agent with 20+ years of experience who specializes in explaining complex insurance policies to business owners in simple, clear terms.
 
-MISSION: Write ONE single paragraph that explains this policy like you're sitting across from the client, helping them understand their coverage in plain English.
+MISSION: Write ONE single paragraph that explains this policy professionally to the client, helping them understand their coverage in plain English.
 
 **CRITICAL REQUIREMENT: EXACTLY ONE PARAGRAPH ONLY**
 - Write ONLY one continuous paragraph (150-200 words)
@@ -258,7 +258,9 @@ CRITICAL INSTRUCTIONS:
 • Start with the header [Your Coverage Summary] followed by ONE continuous paragraph
 • Do NOT create multiple paragraphs, sections, or bullet points
 • Do NOT include any additional headers or subheadings
-• Write as if you're an experienced agent explaining face-to-face to a valued client
+• Write as if you're an experienced agent explaining professionally to a valued client
+• Do NOT use casual greetings like "Hey there", "Hi", "Hello", or other informal openings
+• Start directly with the policy information
 
 WHAT TO INCLUDE IN YOUR SINGLE PARAGRAPH:
 • What type of policy this is and the insurance company name
@@ -272,6 +274,8 @@ WRITING STYLE:
 • Write like a knowledgeable, experienced insurance agent
 • Use conversational, reassuring tone
 • Avoid insurance jargon completely
+• Do NOT use casual greetings like "Hey there", "Hi", "Hello", or other informal openings
+• Start directly with the policy information
 • Give specific examples they can relate to
 • Make them feel confident and secure about their coverage
 • Keep sentences clear and easy to understand

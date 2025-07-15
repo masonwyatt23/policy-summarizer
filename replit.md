@@ -470,6 +470,11 @@ This is a full-stack policy document processing application built for Valley Tru
   - Improved responsive design with proper mobile and desktop layouts
   - Enhanced typography with large gradient text headings and professional card styling
   - Swapped layout positioning per user preference: login card on left, description on right
+- July 15, 2025: Removed casual greetings from AI-generated policy summaries
+  - Updated xAI service prompts to explicitly avoid casual greetings like "Hey there", "Hi", "Hello"
+  - Modified writing style instructions to start directly with policy information
+  - Changed conversational tone from "face-to-face" to "professional" explanation
+  - Enhanced prompt instructions to maintain professional tone while avoiding informal openings
 
 ## Changelog
 - July 01, 2025. Initial setup
