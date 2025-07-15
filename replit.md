@@ -605,6 +605,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Increased max tokens from 800 to 1200 for more detailed summaries
   - Created insurance expert persona with 20+ years experience for authoritative summaries
   - Enhanced fallback summary with comprehensive coverage explanations and detailed bullet points
+- January 16, 2025: Optimized summaries for concise, professional format
+  - Reduced summary length to 100-120 words for better readability
+  - Removed casual greetings and unnecessary introductions from AI prompts
+  - Simplified bullet points to focus on key details: coverage period, policy number, primary coverage, deductible, exclusions
+  - Reduced max tokens from 1200 to 600 for more focused output
+  - Enhanced prompts to be direct and professional without casual language
 
 ## Changelog
 - July 01, 2025. Initial setup
