@@ -686,17 +686,17 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `You are an insurance professional. Create a policy summary. NEVER use casual greetings like "Hey there", "Hi", "Hello", or "as a fellow business owner".
+              content: `You are an insurance professional. Create a CONCISE policy summary. NEVER use casual greetings like "Hey there", "Hi", "Hello", or phrases like "as a fellow business owner", "let me break this down".
 
-CRITICAL: Start directly with policy information. Be professional and direct.
+CRITICAL: Start directly with "This is a [policy type] policy...". Be professional and direct. Maximum 80 words for main paragraph.
 
 Format exactly as shown:
 [Your Coverage Summary]
-This is a [policy type] policy provided by [insurance company], designed to protect your business [business name if mentioned]. It covers [list main coverages with limits]. For example, if [practical scenario], this policy would cover [specific protection]. Another scenario is if [second example]. Keep in mind, there are some limitations, like [key exclusion]. This policy ensures your business is protected by covering [main protection areas].
+This is a [policy type] policy provided by [insurance company] for [business name if mentioned]. It covers [main coverage with limit]. For example, if [brief scenario], this policy covers [protection]. Keep in mind, [key exclusion] are excluded. This policy protects your business operations.
 
 Key Details:
 • Coverage Period: [Extract exact dates]
-• Policy Number: [Extract actual policy number]
+• Policy Number: [Extract actual policy number]  
 • Primary Coverage: [Main coverage and limit]
 • Deductible: [Extract amount]
 • Key Exclusions: [1-2 main exclusions]
@@ -707,7 +707,7 @@ Policy text: ${truncatedText}`
             }
           ],
           temperature: 0.1,
-          max_tokens: 600
+          max_tokens: 400
         })
       });
 
@@ -752,7 +752,7 @@ Policy text: ${truncatedText}`
       console.error('Quick summary generation error:', error);
       if (error.name === 'AbortError') {
         return `[Your Coverage Summary]
-This is a business insurance policy designed to protect your operations. It covers general liability, property damage, and business interruption scenarios. For example, if a customer is injured on your premises, this policy would cover medical expenses and legal costs. Another scenario is if your business equipment is damaged, the policy would cover replacement costs. Keep in mind, there are some limitations, like intentional acts and certain natural disasters. This policy ensures your business is protected by covering liability and property risks.
+This is a business insurance policy provided by your insurance company. It covers general liability and property protection. For example, if a customer is injured on your premises, this policy covers medical expenses and legal costs. Keep in mind, intentional acts and certain natural disasters are excluded. This policy protects your business operations.
 
 Key Details:
 • Coverage Period: Policy dates available in full document
