@@ -611,6 +611,11 @@ This is a full-stack policy document processing application built for Valley Tru
   - Simplified bullet points to focus on key details: coverage period, policy number, primary coverage, deductible, exclusions
   - Reduced max tokens from 1200 to 600 for more focused output
   - Enhanced prompts to be direct and professional without casual language
+- January 16, 2025: Enhanced summary format and progress visualization timing
+  - Added explicit template format with practical examples and scenarios
+  - Strengthened prompts to NEVER use casual greetings like "Hey there" or "as a fellow business owner"
+  - Improved progress visualization to better reflect actual processing time (30s process, 20s analyze, 10s summarize)
+  - Enhanced fallback summary to include practical coverage examples and scenarios
 
 ## Changelog
 - July 01, 2025. Initial setup

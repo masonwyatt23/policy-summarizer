@@ -686,20 +686,20 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `You are an insurance expert. Create a concise policy summary. NO casual greetings or introductions.
+              content: `You are an insurance professional. Create a policy summary. NEVER use casual greetings like "Hey there", "Hi", "Hello", or "as a fellow business owner".
 
-IMPORTANT: Return ONLY the formatted summary below. Do not include any reasoning or explanations.
+CRITICAL: Start directly with policy information. Be professional and direct.
 
 Format exactly as shown:
 [Your Coverage Summary]
-(Write a 100-120 word paragraph explaining what this policy covers and its key protections. Be direct and professional. No greetings or casual language.)
+This is a [policy type] policy provided by [insurance company], designed to protect your business [business name if mentioned]. It covers [list main coverages with limits]. For example, if [practical scenario], this policy would cover [specific protection]. Another scenario is if [second example]. Keep in mind, there are some limitations, like [key exclusion]. This policy ensures your business is protected by covering [main protection areas].
 
 Key Details:
-• Coverage Period: (Extract exact dates)
-• Policy Number: (Extract actual policy number)
-• Primary Coverage: (Main coverage and limit)
-• Deductible: (Extract amount)
-• Key Exclusions: (1-2 main exclusions)
+• Coverage Period: [Extract exact dates]
+• Policy Number: [Extract actual policy number]
+• Primary Coverage: [Main coverage and limit]
+• Deductible: [Extract amount]
+• Key Exclusions: [1-2 main exclusions]
 
 Contact Valley Trust: (540) 885-5531
 
@@ -752,7 +752,7 @@ Policy text: ${truncatedText}`
       console.error('Quick summary generation error:', error);
       if (error.name === 'AbortError') {
         return `[Your Coverage Summary]
-This business insurance policy provides essential protection for your operations, covering general liability, property damage, and business interruption scenarios. The policy protects against customer injuries, property damage claims, and operational losses that could impact your business financially. Coverage includes protection for business assets, equipment, and day-to-day operations.
+This is a business insurance policy designed to protect your operations. It covers general liability, property damage, and business interruption scenarios. For example, if a customer is injured on your premises, this policy would cover medical expenses and legal costs. Another scenario is if your business equipment is damaged, the policy would cover replacement costs. Keep in mind, there are some limitations, like intentional acts and certain natural disasters. This policy ensures your business is protected by covering liability and property risks.
 
 Key Details:
 • Coverage Period: Policy dates available in full document
