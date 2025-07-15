@@ -8,8 +8,11 @@ export class XAIService {
   constructor() {
     this.apiKey = process.env.XAI_API_KEY!;
     if (!this.apiKey) {
-      throw new Error('XAI_API_KEY environment variable is required');
+      console.error('🔴 XAI_API_KEY is missing in environment variables');
+      console.error('🔴 Available environment vars:', Object.keys(process.env).filter(k => !k.includes('SECRET')).join(', '));
+      throw new Error('XAI_API_KEY environment variable is required. Please ensure it is set in the deployment environment.');
     }
+    console.log('✅ XAI service initialized with API key');
   }
 
   async analyzePolicy(documentText: string): Promise<PolicyData> {

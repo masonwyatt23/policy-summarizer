@@ -65,17 +65,31 @@ export const api = {
       formData.append('options', JSON.stringify(options));
     }
     
+    console.log(`📤 Uploading document: ${file.name} (${file.size} bytes)`);
+    console.log(`📤 Options:`, options);
+    
     const response = await fetch('/api/documents/upload', {
       method: 'POST',
       body: formData,
+      credentials: 'same-origin', // Ensure cookies are sent in deployment
     });
     
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Upload failed');
+      let errorMessage = 'Upload failed';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || errorMessage;
+        console.error('📤 Upload error response:', error);
+      } catch (e) {
+        console.error('📤 Failed to parse error response:', e);
+        errorMessage = `Upload failed with status ${response.status}`;
+      }
+      throw new Error(errorMessage);
     }
     
-    return response.json();
+    const result = await response.json();
+    console.log('📤 Upload successful:', result);
+    return result;
   },
 
   async getDocumentStatus(id: number): Promise<DocumentStatus> {

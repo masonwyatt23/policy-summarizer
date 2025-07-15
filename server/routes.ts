@@ -33,7 +33,7 @@ const upload = multer({
       cb(new Error('Only PDF and DOCX files are allowed'));
     }
   },
-});
+}).single('document'); // Add error handler for multer
 
 // Authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
@@ -223,10 +223,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload and process policy document
-  app.post("/api/documents/upload", requireAuth, upload.single('document'), async (req, res) => {
+  // Upload and process policy document with error handling
+  app.post("/api/documents/upload", requireAuth, (req, res, next) => {
+    upload(req, res, (err) => {
+      if (err) {
+        console.error("📤 Multer error:", err);
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(413).json({ error: 'File too large. Maximum size is 10MB.' });
+        }
+        return res.status(400).json({ error: err.message || 'File upload failed' });
+      }
+      next();
+    });
+  }, async (req, res) => {
     try {
+      console.log("📤 Upload request received - Environment:", process.env.NODE_ENV);
+      console.log("📤 Request file:", req.file ? `${req.file.originalname} (${req.file.size} bytes)` : 'NO FILE');
+      console.log("📤 XAI_API_KEY available:", !!process.env.XAI_API_KEY);
+      
       if (!req.file) {
+        console.error("📤 Upload failed: No file in request");
         return res.status(400).json({ error: "No file uploaded" });
       }
 
@@ -766,6 +782,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 // Background document processing
 async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string, options?: any) {
   try {
+    console.log(`🔄 Starting async processing for document ${documentId}`);
+    console.log(`🔄 Buffer size: ${buffer.length} bytes, filename: ${filename}`);
+    console.log(`🔄 Processing options:`, options);
+    
     const result = await documentProcessor.processDocument(buffer, filename, options);
     
     // Update the document

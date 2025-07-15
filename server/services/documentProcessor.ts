@@ -39,7 +39,19 @@ export class DocumentProcessor {
         summary,
       };
     } catch (error) {
-      console.error('Document processing error:', error);
+      console.error('🔴 Document processing error:', error);
+      console.error('🔴 Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      
+      // Provide more specific error messages for deployment issues
+      if (error instanceof Error) {
+        if (error.message.includes('XAI_API_KEY')) {
+          throw new Error('AI service configuration error. Please ensure XAI_API_KEY is set in deployment environment.');
+        }
+        if (error.message.includes('fetch failed')) {
+          throw new Error('AI service connection failed. This may be a temporary network issue. Please try again.');
+        }
+      }
+      
       throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }

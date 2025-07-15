@@ -490,6 +490,14 @@ This is a full-stack policy document processing application built for Valley Tru
   - Changed authentication redirect to use window.location.href for full page reload
   - Fixed session cookie settings for deployment (secure: false, sameSite: 'lax')
   - Enhanced debugging to track session state in both development and deployment environments
+- July 15, 2025: Enhanced user experience with upload feedback and fixed deployment upload issues
+  - Added helpful text under "Upload Policy Document" mentioning AI analysis may take 1-2 minutes
+  - Enhanced upload error handling with comprehensive debugging for deployment issues
+  - Added multer error handler for file size limits (413 status for files over 10MB)
+  - Added credentials: 'same-origin' to upload requests for proper cookie handling in deployment
+  - Enhanced XAI service initialization with better error messages for missing API keys
+  - Added client-side debugging for upload failures with detailed console logging
+  - Improved error messages to help diagnose deployment-specific issues (API keys, network, file size)
 
 ## Changelog
 - July 01, 2025. Initial setup
