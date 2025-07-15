@@ -628,6 +628,8 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added instructions to find real policy numbers, coverage amounts, business names, dates
   - Increased max tokens to 500 for complete data extraction
   - Improved prompt to identify and use specific dollar amounts and exclusions from document
+  - Adjusted progress timing: Process (10s), Analyze (10s), Summarize (remaining time)
+  - Most processing time now spent on "Summarize" stage as requested
 
 ## Changelog
 - July 01, 2025. Initial setup

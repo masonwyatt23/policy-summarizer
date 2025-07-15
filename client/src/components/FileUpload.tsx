@@ -117,16 +117,16 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
         attempts++;
         const status = await api.getDocumentStatus(documentId);
         
-        // Update processing stage to cycle through smoothly
+        // Update processing stage to move quickly through stages
         let stageIndex = 0;
-        if (attempts <= 2) {
-          // Process stage - document upload and text extraction
+        if (attempts <= 1) {
+          // Process stage - quick initial processing (10 seconds)
           stageIndex = 0;
-        } else if (attempts <= 4) {
-          // Analyze stage - OCR and analysis
+        } else if (attempts <= 2) {
+          // Analyze stage - analysis phase (10 seconds)
           stageIndex = 1;
         } else {
-          // Summarize stage - AI summary generation
+          // Summarize stage - most time spent here
           stageIndex = 2;
         }
         setUploadingFiles(prev => prev.map(f => 
