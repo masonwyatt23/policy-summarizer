@@ -10,10 +10,10 @@ export class XAIService {
     if (!this.apiKey) {
       throw new Error('XAI_API_KEY environment variable is required');
     }
-    console.log('🔑 xAI service initialized with Grok 4');
+    console.log('🔑 xAI service initialized with Grok 3 Mini Fast');
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 API endpoint: ${this.baseUrl}`);
-    console.log(`🤖 Model: grok-4-0709 (fastest, most advanced)`);
+    console.log(`🤖 Model: grok-3-mini-fast (ultra-fast responses)`);
   }
 
   async analyzePolicy(documentText: string, summaryLength: string = 'detailed'): Promise<PolicyData> {
@@ -658,16 +658,22 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
 
     try {
       const controller = new AbortController();
-      const timeout = 30000; // 30 second timeout for ultra-fast summaries
-      const timeoutId = setTimeout(() => {
-        console.error(`⏱️ Quick summary timeout after ${Date.now() - startTime}ms`);
-        controller.abort();
-      }, timeout);
+      const timeout = 20000; // 20 second timeout for ultra-fast summaries with grok-3-mini-fast
+      
+      // Create timeout promise that will resolve with error
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          console.error(`⏱️ Quick summary timeout after ${Date.now() - startTime}ms`);
+          controller.abort();
+          reject(new Error('Summary generation timeout'));
+        }, timeout);
+      });
 
-      // Take only first 30k characters for faster processing
-      const truncatedText = documentText.substring(0, 30000);
+      // Take only first 20k characters for even faster processing with mini model
+      const truncatedText = documentText.substring(0, 20000);
 
-      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+      // Race between API call and timeout
+      const fetchPromise = fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -675,15 +681,14 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
         },
         signal: controller.signal,
         body: JSON.stringify({
-          model: 'grok-4-0709',
+          model: 'grok-3-mini-fast',
           messages: [
             {
               role: 'user',
-              content: `You're an insurance agent. Write a brief 100-word summary of this policy followed by 4 bullet points with key coverage amounts.
+              content: `Brief insurance summary. 100 words + 4 bullets:
 
-Format:
 [Your Coverage Summary]
-One paragraph summary (100 words max)
+(100 word paragraph)
 
 Key coverages:
 • Coverage 1 with amount
@@ -693,19 +698,16 @@ Key coverages:
 
 Contact Valley Trust: (540) 885-5531
 
-Policy text: ${truncatedText}`
+Policy: ${truncatedText}`
             }
           ],
-          temperature: 0.2,
-          max_tokens: 400
+          temperature: 0.1,
+          max_tokens: 300
         })
-      }).catch(error => {
-        clearTimeout(timeoutId);
-        console.error(`❌ Fetch error after ${Date.now() - startTime}ms:`, error);
-        throw error;
       });
 
-      clearTimeout(timeoutId);
+      // Race between fetch and timeout
+      const response = await Promise.race([fetchPromise, timeoutPromise]);
 
       if (!response.ok) {
         throw new Error(`xAI API error: ${response.status}`);

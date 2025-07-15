@@ -1,0 +1,73 @@
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+10:18:36 PM [express] GET /api/auth/me 401 in 5ms :: {"error":"Authentication required"}
+10:18:57 PM [express] GET /api/auth/me 401 in 1ms :: {"error":"Authentication required"}
+10:19:41 PM [express] POST /api/auth/login 200 in 1660ms :: {"success":true,"agent":{"id":6,"username…
+10:19:41 PM [express] GET /api/auth/me 304 in 78ms :: {"id":6,"username":"testy","fullName":"test","e…
+10:19:42 PM [express] GET /api/documents 200 in 101ms :: [{"id":136,"originalName":"20250401121014.pd…
+10:20:10 PM [express] GET /api/settings 200 in 319ms :: {"id":10,"agentId":6,"defaultProcessingOption…
+10:20:46 PM [express] PUT /api/settings 200 in 402ms :: {"id":10,"agentId":6,"defaultProcessingOption…
+10:20:46 PM [express] GET /api/settings 200 in 76ms :: {"id":10,"agentId":6,"defaultProcessingOptions…
+10:20:55 PM [express] DELETE /api/documents/136 200 in 155ms :: {"message":"Document deleted successf…
+10:20:55 PM [express] GET /api/documents 200 in 76ms :: []
+🚀 Starting document processing for ID: 137
+📋 Processing options passed to async function: { summaryLength: 'short' }
+📋 Summary length in options: short
+📄 Starting document processing for: 20250401121014.pdf
+Starting PDF text extraction...
+Trying extraction strategy 1...
+10:21:06 PM [express] POST /api/documents/upload 200 in 443ms :: {"documentId":137,"message":"Documen…
+Strategy 1 produced insufficient text (0 chars)
+Trying extraction strategy 2...
+Strategy 2 produced insufficient text (0 chars)
+Trying extraction strategy 3...
+Lenient extraction processed 0/8 pages
+Strategy 3 produced insufficient text (0 chars)
+Trying extraction strategy 4...
+Attempting OCR extraction for image-based PDF...
+Converting PDF to images...
+Processing 8 pages with OCR...
+OCR processing page: page-1752618067588-1.png
+10:21:17 PM [express] GET /api/documents/137/status 200 in 390ms :: {"id":137,"originalName":"2025040…
+OCR processing page: page-1752618067588-2.png
+OCR processing page: page-1752618067588-3.png
+OCR processing page: page-1752618067588-4.png
+OCR processing page: page-1752618067588-5.png
+OCR processing page: page-1752618067588-6.png
+10:21:26 PM [express] GET /api/documents/137/status 304 in 153ms :: {"id":137,"originalName":"2025040…
+OCR processing page: page-1752618067588-7.png
+OCR processing page: page-1752618067588-8.png
+OCR extraction successful: 10534 characters from 7 pages
+Strategy 4 succeeded, extracted 10534 characters
+⚡ Processing document with ultra-fast summary generation...
+10:21:36 PM [express] GET /api/documents/137/status 304 in 147ms :: {"id":137,"originalName":"2025040…
+✅ Document processing completed in 35740ms
+📊 Document 137 processing completed successfully
+10:21:46 PM [express] GET /api/documents/137/status 200 in 150ms :: {"id":137,"originalName":"2025040…
+10:21:56 PM [express] GET /api/documents/137/status 304 in 149ms :: {"id":137,"originalName":"2025040…
+10:22:06 PM [express] GET /api/documents/137/status 304 in 147ms :: {"id":137,"originalName":"2025040…
+10:22:16 PM [express] GET /api/documents/137/status 304 in 147ms :: {"id":137,"originalName":"2025040…
+10:22:26 PM [express] GET /api/documents/137/status 304 in 145ms :: {"id":137,"originalName":"2025040…
+10:22:36 PM [express] GET /api/documents/137/status 304 in 147ms :: {"id":137,"originalName":"2025040…
+10:22:46 PM [express] GET /api/documents/137/status 304 in 147ms :: {"id":137,"originalName":"2025040…
+10:22:56 PM [express] GET /api/documents/137/status 304 in 149ms :: {"id":137,"originalName":"2025040…
+10:23:06 PM [express] GET /api/documents/137/status 304 in 148ms :: {"id":137,"originalName":"2025040…
+10:23:16 PM [express] GET /api/documents/137/status 304 in 146ms :: {"id":137,"originalName":"2025040…
+10:23:26 PM [express] GET /api/documents/137/status 304 in 146ms :: {"id":137,"originalName":"2025040…
+10:23:36 PM [express] GET /api/documents/137/status 304 in 149ms :: {"id":137,"originalName":"2025040…
+10:23:46 PM [express] GET /api/documents/137/status 304 in 147ms :: {"id":137,"originalName":"2025040…
+10:23:56 PM [express] GET /api/documents/137/status 304 in 146ms :: {"id":137,"originalName":"2025040…
+10:24:06 PM [express] GET /api/documents/137/status 304 in 147ms :: {"id":137,"originalName":"2025040…
+10:24:16 PM [express] GET /api/documents/137/status 304 in 147ms :: {"id":137,"originalName":"2025040…
+10:24:27 PM [express] GET /api/documents/137/status 304 in 391ms :: {"id":137,"originalName":"2025040…
+10:24:36 PM [express] GET /api/documents/137/status 304 in 150ms :: {"id":137,"originalName":"2025040…
+10:24:46 PM [express] GET /api/documents/137/status 304 in 150ms :: {"id":137,"originalName":"2025040…
+10:24:56 PM [express] GET /api/documents/137/status 304 in 150ms :: {"id":137,"originalName":"2025040…
+10:25:06 PM [express] GET /api/documents/137/status 304 in 149ms :: {"id":137,"originalName":"2025040…
+10:25:16 PM [express] GET /api/documents/137/status 304 in 149ms :: {"id":137,"originalName":"2025040…
+10:25:26 PM [express] GET /api/documents/137/status 304 in 149ms :: {"id":137,"originalName":"2025040…
+10:25:37 PM [express] GET /api/documents/137/status 304 in 398ms :: {"id":137,"originalName":"2025040…
+10:25:47 PM [express] GET /api/documents/137/status 304 in 147ms :: {"id":137,"originalName":"2025040…
+10:25:57 PM [express] GET /api/documents/137/status 304 in 149ms :: {"id":137,"originalName":"2025040…
+10:26:07 PM [express] GET /api/documents/137/status 304 in 148ms :: {"id":137,"originalName":"2025040…
