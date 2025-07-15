@@ -564,6 +564,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Reduced extracted text storage from 5k to 1k characters to minimize memory usage
   - Simplified processing options parsing - always forces 'short' summary format
   - Made the application significantly more efficient and responsive
+- January 16, 2025: Fixed xAI API response handling for grok-3-mini-fast model
+  - Discovered API returns content in 'reasoning_content' field instead of 'content'
+  - Increased max_tokens from 300 to 800 to prevent response truncation
+  - Updated content extraction to check both 'content' and 'reasoning_content' fields
+  - Enhanced prompt to explicitly request formatted summary without reasoning
+  - Fixed timeout to 20 seconds with proper Promise.race implementation
 
 ## Changelog
 - July 01, 2025. Initial setup

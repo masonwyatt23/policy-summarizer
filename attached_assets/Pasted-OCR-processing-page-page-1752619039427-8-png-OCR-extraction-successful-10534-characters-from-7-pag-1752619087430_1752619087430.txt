@@ -1,0 +1,21 @@
+OCR processing page: page-1752619039427-8.png
+OCR extraction successful: 10534 characters from 7 pages
+Strategy 4 succeeded, extracted 10534 characters
+⚡ Processing document with ultra-fast summary generation...
+xAI response received in 2041ms
+xAI response missing content: {"index":0,"message":{"role":"assistant","content":"","reasoning_content":"First, the user asked for a \"Brief insurance summary. 100 words + 4 bullets.\" Specifically:\n\n- [Your Coverage Summary] (100 word paragraph)\n\n- Key coverages: • Coverage 1 with amount • Coverage 2 with amount • Coverage 3 with amount • Coverage 4 with amount\n\n- Contact Valley Trust: (540) 885-5531\n\nI need to extract the key information from the provided policy details and summarize it into a 100-word paragraph, followed by 4 bullet points highlighting the main coverages.\n\nKey elements from the document:\n\n- Insured: MOR JEN HEATH, INC DBA DEPOT GRILLE\n\n- Policy from: Erie Insurance Company\n\n- Policy period: 05/10/2025 to 05/10/2026\n\n- Total net premium: $7,895\n\n- Main coverages:\n\n  - Commercial General Liability: Bodily injury and property damage - $1,000,000 per occurrence\n\n  - Personal and advertising injury - $1,000,000\n\n  - Medical expense payments - $5,000 per person\n\n  - Cyber suite - $50,000 aggregate\n\n  - Liquor liability - $1,000,000 per common cause\n\n  - Employment practices liability - $250,000 aggregate\n\n  - Business personal property - $341,500\n\n  I need to pick the top 4 key coverages for the bullets.\n\nFor the 100-word paragraph, I should summarize","refusal":null},"finish_reason":"length"}
+Quick summary generation error: Error: No summary content received from xAI
+    at XAIService.generateQuickSummary (/home/runner/workspace/server/services/xai.ts:731:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async DocumentProcessor.processDocument (/home/runner/workspace/server/services/documentProcessor.ts:35:28)
+    at async processDocumentAsync (/home/runner/workspace/server/routes.ts:675:20)
+Document processing error: Error: No summary content received from xAI
+    at XAIService.generateQuickSummary (/home/runner/workspace/server/services/xai.ts:731:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async DocumentProcessor.processDocument (/home/runner/workspace/server/services/documentProcessor.ts:35:28)
+    at async processDocumentAsync (/home/runner/workspace/server/routes.ts:675:20)
+❌ Processing error for document 139 after 26816ms: Error: Failed to process document: No summary content received from xAI
+    at DocumentProcessor.processDocument (/home/runner/workspace/server/services/documentProcessor.ts:62:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async processDocumentAsync (/home/runner/workspace/server/routes.ts:675:20)
+10:37:48 PM [express] GET /api/documents/139/status 200 in 156ms :: {"id":139,"originalName":"2025040…

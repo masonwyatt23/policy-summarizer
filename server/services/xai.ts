@@ -685,24 +685,27 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `Brief insurance summary. 100 words + 4 bullets:
+              content: `You are an insurance agent. Create a brief summary of this policy. 
 
+IMPORTANT: Return ONLY the formatted summary below. Do not include any reasoning or explanations.
+
+Format exactly as shown:
 [Your Coverage Summary]
-(100 word paragraph)
+(Write a 100-word paragraph about this policy)
 
 Key coverages:
-• Coverage 1 with amount
-• Coverage 2 with amount  
-• Coverage 3 with amount
-• Coverage 4 with amount
+• (First coverage with amount)
+• (Second coverage with amount)
+• (Third coverage with amount)
+• (Fourth coverage with amount)
 
 Contact Valley Trust: (540) 885-5531
 
-Policy: ${truncatedText}`
+Policy text: ${truncatedText}`
             }
           ],
           temperature: 0.1,
-          max_tokens: 300
+          max_tokens: 800
         })
       });
 
@@ -724,7 +727,9 @@ Policy: ${truncatedText}`
         throw new Error('xAI API returned no choices');
       }
       
-      const content = data.choices[0]?.message?.content;
+      // Check for both content and reasoning_content fields
+      const message = data.choices[0]?.message;
+      const content = message?.content || message?.reasoning_content;
       
       if (!content) {
         console.error('xAI response missing content:', JSON.stringify(data.choices[0]));
