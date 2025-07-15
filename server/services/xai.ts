@@ -10,10 +10,10 @@ export class XAIService {
     if (!this.apiKey) {
       throw new Error('XAI_API_KEY environment variable is required');
     }
-    console.log('🔑 xAI service initialized with Grok 3 Mini');
+    console.log('🔑 xAI service initialized with Grok 3 Mini Fast');
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 API endpoint: ${this.baseUrl}`);
-    console.log(`🤖 Model: grok-3-mini (ultra-fast responses)`);
+    console.log(`🤖 Model: grok-3-mini-fast (ultra-fast responses)`);
   }
 
   async analyzePolicy(documentText: string, summaryLength: string = 'detailed'): Promise<PolicyData> {
@@ -681,7 +681,7 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
         },
         signal: controller.signal,
         body: JSON.stringify({
-          model: 'grok-3-mini',
+          model: 'grok-3-mini-fast',
           messages: [
             {
               role: 'user',

@@ -521,7 +521,7 @@ This is a full-stack policy document processing application built for Valley Tru
   - Reduced document text truncation to 20k characters for faster processing
   - Enhanced error logging to debug API response issues
   - Simplified prompts and reduced max tokens to 300 for efficiency
-  - Fixed model name from incorrect 'grok-3-mini-fast' to correct 'grok-3-mini'
+  - Using correct model name 'grok-3-mini-fast' as documented in xAI official docs
 - July 16, 2025: Enhanced brief summary generation and policy number identification
   - Reduced brief summary length to 100-150 words for better readability
   - Removed first-person phrasing like "As your insurance agent" from summaries
