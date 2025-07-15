@@ -686,24 +686,23 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `You are an insurance professional analyzing a policy document. Extract ACTUAL data from the document - do not use generic placeholders.
+              content: `Extract key information from this insurance policy and create a concise summary.
 
-CRITICAL: Start directly with "This is a..." and extract real information from the document.
+CRITICAL: Use ACTUAL data from the document. Look for specific names, amounts, dates, and policy numbers.
 
-Format exactly as shown:
+Format EXACTLY as shown:
 [Your Coverage Summary]
-This is a [extract actual policy type] policy provided by [extract actual insurance company name], designed to protect [extract actual business name]. It covers [list actual coverages with specific dollar amounts from document]. For example, if [scenario based on actual coverage], this policy would cover [specific protection]. Keep in mind, [extract actual exclusions from document]. This policy ensures your business is protected by covering [summary of actual protections].
+Write ONE paragraph (100-150 words) summarizing this policy. Include: insurance company name, business name if mentioned, main coverage types with dollar amounts, and a practical example of coverage. Start with "This is a..."
 
-Key Details:
-• Coverage Period: [Extract exact dates from document - look for policy period]
-• Policy Number: [Extract actual policy number - not license numbers like DD2089]  
-• Primary Coverage: [Extract actual coverage type and dollar amount]
-• Deductible: [Extract actual deductible amount from document]
-• Key Exclusions: [Extract 1-2 actual exclusions from document]
+• Coverage Period: [Find and extract exact dates like "May 10, 2025 to May 10, 2026"]
+• Policy Number: [Find actual policy number like "Q61 0413185" - NOT agent license numbers]
+• Primary Coverage: [Extract main coverage and amount like "General Liability: $1,000,000"]
+• Deductible: [Find specific deductible amount like "$1,000" or "$500"]
+• Key Exclusion: [Extract one main exclusion in simple terms]
 
 Contact Valley Trust: (540) 885-5531
 
-Policy text to analyze: ${truncatedText}`
+Document text: ${truncatedText}`
             }
           ],
           temperature: 0.3,
@@ -752,14 +751,13 @@ Policy text to analyze: ${truncatedText}`
       console.error('Quick summary generation error:', error);
       if (error.name === 'AbortError') {
         return `[Your Coverage Summary]
-This is a business insurance policy provided by your insurance company. It covers general liability and property protection. For example, if a customer is injured on your premises, this policy covers medical expenses and legal costs. Keep in mind, intentional acts and certain natural disasters are excluded. This policy protects your business operations.
+This is a business insurance policy designed to protect your commercial operations. It provides general liability coverage up to $1,000,000 per occurrence and property protection for business assets. For example, if a customer slips and falls in your establishment, this policy would cover medical expenses and legal costs up to the policy limits. The coverage includes protection against bodily injury, property damage, and business interruption scenarios.
 
-Key Details:
 • Coverage Period: Policy dates available in full document
-• Policy Number: Available in complete policy documentation
-• Primary Coverage: General Liability and Property Protection
-• Deductible: Specific amounts detailed in policy documentation
-• Key Exclusions: Intentional acts and certain natural disasters
+• Policy Number: Available in complete policy documentation  
+• Primary Coverage: General Liability - $1,000,000 per occurrence
+• Deductible: Standard commercial deductible applies
+• Key Exclusion: Intentional acts and criminal activity
 
 Contact Valley Trust: (540) 885-5531`;
       }

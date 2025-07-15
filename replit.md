@@ -630,6 +630,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Improved prompt to identify and use specific dollar amounts and exclusions from document
   - Adjusted progress timing: Process (10s), Analyze (10s), Summarize (remaining time)
   - Most processing time now spent on "Summarize" stage as requested
+- January 16, 2025: Improved summary format for better readability
+  - Restructured AI prompt to generate one paragraph (100-150 words) followed by bullet points
+  - Enhanced prompt to extract specific data: company names, dollar amounts, policy numbers, dates
+  - Added examples in prompt to guide AI toward extracting real data like "Q61 0413185" policy numbers
+  - Simplified output format to match user's example with clear bullet points for key details
+  - Enhanced fallback summary to include specific coverage amounts and practical examples
 
 ## Changelog
 - July 01, 2025. Initial setup
