@@ -506,6 +506,15 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced error messages to distinguish between auth failures, rate limits, and service availability
   - Added credentials: 'same-origin' to PDF export requests
   - Enhanced debugging throughout XAI service and upload pipeline for deployment diagnostics
+- July 15, 2025: Comprehensive deployment-specific configuration and optimization
+  - Created deploymentConfig.ts for environment-specific settings (timeouts, text limits, retries)
+  - Extended XAI timeout to 2 minutes for deployment vs 1 minute for preview environment
+  - Added text truncation for deployment (40k chars) to prevent timeouts on large PDFs
+  - Enhanced document processor with detailed timing logs and memory usage tracking
+  - Added deployment-aware error messages that guide users to use Replit preview for large files
+  - Improved processDocumentAsync with comprehensive error logging and user-friendly messages
+  - Added environment detection throughout pipeline (PDF extraction, XAI analysis, document processing)
+  - Implemented stage-by-stage timing logs to identify bottlenecks in deployment
 
 ## Changelog
 - July 01, 2025. Initial setup

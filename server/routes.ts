@@ -782,12 +782,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 // Background document processing
 async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string, options?: any) {
+  const isDeployed = !!process.env.REPL_ID;
+  const startTime = Date.now();
+  
   try {
-    console.log(`🔄 Starting async processing for document ${documentId}`);
+    console.log(`🔄 Starting async processing for document ${documentId} in ${isDeployed ? 'DEPLOYED' : 'PREVIEW'} environment`);
     console.log(`🔄 Buffer size: ${buffer.length} bytes, filename: ${filename}`);
     console.log(`🔄 Processing options:`, options);
+    console.log(`🔄 XAI_API_KEY available:`, !!process.env.XAI_API_KEY);
     
     const result = await documentProcessor.processDocument(buffer, filename, options);
+    
+    const processingTime = Date.now() - startTime;
+    console.log(`✅ Document ${documentId} processed successfully in ${processingTime}ms`);
     
     // Update the document
     await storage.updatePolicyDocument(documentId, {
@@ -809,11 +816,29 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
       });
     }
   } catch (error) {
-    console.error(`Processing error for document ${documentId}:`, error);
+    const failTime = Date.now() - startTime;
+    console.error(`🔴 Processing error for document ${documentId} after ${failTime}ms:`, error);
+    console.error(`🔴 Error type:`, error instanceof Error ? error.constructor.name : 'Unknown');
+    console.error(`🔴 Error message:`, error instanceof Error ? error.message : 'No message');
+    console.error(`🔴 Error stack:`, error instanceof Error ? error.stack : 'No stack');
+    
+    // Store user-friendly error message based on failure type
+    let userMessage = 'Document processing failed';
+    if (error instanceof Error) {
+      if (error.message.includes('timeout') || error.message.includes('timed out')) {
+        userMessage = `Processing timed out after ${Math.round(failTime/1000)} seconds. ${isDeployed ? 'This is a known issue with the deployed environment. Please try using the Replit preview environment or a smaller PDF file.' : 'Please try a smaller file or wait and try again.'}`;
+      } else if (error.message.includes('XAI_API_KEY')) {
+        userMessage = 'AI service is not configured. Please ensure the XAI_API_KEY is set.';
+      } else if (error.message.includes('connection failed') || error.message.includes('fetch failed')) {
+        userMessage = `AI service connection failed. ${isDeployed ? 'This may be due to network restrictions in the deployed environment.' : 'Please check your internet connection and try again.'}`;
+      } else {
+        userMessage = error.message;
+      }
+    }
     
     await storage.updatePolicyDocument(documentId, {
       processed: true,
-      processingError: error instanceof Error ? error.message : 'Processing failed',
+      processingError: userMessage,
     });
   }
 }

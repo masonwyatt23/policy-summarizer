@@ -13,10 +13,12 @@ export class XAIService {
       throw new Error('XAI_API_KEY environment variable is required. Please ensure it is set in the deployment environment.');
     }
     console.log('✅ XAI service initialized with API key');
+    console.log(`🌐 Environment: ${process.env.NODE_ENV}, Deployed: ${!!process.env.REPL_ID}`);
   }
 
   async analyzePolicy(documentText: string): Promise<PolicyData> {
-    console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok`);
+    const isDeployed = !!process.env.REPL_ID;
+    console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok in ${isDeployed ? 'DEPLOYED' : 'PREVIEW'} environment`);
 
     try {
       console.log(`🔌 Making XAI API request to: ${this.baseUrl}/chat/completions`);

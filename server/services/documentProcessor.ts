@@ -3,6 +3,7 @@ import { PolicyData, PolicyDataSchema, ProcessingOptions } from '@shared/schema'
 import { extractPolicyData } from './openai-simplified';
 import { xaiService } from './xai';
 import { pdfExtractor } from './pdfExtractor';
+import { getDeploymentConfig } from './deploymentConfig';
 
 export class DocumentProcessor {
   async processDocument(buffer: Buffer, filename: string, options?: ProcessingOptions): Promise<{
@@ -10,8 +11,19 @@ export class DocumentProcessor {
     policyData: PolicyData;
     summary: string;
   }> {
+    const config = getDeploymentConfig();
+    const startTime = Date.now();
+    
     try {
+      console.log(`🚀 Starting document processing in ${config.environment} environment`);
+      console.log(`📄 File: ${filename}, Size: ${buffer.length} bytes`);
+      console.log(`⚙️ Timeout: ${config.timeouts.totalProcessing/1000}s, Text limit: ${config.textLimits.maxCharacters} chars`);
+      
+      const extractStart = Date.now();
+      console.log('📖 Step 1/3: Extracting text from document...');
       const extractedText = await this.extractTextFromDocument(buffer, filename);
+      const extractTime = Date.now() - extractStart;
+      console.log(`✅ Text extraction completed in ${extractTime}ms (${extractedText.length} characters)`);
       
       if (!extractedText || extractedText.trim().length === 0) {
         throw new Error('No text content could be extracted from the document');
@@ -19,27 +31,52 @@ export class DocumentProcessor {
 
 
 
-      // Use xAI exclusively for superior policy analysis and summaries
-      console.log('🚀 Using xAI (Grok) for comprehensive policy analysis...');
-      console.log(`📄 Processing ${extractedText.length} characters of document text`);
+      // For deployment, truncate very large texts to prevent timeout
+      let processedText = extractedText;
+      if (config.isDeployed && extractedText.length > config.textLimits.maxCharacters) {
+        console.warn(`⚠️ Truncating text from ${extractedText.length} to ${config.textLimits.maxCharacters} characters for deployment`);
+        processedText = extractedText.substring(0, config.textLimits.maxCharacters);
+      }
+
+      // Step 2: Analyze policy with timing
+      const analyzeStart = Date.now();
+      console.log('🤖 Step 2/3: Analyzing policy with xAI...');
+      console.log(`📄 Processing ${processedText.length} characters of document text`);
       console.log(`📋 Summary length requested: ${options?.summaryLength || 'detailed'}`);
       
-      const policyData = await xaiService.analyzePolicy(extractedText);
+      const policyData = await xaiService.analyzePolicy(processedText);
+      const analyzeTime = Date.now() - analyzeStart;
+      console.log(`✅ Policy analysis completed in ${analyzeTime}ms`);
+      
+      // Step 3: Generate summary with timing
+      const summaryStart = Date.now();
       const summaryLength = options?.summaryLength || 'detailed';
+      console.log(`📝 Step 3/3: Generating ${summaryLength} summary...`);
       
-      console.log(`📝 Generating ${summaryLength} summary...`);
       const summary = await xaiService.generateEnhancedSummary(policyData, '', summaryLength);
+      const summaryTime = Date.now() - summaryStart;
+      console.log(`✅ Summary generation completed in ${summaryTime}ms`);
       
-      console.log('✅ xAI analysis completed with comprehensive results');
+      const totalTime = Date.now() - startTime;
+      console.log('✅ Document processing completed successfully');
+      console.log(`📊 Total processing time: ${totalTime}ms (Extract: ${extractTime}ms, Analyze: ${analyzeTime}ms, Summary: ${summaryTime}ms)`);
       console.log(`📊 Summary format: ${summaryLength}, Length: ${summary.length} characters`);
+      
+      // Log memory usage in deployment
+      if (config.logging.includeMemory) {
+        const used = process.memoryUsage();
+        console.log(`💾 Memory usage: RSS ${Math.round(used.rss / 1024 / 1024)}MB, Heap ${Math.round(used.heapUsed / 1024 / 1024)}MB`);
+      }
 
       return {
-        extractedText,
+        extractedText: processedText,
         policyData,
         summary,
       };
     } catch (error) {
-      console.error('🔴 Document processing error:', error);
+      const failTime = Date.now() - startTime;
+      console.error(`🔴 Document processing FAILED after ${failTime}ms in ${config.environment} environment`);
+      console.error('🔴 Error:', error);
       console.error('🔴 Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       
       // Provide more specific error messages for deployment issues
@@ -47,8 +84,11 @@ export class DocumentProcessor {
         if (error.message.includes('XAI_API_KEY')) {
           throw new Error('AI service configuration error. Please ensure XAI_API_KEY is set in deployment environment.');
         }
-        if (error.message.includes('fetch failed')) {
-          throw new Error('AI service connection failed. This may be a temporary network issue. Please try again.');
+        if (error.message.includes('timeout') || error.message.includes('timed out')) {
+          throw new Error(`Processing timed out after ${Math.round(failTime/1000)} seconds. This is a known issue with the deployed environment. Please try: 1) Using a smaller PDF file, 2) Using the Replit preview environment instead, or 3) Waiting a moment and trying again.`);
+        }
+        if (error.message.includes('fetch failed') || error.message.includes('connection failed')) {
+          throw new Error('AI service connection failed. This may be due to network restrictions in the deployed environment. Please try using the Replit preview environment.');
         }
       }
       
