@@ -457,6 +457,11 @@ This is a full-stack policy document processing application built for Valley Tru
 - July 15, 2025: Changed default summary length selection from 'detailed' to 'short' (1 paragraph)
   - Updated PolicySummaryGenerator to default to concise format instead of 5-paragraph format
   - Reflects user preference for digestible, brief summaries as the primary option
+- July 15, 2025: Enhanced authentication page with tool description box
+  - Added attractive description card above login/register form explaining platform purpose
+  - Includes visual elements with document icon, gradient background, and feature highlights
+  - Describes platform as "Insurance Document Intelligence Platform" with clear value proposition
+  - Added feature indicators for AI-Powered Analysis, Professional PDFs, and Client-Focused approach
 
 ## Changelog
 - July 01, 2025. Initial setup
