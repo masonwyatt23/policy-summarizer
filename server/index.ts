@@ -1,14 +1,19 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
+import pgSession from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { pool } from "./db";
+import "./deployment-check";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Session configuration
-app.use(session({
+// Session configuration with PostgreSQL store for production
+const PostgreSQLStore = pgSession(session);
+
+const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'development-secret-key',
   resave: false,
   saveUninitialized: false,
@@ -16,8 +21,16 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}));
+  },
+  // Use PostgreSQL session store in production, memory store in development
+  store: process.env.NODE_ENV === 'production' ? new PostgreSQLStore({
+    pool: pool,
+    tableName: 'user_sessions',
+    createTableIfMissing: true,
+  }) : undefined
+};
+
+app.use(session(sessionConfig));
 
 app.use((req, res, next) => {
   const start = Date.now();

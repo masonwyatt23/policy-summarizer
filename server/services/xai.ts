@@ -16,12 +16,16 @@ export class XAIService {
     console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok`);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutes timeout
+
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
         },
+        signal: controller.signal,
         body: JSON.stringify({
           model: 'grok-2-1212',
           messages: [
@@ -131,6 +135,8 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
         })
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error('xAI API error:', response.status, errorText);
@@ -164,6 +170,9 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
 
     } catch (error) {
       console.error('xAI analysis failed:', error);
+      if (error.name === 'AbortError') {
+        throw new Error('xAI analysis request timed out. Please try again.');
+      }
       throw error;
     }
   }
@@ -172,12 +181,16 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
     try {
       console.log(`📝 xAI generating ${summaryLength} summary for ${policyData.policyType || 'unknown'} policy`);
       
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 seconds timeout for summary generation
+      
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
         },
+        signal: controller.signal,
         body: JSON.stringify({
           model: 'grok-2-1212',
           messages: [
@@ -379,6 +392,8 @@ Create a transformative 5-paragraph business intelligence summary where the fina
         })
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
         throw new Error(`xAI API error: ${response.status}`);
       }
@@ -397,12 +412,16 @@ Create a transformative 5-paragraph business intelligence summary where the fina
         console.warn(`${summaryLength} summary appears truncated, attempting to regenerate...`);
         
         // Try again with explicit instruction to complete the summary
+        const retryController = new AbortController();
+        const retryTimeoutId = setTimeout(() => retryController.abort(), 60000); // 1 minute for retry
+        
         const retryResponse = await fetch(`${this.baseUrl}/chat/completions`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json',
           },
+          signal: retryController.signal,
           body: JSON.stringify({
             model: 'grok-2-1212',
             messages: [
@@ -429,15 +448,21 @@ Create a transformative 5-paragraph business intelligence summary where the fina
           const retryContent = retryData.choices[0]?.message?.content;
           if (retryContent && retryContent.length > content.length) {
             console.log(`Successfully generated complete ${summaryLength} summary on retry`);
+            clearTimeout(retryTimeoutId);
             return retryContent;
           }
         }
+        clearTimeout(retryTimeoutId);
       }
       
       return content;
 
     } catch (error) {
       console.error('xAI summary generation failed:', error);
+      if (error.name === 'AbortError') {
+        console.error('xAI summary generation timed out');
+        return this.generateFallbackSummary(policyData);
+      }
       return this.generateFallbackSummary(policyData);
     }
   }

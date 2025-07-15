@@ -43,18 +43,6 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
-  // Configure session middleware
-  app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-development-secret-here',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false, // Set to true in production with HTTPS
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-  }));
 
   // Agent registration route
   app.post("/api/auth/register", async (req, res) => {
@@ -151,21 +139,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Agent logout route
+  // Agent logout route - deployment-ready with better session cleanup
   app.post("/api/auth/logout", (req, res) => {
     req.session.destroy((err) => {
       if (err) {
+        console.error("Logout error:", err);
         return res.status(500).json({ error: "Logout failed" });
       }
+      // Clear session cookie
+      res.clearCookie('connect.sid');
       res.json({ success: true });
     });
   });
 
-  // Get current agent route
+  // Get current agent route - deployment-ready with better session handling
   app.get("/api/auth/me", requireAuth, async (req, res) => {
     try {
       const agent = await storage.getAgent(req.session.agentId!);
       if (!agent) {
+        // Clear invalid session
+        req.session.destroy(() => {});
         return res.status(404).json({ error: "Agent not found" });
       }
 
@@ -219,7 +212,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const document = await storage.createPolicyDocument(documentData);
 
       // Start processing in background with options
-      processDocumentAsync(document.id, req.file.buffer, req.file.originalname, processingOptions);
+      processDocumentAsync(document.id, req.file.buffer, req.file.originalname, processingOptions)
+        .catch(error => {
+          console.error(`❌ Background processing failed for document ${document.id}:`, error);
+          // Update document status to failed
+          storage.updatePolicyDocument(document.id, {
+            processed: true,
+            processingError: error.message
+          }, req.session.agentId!);
+        });
 
       res.json({ 
         documentId: document.id,
@@ -721,10 +722,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// Background document processing
+// Background document processing with deployment-ready timeout handling
 async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string, options?: any) {
+  const startTime = Date.now();
+  console.log(`🚀 Starting document processing for ID: ${documentId}`);
+  
   try {
-    const result = await documentProcessor.processDocument(buffer, filename, options);
+    // Wrap document processing with timeout for deployment environments
+    const processingPromise = documentProcessor.processDocument(buffer, filename, options);
+    
+    // Set timeout based on environment (longer for development, shorter for production)
+    const timeoutMs = process.env.NODE_ENV === 'production' ? 300000 : 600000; // 5 or 10 minutes
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Document processing timed out')), timeoutMs);
+    });
+    
+    const result = await Promise.race([processingPromise, timeoutPromise]);
+    
+    const processingTime = Date.now() - startTime;
+    console.log(`✅ Document processing completed in ${processingTime}ms`);
     
     // Update the document
     await storage.updatePolicyDocument(documentId, {
@@ -745,12 +761,27 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
         processingOptions: options || {}
       });
     }
+    
+    console.log(`📊 Document ${documentId} processing completed successfully`);
   } catch (error) {
-    console.error(`Processing error for document ${documentId}:`, error);
+    const processingTime = Date.now() - startTime;
+    console.error(`❌ Processing error for document ${documentId} after ${processingTime}ms:`, error);
+    
+    // Provide more specific error messages for deployment troubleshooting
+    let errorMessage = 'Processing failed';
+    if (error.message.includes('timeout')) {
+      errorMessage = 'Document processing timed out - please try again or contact support';
+    } else if (error.message.includes('API') || error.message.includes('fetch')) {
+      errorMessage = 'External service unavailable - please try again in a few minutes';
+    } else if (error.message.includes('extract')) {
+      errorMessage = 'Unable to extract text from document - please ensure it contains readable text';
+    } else {
+      errorMessage = error instanceof Error ? error.message : 'Processing failed';
+    }
     
     await storage.updatePolicyDocument(documentId, {
       processed: true,
-      processingError: error instanceof Error ? error.message : 'Processing failed',
+      processingError: errorMessage,
     });
   }
 }
