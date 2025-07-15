@@ -29,24 +29,9 @@ export class DocumentProcessor {
 
 
 
-      // Try Grok 4 vision API first for PDFs
-      let quickSummary: string;
-      
-      if (filename.toLowerCase().endsWith('.pdf')) {
-        try {
-          console.log('🖼️ Attempting Grok 4 vision processing for PDF...');
-          quickSummary = await xaiService.processPDFWithVision(buffer);
-          console.log('✅ Vision processing successful!');
-        } catch (error) {
-          console.log('⚠️ Vision processing failed, falling back to text extraction:', error.message);
-          // Fallback to text-based processing
-          quickSummary = await xaiService.generateQuickSummary(processedText);
-        }
-      } else {
-        // Non-PDF files use text extraction
-        console.log('⚡ Processing document with ultra-fast summary generation...');
-        quickSummary = await xaiService.generateQuickSummary(processedText);
-      }
+      // Use direct text extraction for all files - faster and more reliable
+      console.log('⚡ Processing document with ultra-fast summary generation...');
+      const quickSummary = await xaiService.generateQuickSummary(processedText);
       
       // Create minimal policyData for compatibility
       const policyData: PolicyData = {
@@ -67,7 +52,7 @@ export class DocumentProcessor {
       };
       
       return {
-        extractedText: processedText.substring(0, 1000), // Only keep first 1k chars for reference
+        extractedText: processedText.substring(0, 5000), // Keep first 5k chars for better context
         policyData,
         summary: quickSummary,
       };

@@ -1,0 +1,42 @@
+OCR processing page: page-1752620205452-1.png
+10:56:55 PM [express] GET /api/documents/141/status 200 in 421ms :: {"id":141,"originalName":"2025040…
+OCR processing page: page-1752620205452-2.png
+OCR processing page: page-1752620205452-3.png
+OCR processing page: page-1752620205452-4.png
+OCR processing page: page-1752620205452-5.png
+10:57:04 PM [express] GET /api/documents/141/status 304 in 159ms :: {"id":141,"originalName":"2025040…
+OCR processing page: page-1752620205452-6.png
+OCR processing page: page-1752620205452-7.png
+OCR processing page: page-1752620205452-8.png
+OCR extraction successful: 10534 characters from 7 pages
+Strategy 4 succeeded, extracted 10534 characters
+🖼️ Attempting Grok 4 vision processing for PDF...
+🖼️ Starting PDF vision processing with Grok 4...
+Warning: Please use the `legacy` build in Node.js environments.
+Vision processing error: Error: Please provide binary data as `Uint8Array`, rather than `Buffer`.
+    at getDataProp (/home/runner/workspace/node_modules/pdfjs-dist/build/pdf.mjs:5770:11)
+    at Module.getDocument (/home/runner/workspace/node_modules/pdfjs-dist/build/pdf.mjs:11520:27)
+    at XAIService.processPDFWithVision (/home/runner/workspace/server/services/xai.ts:792:33)
+    at async DocumentProcessor.processDocument (/home/runner/workspace/server/services/documentProcessor.ts:38:26)
+    at async processDocumentAsync (/home/runner/workspace/server/routes.ts:675:20)
+Falling back to text extraction method...
+⚠️ Vision processing failed, falling back to text extraction: Please provide binary data as `Uint8Array`, rather than `Buffer`.
+10:57:14 PM [express] GET /api/documents/141/status 304 in 154ms :: {"id":141,"originalName":"2025040…
+xAI response received in 4890ms
+✅ Summary generated successfully in 4890ms
+✅ Document processing completed in 31385ms
+📊 Document 141 processing completed successfully
+10:57:24 PM [express] GET /api/documents/141/status 200 in 155ms :: {"id":141,"originalName":"2025040…
+10:57:34 PM [express] GET /api/documents/141/status 304 in 153ms :: {"id":141,"originalName":"2025040…
+⏱️ Vision processing timeout after 30000ms
+/home/runner/workspace/server/services/xai.ts:781
+          reject(new Error('Vision processing timeout'));
+                 ^
+
+
+Error: Vision processing timeout
+    at Timeout._onTimeout (/home/runner/workspace/server/services/xai.ts:781:18)
+    at listOnTimeout (node:internal/timers:581:17)
+    at process.processTimers (node:internal/timers:519:7)
+
+Node.js v20.18.1

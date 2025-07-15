@@ -788,8 +788,11 @@ For detailed coverage information and personalized assistance, please contact Va
       // Set worker path
       pdfjs.GlobalWorkerOptions.workerSrc = '/node_modules/pdfjs-dist/build/pdf.worker.js';
       
+      // Convert Buffer to Uint8Array for PDF.js
+      const pdfData = new Uint8Array(pdfBuffer);
+      
       // Load PDF document
-      const loadingTask = pdfjs.getDocument({ data: pdfBuffer });
+      const loadingTask = pdfjs.getDocument({ data: pdfData });
       const pdfDoc = await loadingTask.promise;
       console.log(`📄 PDF has ${pdfDoc.numPages} pages, processing first page only for speed`);
       
