@@ -1,0 +1,74 @@
+First, the user wants me to output ONLY the formatted summary. No reasoning, thinking, or explanations. So, my response should be just the summary as specified.
+
+The format is:
+
+Your Coverage Summary
+Then, a one-paragraph summary (100-150 words) starting with "This is a..."
+
+Followed by bullet points:
+
+•
+Coverage Period: [Extract exact dates]
+•
+Policy Number: [Extract actual policy number]
+•
+Primary Coverage: [Extract main coverage and amount]
+•
+Deductible: [Extract deductible amount]
+•
+Key Exclusion: [Extract one main exclusion]
+And end with: Contact Valley Trust: (540) 885-5531
+
+From the policy text, I need to extract the relevant information.
+
+1.
+
+Insurance Company Name:
+It's Erie Insurance Company.
+
+2.
+
+Business Name:
+The insured is MOR JEN HEATH, INC DBA DEPOT GRILLE.
+
+3.
+
+Main Coverage Types with Dollar Amounts:
+From the text:
+
+- Commercial General Liability: Bodily injury and property damage $1,000,000 each occurrence.
+
+- Other coverages like Personal and advertising injury $1,000,000, etc.
+
+For the summary paragraph, I need to include main ones and a practical example.
+
+4.
+
+Coverage Period:
+Policy period: 05 10 2025 to 05 10 2026. So, May 10, 2025, to May 10, 2026.
+
+5.
+
+Policy Number:
+Q61 0413185
+
+6.
+
+Primary Coverage:
+Main one is Commercial General Liability with $1,000,000 for bodily injury and property damage.
+
+7.
+
+Deductible:
+For Liability, it's $1,000 for Bodily injury and property damage. Also, for Property, it's $1,000.
+
+I need to extract one, probably the liability deductible.
+
+8.
+
+Key Exclusion:
+From the text, there's "Exclusion - Perfluoroalkyl and Polyfluoroalkyl Substances (PFAS)", "Abuse or molestation exclusion", etc. I can pick one, say PFAS exclusion.
+
+Now, for the paragraph: Write ONE paragraph (100-150 words) summarizing this policy. Include: insurance company name, business name if mentioned, main coverage types with dollar amounts, and a practical example of coverage. Start with "This is a..."
+
+So, something like: "This is a policy from Erie Insurance Company for MOR JEN HEATH, INC

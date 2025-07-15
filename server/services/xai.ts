@@ -686,20 +686,21 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `Analyze this insurance policy and output ONLY the formatted summary below. Do NOT include any reasoning, thinking, or explanations.
+              content: `Generate a policy summary using this exact format. Output ONLY the text below, nothing else:
 
 [Your Coverage Summary]
-Write ONE paragraph (100-150 words) summarizing this policy. Include: insurance company name, business name if mentioned, main coverage types with dollar amounts, and a practical example of coverage. Start with "This is a..."
+This is a [type] insurance policy from [company] for [business]. It provides [main coverages with amounts]. For example, [practical coverage scenario]. The policy covers [key protections].
 
-• Coverage Period: [Extract exact dates]
-• Policy Number: [Extract actual policy number]
-• Primary Coverage: [Extract main coverage and amount]
-• Deductible: [Extract deductible amount]
-• Key Exclusion: [Extract one main exclusion]
+• Coverage Period: [exact dates from document]
+• Policy Number: [actual policy number]
+• Primary Coverage: [coverage type and amount]
+• Deductible: [dollar amount]
+• Key Exclusion: [one exclusion in simple terms]
 
 Contact Valley Trust: (540) 885-5531
 
-Policy text: ${truncatedText}`
+Extract all information from this policy text:
+${truncatedText}`
             }
           ],
           temperature: 0.3,
@@ -738,6 +739,20 @@ Policy text: ${truncatedText}`
       }
 
       console.log(`✅ Summary generated successfully in ${Date.now() - startTime}ms`);
+      
+      // Extract only the formatted summary part, removing any reasoning
+      const summaryMatch = content.match(/\[Your Coverage Summary\][\s\S]*Contact Valley Trust: \(540\) 885-5531/);
+      if (summaryMatch) {
+        return summaryMatch[0].trim();
+      }
+      
+      // If no match found, try to find content starting from "This is a..."
+      const thisIsMatch = content.match(/This is a[\s\S]*Contact Valley Trust: \(540\) 885-5531/);
+      if (thisIsMatch) {
+        return `[Your Coverage Summary]\n${thisIsMatch[0].trim()}`;
+      }
+      
+      // Fallback: return the whole content if no pattern matches
       return content.trim();
 
     } catch (error) {
