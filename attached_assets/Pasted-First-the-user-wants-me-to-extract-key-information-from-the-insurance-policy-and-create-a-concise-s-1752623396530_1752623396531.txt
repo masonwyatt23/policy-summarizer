@@ -1,0 +1,46 @@
+First, the user wants me to extract key information from the insurance policy and create a concise summary. I must use ACTUAL data from the document. Specifically, look for names, amounts, dates, and policy numbers.
+
+The format should be EXACTLY as shown:
+
+Your Coverage Summary
+Then, write ONE paragraph (100-150 words) summarizing the policy. It should include:
+
+- Insurance company name
+
+- Business name if mentioned
+
+- Main coverage types with dollar amounts
+
+- A practical example of coverage
+
+Start with "This is a..."
+
+Additionally, after the paragraph, I need to include these specific points:
+
+- Coverage Period: [Extract exact dates]
+
+- Policy Number: [Extract actual policy number]
+
+- Primary Coverage: [Extract main coverage and amount]
+
+- Deductible: [Find specific deductible amount]
+
+- Key Exclusion: [Extract one main exclusion in simple terms]
+
+Finally, end with: Contact Valley Trust: (540) 885-5531
+
+From the document, let's extract the key data:
+
+- Insurance company name: Erie Insurance Company
+
+- Business name: MOR JEN HEATH, INC DBA DEPOT GRILLE
+
+- Coverage Period: 05 10 2025 to 05 10 2026 (which is May 10, 2025 to May 10, 2026)
+
+- Policy Number: Q61 0413185
+
+- Primary Coverage: From the document, Commercial General Liability: Bodily injury and property damage $1,000,000 Each occurrence; General aggregate $2,000,000; etc. So, main one is General Liability: $1,000,000 per occurrence.
+
+- Deductible: For liability, it's mentioned as CG0305 01 96 Deductible Liability Insurance, and in property, it's $1,000 for property deductible.
+
+Specifically, under Liability Protection: It says "Coverage Deductible Limit Bodily injury and property damage 1,000,000 Each occurrence" – wait, that might be the limit, not deductible. Actually, looking closely: In the forms, there's CG0305 for Deductible Liability Insurance, but in the main text, for property, it's $1,000. For liability, it might be included. Wait, in Page 2: "Commercial general liability coverage Coverage Deductible Limit" – it lists "Bodily injury and property damage 1,000,000 Each occurrence" but doesn't specify a deductible

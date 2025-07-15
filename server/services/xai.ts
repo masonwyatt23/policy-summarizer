@@ -686,23 +686,20 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `Extract key information from this insurance policy and create a concise summary.
+              content: `Analyze this insurance policy and output ONLY the formatted summary below. Do NOT include any reasoning, thinking, or explanations.
 
-CRITICAL: Use ACTUAL data from the document. Look for specific names, amounts, dates, and policy numbers.
-
-Format EXACTLY as shown:
 [Your Coverage Summary]
 Write ONE paragraph (100-150 words) summarizing this policy. Include: insurance company name, business name if mentioned, main coverage types with dollar amounts, and a practical example of coverage. Start with "This is a..."
 
-• Coverage Period: [Find and extract exact dates like "May 10, 2025 to May 10, 2026"]
-• Policy Number: [Find actual policy number like "Q61 0413185" - NOT agent license numbers]
-• Primary Coverage: [Extract main coverage and amount like "General Liability: $1,000,000"]
-• Deductible: [Find specific deductible amount like "$1,000" or "$500"]
-• Key Exclusion: [Extract one main exclusion in simple terms]
+• Coverage Period: [Extract exact dates]
+• Policy Number: [Extract actual policy number]
+• Primary Coverage: [Extract main coverage and amount]
+• Deductible: [Extract deductible amount]
+• Key Exclusion: [Extract one main exclusion]
 
 Contact Valley Trust: (540) 885-5531
 
-Document text: ${truncatedText}`
+Policy text: ${truncatedText}`
             }
           ],
           temperature: 0.3,

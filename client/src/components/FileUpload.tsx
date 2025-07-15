@@ -112,28 +112,28 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
       'Summarizing policy...'
     ];
 
+    // Immediately move to analyze stage after 8 seconds
+    setTimeout(() => {
+      setUploadingFiles(prev => prev.map(f => 
+        f.file === file && f.status === 'processing'
+          ? { ...f, processingStage: 'Analyzing coverage...' }
+          : f
+      ));
+    }, 8000);
+
+    // Move to summarize stage after 16 seconds
+    setTimeout(() => {
+      setUploadingFiles(prev => prev.map(f => 
+        f.file === file && f.status === 'processing'
+          ? { ...f, processingStage: 'Summarizing policy...' }
+          : f
+      ));
+    }, 16000);
+
     const pollInterval = setInterval(async () => {
       try {
         attempts++;
         const status = await api.getDocumentStatus(documentId);
-        
-        // Update processing stage to move quickly through stages
-        let stageIndex = 0;
-        if (attempts <= 1) {
-          // Process stage - quick initial processing (10 seconds)
-          stageIndex = 0;
-        } else if (attempts <= 2) {
-          // Analyze stage - analysis phase (10 seconds)
-          stageIndex = 1;
-        } else {
-          // Summarize stage - most time spent here
-          stageIndex = 2;
-        }
-        setUploadingFiles(prev => prev.map(f => 
-          f.file === file 
-            ? { ...f, processingStage: processingStages[stageIndex] }
-            : f
-        ));
         
         if (status.processed && status.hasSummary) {
           clearInterval(pollInterval);
