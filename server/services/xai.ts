@@ -10,10 +10,10 @@ export class XAIService {
     if (!this.apiKey) {
       throw new Error('XAI_API_KEY environment variable is required');
     }
-    console.log('🔑 xAI service initialized with Grok 3 Mini Fast');
+    console.log('🔑 xAI service initialized with Grok 3 Mini');
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 API endpoint: ${this.baseUrl}`);
-    console.log(`🤖 Model: grok-3-mini-fast (ultra-fast responses)`);
+    console.log(`🤖 Model: grok-3-mini (ultra-fast responses)`);
   }
 
   async analyzePolicy(documentText: string, summaryLength: string = 'detailed'): Promise<PolicyData> {
@@ -681,7 +681,7 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
         },
         signal: controller.signal,
         body: JSON.stringify({
-          model: 'grok-3-mini-fast',
+          model: 'grok-3-mini',
           messages: [
             {
               role: 'user',
@@ -710,16 +710,28 @@ Policy: ${truncatedText}`
       const response = await Promise.race([fetchPromise, timeoutPromise]);
 
       if (!response.ok) {
-        throw new Error(`xAI API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error(`xAI API error response: ${errorText}`);
+        throw new Error(`xAI API error: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
+      console.log(`xAI response received in ${Date.now() - startTime}ms`);
+      
+      // Log the response structure for debugging
+      if (!data.choices || data.choices.length === 0) {
+        console.error('xAI response has no choices:', JSON.stringify(data));
+        throw new Error('xAI API returned no choices');
+      }
+      
       const content = data.choices[0]?.message?.content;
       
       if (!content) {
+        console.error('xAI response missing content:', JSON.stringify(data.choices[0]));
         throw new Error('No summary content received from xAI');
       }
 
+      console.log(`✅ Summary generated successfully in ${Date.now() - startTime}ms`);
       return content.trim();
 
     } catch (error) {

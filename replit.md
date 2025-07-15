@@ -515,13 +515,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added catch blocks to all fetch operations to prevent hanging on network errors
   - Enhanced error response handling with better logging and diagnostics
   - Added timing logs to identify bottlenecks in processing pipeline
-- July 15, 2025: Upgraded to Grok 4 model for optimal performance and reliability
-  - Updated xAI service to use grok-4-0709 model (fastest, most advanced)
-  - Optimized timeouts for Grok 4: analysis 4 minutes, summary 2 minutes, overall 10 minutes
-  - Reduced document text truncation to 100k characters for optimal Grok 4 performance
-  - Enhanced logging to track Grok 4 processing performance
-  - Improved processing efficiency with faster model response times
-  - Added comprehensive error handling for reliable deployment performance
+- July 15, 2025: Switched to Grok 3 Mini model for ultra-fast processing
+  - Updated xAI service to use grok-3-mini model (ultra-fast 20-second responses)
+  - Optimized timeout to 20 seconds with Promise.race for guaranteed completion
+  - Reduced document text truncation to 20k characters for faster processing
+  - Enhanced error logging to debug API response issues
+  - Simplified prompts and reduced max tokens to 300 for efficiency
+  - Fixed model name from incorrect 'grok-3-mini-fast' to correct 'grok-3-mini'
 - July 16, 2025: Enhanced brief summary generation and policy number identification
   - Reduced brief summary length to 100-150 words for better readability
   - Removed first-person phrasing like "As your insurance agent" from summaries
