@@ -592,6 +592,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - System now processes all pages without falling back to slow OCR
   - Increased extracted text storage from 1k to 5k characters for better context
   - Achieves full document processing in 20-30 seconds reliably
+- January 16, 2025: Enhanced processing visualization with simplified 3-step progress indicator
+  - Simplified progress from 7 steps to 3 clear stages: Process, Analyze, Summarize
+  - Improved progress circles with larger size (14x14) and better visual feedback
+  - Fixed frontend polling to properly detect completion when backend finishes processing
+  - Enhanced stage timing to show realistic progress during document analysis
+  - Streamlined user experience with cleaner, more intuitive progress visualization
 
 ## Changelog
 - July 01, 2025. Initial setup

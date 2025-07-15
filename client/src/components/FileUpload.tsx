@@ -104,16 +104,12 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
   };
 
   const pollProcessingStatus = async (documentId: number, file: File) => {
-    const maxAttempts = 30; // 5 minutes with 10-second intervals
+    const maxAttempts = 18; // 3 minutes with 10-second intervals
     let attempts = 0;
     const processingStages = [
-      'Reading document content...',
-      'Extracting policy information...',
-      'Analyzing coverage details...',
-      'Identifying key benefits...',
-      'Creating professional summary...',
-      'Adding bullet points...',
-      'Finalizing client-ready document...'
+      'Processing document...',
+      'Analyzing coverage...',
+      'Summarizing policy...'
     ];
 
     const pollInterval = setInterval(async () => {
@@ -122,7 +118,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
         const status = await api.getDocumentStatus(documentId);
         
         // Update processing stage for better user feedback
-        const stageIndex = Math.min(Math.floor(attempts / 2), processingStages.length - 1);
+        const stageIndex = Math.min(Math.floor(attempts / 6), processingStages.length - 1);
         setUploadingFiles(prev => prev.map(f => 
           f.file === file 
             ? { ...f, processingStage: processingStages[stageIndex] }
@@ -170,7 +166,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
             : f
         ));
       }
-    }, 10000); // Check every 10 seconds instead of 5
+    }, 10000); // Check every 10 seconds
   };
 
   const removeFile = (fileToRemove: File) => {
@@ -256,20 +252,16 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
                         </p>
                       </div>
                       
-                      <div className="w-full max-w-md">
-                        <div className="flex justify-between items-center">
-                          {[...Array(7)].map((_, i) => {
+                      <div className="w-full max-w-sm">
+                        <div className="flex justify-center items-center space-x-8">
+                          {[...Array(3)].map((_, i) => {
                             const currentStage = fileData.processingStage || '';
                             const stages = [
-                              'Reading document content...',
-                              'Extracting policy information...',
-                              'Analyzing coverage details...',
-                              'Identifying key benefits...',
-                              'Creating professional summary...',
-                              'Adding bullet points...',
-                              'Finalizing client-ready document...'
+                              'Processing document...',
+                              'Analyzing coverage...',
+                              'Summarizing policy...'
                             ];
-                            const stageLabels = ['Read', 'Extract', 'Analyze', 'Benefits', 'Summary', 'Bullets', 'Finalize'];
+                            const stageLabels = ['Process', 'Analyze', 'Summarize'];
                             const stageIndex = stages.findIndex(stage => stage === currentStage);
                             const isActive = i <= stageIndex;
                             const isCurrentStep = i === stageIndex;
@@ -279,16 +271,16 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
                               <div key={i} className="flex flex-col items-center">
                                 <div className="relative">
                                   <div 
-                                    className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-all duration-500 ${
+                                    className={`w-14 h-14 rounded-full flex items-center justify-center font-medium text-sm transition-all duration-500 ${
                                       isActive
                                         ? 'bg-blue-600 text-white scale-110 shadow-lg' 
                                         : 'bg-gray-200 text-gray-500'
                                     }`}
                                   >
                                     {isCurrentStep ? (
-                                      <Loader2 className="w-5 h-5 animate-spin" />
+                                      <Loader2 className="w-6 h-6 animate-spin" />
                                     ) : isCompleted ? (
-                                      '✓'
+                                      <div className="text-lg">✓</div>
                                     ) : (
                                       i + 1
                                     )}
@@ -296,18 +288,18 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
                                   {isCurrentStep && (
                                     <div className="absolute inset-0 rounded-full bg-blue-600 opacity-20 animate-ping" />
                                   )}
-                                  {i < 6 && (
+                                  {i < 2 && (
                                     <div 
-                                      className={`absolute top-5 left-10 h-0.5 transition-all duration-500 ${
+                                      className={`absolute top-7 left-14 h-0.5 transition-all duration-500 ${
                                         i < stageIndex ? 'bg-blue-600' : 
                                         i === stageIndex ? 'bg-gray-300 animate-pulse' :
                                         'bg-gray-300'
                                       }`}
-                                      style={{ width: '40px' }}
+                                      style={{ width: '32px' }}
                                     />
                                   )}
                                 </div>
-                                <span className={`text-xs mt-1 transition-all duration-300 ${
+                                <span className={`text-sm mt-2 transition-all duration-300 ${
                                   isCurrentStep ? 'text-blue-700 font-semibold' : 
                                   isActive ? 'text-blue-600 font-medium' : 
                                   'text-gray-400'
@@ -321,7 +313,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
                       </div>
                       
                       <p className="text-sm text-muted-foreground text-center">
-                        Please wait while we analyze your document...
+                        {fileData.processingStage || 'Processing document...'}
                       </p>
                     </div>
                   </div>
