@@ -10,22 +10,23 @@ export class XAIService {
     if (!this.apiKey) {
       throw new Error('XAI_API_KEY environment variable is required');
     }
-    console.log('🔑 xAI service initialized');
+    console.log('🔑 xAI service initialized with Grok 4');
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 API endpoint: ${this.baseUrl}`);
+    console.log(`🤖 Model: grok-4-0709 (fastest, most advanced)`);
   }
 
   async analyzePolicy(documentText: string): Promise<PolicyData> {
-    console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok`);
+    console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok 4`);
     console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
     const startTime = Date.now();
 
     try {
       const controller = new AbortController();
-      // Increase timeout for deployed environments (5 minutes for analysis)
-      // Check both NODE_ENV and Replit deployment indicators
+      // Optimized timeout for Grok 4 (faster response times)
+      // Check both NODE_ENV and Replit deployment indicators  
       const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT === '1';
-      const analysisTimeout = isDeployed ? 300000 : 180000;
+      const analysisTimeout = isDeployed ? 240000 : 120000; // 4 minutes for deployed, 2 minutes for development
       const timeoutId = setTimeout(() => {
         console.error(`⏱️ xAI analysis timeout after ${Date.now() - startTime}ms`);
         controller.abort();
@@ -42,7 +43,7 @@ export class XAIService {
         },
         signal: controller.signal,
         body: JSON.stringify({
-          model: 'grok-2-1212',
+          model: 'grok-4-0709',
           messages: [
             {
               role: 'system',
@@ -203,7 +204,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
       
       if (error.name === 'AbortError') {
         const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT === '1';
-        const timeoutMinutes = isDeployed ? 5 : 3;
+        const timeoutMinutes = isDeployed ? 4 : 2;
         throw new Error(`Document analysis timed out after ${timeoutMinutes} minutes. This usually happens with very large documents. Please try again or contact support.`);
       }
       
@@ -224,10 +225,10 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
       console.log(`📊 Policy data size: ${JSON.stringify(policyData).length} characters`);
       
       const controller = new AbortController();
-      // Increase timeout for deployed environments (3 minutes for summary)
+      // Optimized timeout for Grok 4 (faster response times)
       // Check both NODE_ENV and Replit deployment indicators
       const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT === '1';
-      const summaryTimeout = isDeployed ? 180000 : 120000;
+      const summaryTimeout = isDeployed ? 120000 : 90000; // 2 minutes for deployed, 1.5 minutes for development
       const timeoutId = setTimeout(() => {
         console.error(`⏱️ xAI summary timeout after ${Date.now() - startTime}ms`);
         controller.abort();
@@ -243,7 +244,7 @@ Be extremely conservative - it's better to say "Not specified in excerpt" than t
         },
         signal: controller.signal,
         body: JSON.stringify({
-          model: 'grok-2-1212',
+          model: 'grok-4-0709',
           messages: [
             {
               role: 'system',
@@ -490,7 +491,7 @@ Create a transformative 5-paragraph business intelligence summary where the fina
           },
           signal: retryController.signal,
           body: JSON.stringify({
-            model: 'grok-2-1212',
+            model: 'grok-4-0709',
             messages: [
               {
                 role: 'system',
