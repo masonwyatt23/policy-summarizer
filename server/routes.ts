@@ -103,7 +103,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);
+          return res.status(500).json({ error: "Failed to save session" });
         }
+        
+        console.log(`📝 Session saved for agent ${agent.id}`);
         
         res.status(201).json({ 
           success: true, 
@@ -153,7 +156,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);
+          return res.status(500).json({ error: "Failed to save session" });
         }
+        
+        console.log(`📝 Session saved for agent ${agent.id}`);
         
         res.json({ 
           success: true, 

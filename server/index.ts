@@ -1,9 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
-import pgSession from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { pool } from "./db";
 import "./deployment-check";
 
 const app = express();
@@ -31,49 +29,35 @@ app.use((req, res, next) => {
   next();
 });
 
-// Session configuration with PostgreSQL store for production
-const PostgreSQLStore = pgSession(session);
-
-// Determine if we're in a secure context (HTTPS)
+// Determine if we're in production
 const isProduction = process.env.NODE_ENV === 'production';
-const isReplitDeployment = !!process.env.REPLIT_DEPLOYMENT;
 
-// Generate a consistent session secret for production
-const sessionSecret = process.env.SESSION_SECRET || 
-  (isProduction ? require('crypto').randomBytes(32).toString('hex') : 'development-secret-key');
+// Use a stable session secret
+const sessionSecret = process.env.SESSION_SECRET || 'valley-trust-insurance-session-secret-2025';
 
+// Simpler session configuration without PostgreSQL store to avoid deployment issues
 const sessionConfig = {
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  rolling: false, // Don't reset expiry to avoid session conflicts
   cookie: {
-    // Only use secure cookies if explicitly in HTTPS context
-    secure: false, // Disable secure to work in both HTTP and HTTPS
+    secure: false, // Allow both HTTP and HTTPS
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'lax', // Allow cookies across same-site requests
-    // Don't set domain - let browser handle it
+    sameSite: 'lax',
     path: '/'
   },
-  name: 'connect.sid', // Use default name to avoid conflicts with existing sessions
-  // Use PostgreSQL session store in production
-  store: isProduction ? new PostgreSQLStore({
-    pool: pool,
-    tableName: 'user_sessions',
-    createTableIfMissing: true,
-    pruneSessionInterval: 60 * 15, // Prune expired sessions every 15 minutes
-  }) : undefined,
-  // Trust proxy in production for proper cookie handling
-  proxy: isProduction
+  name: 'connect.sid'
 };
 
-// Trust proxy in production environments
+// Trust proxy in production
 if (isProduction) {
   app.set('trust proxy', 1);
 }
 
+// Use session middleware
 app.use(session(sessionConfig));
+console.log('✅ Session middleware initialized (using memory store)');
 
 app.use((req, res, next) => {
   const start = Date.now();

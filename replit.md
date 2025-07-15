@@ -496,6 +496,11 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced auth middleware with proper session validation and cleanup
   - Increased auth query stale time to 5 minutes for deployment stability
   - Fixed race conditions in authentication state updates with proper refetch logic
+  - Removed PostgreSQL session store to fix "IDX_session_expire already exists" deployment error
+  - Switched to memory store for session management in all environments for stability
+  - Enhanced login/register redirect logic with deployment-specific handling
+  - Added longer delays (500ms) for session establishment in deployed environments
+  - Implemented window.location.href redirect for Replit deployment domains
 
 ## Changelog
 - July 01, 2025. Initial setup

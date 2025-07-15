@@ -37,11 +37,17 @@ export function AuthPage() {
         // Force a refetch to ensure the auth state is properly updated
         await queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
         
-        // Small delay to ensure state is fully updated
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Longer delay for deployed environments to ensure session is established
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         console.log("Redirecting to main app...");
-        setLocation("/");
+        
+        // Use window.location for more reliable redirect in deployed environments
+        if (window.location.hostname.includes('.replit.app')) {
+          window.location.href = '/';
+        } else {
+          setLocation("/");
+        }
       } catch (error) {
         console.error("Login success handler error:", error);
         setLocation("/");
@@ -76,11 +82,17 @@ export function AuthPage() {
         // Force a refetch to ensure the auth state is properly updated
         await queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
         
-        // Small delay to ensure state is fully updated
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Longer delay for deployed environments to ensure session is established
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         console.log("Redirecting to main app...");
-        setLocation("/");
+        
+        // Use window.location for more reliable redirect in deployed environments
+        if (window.location.hostname.includes('.replit.app')) {
+          window.location.href = '/';
+        } else {
+          setLocation("/");
+        }
       } catch (error) {
         console.error("Registration success handler error:", error);
         setLocation("/");

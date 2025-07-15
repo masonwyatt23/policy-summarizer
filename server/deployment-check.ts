@@ -46,12 +46,8 @@ export async function checkDeploymentReadiness(): Promise<{
     warnings.push('XAI_API_KEY format may be incorrect (should start with "xai-")');
   }
 
-  // Check if using proper session store
-  if (process.env.NODE_ENV === 'production') {
-    console.log('✅ Production session store configured (PostgreSQL)');
-  } else {
-    console.log('ℹ️  Development session store (memory) - OK for development');
-  }
+  // Log session store configuration
+  console.log('✅ Session store: Memory store (simplified for deployment stability)');
 
   return {
     isReady: issues.length === 0,
