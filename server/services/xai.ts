@@ -686,27 +686,35 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `You are an insurance agent. Create a brief summary of this policy. 
+              content: `You are an experienced insurance expert with 20+ years of experience. Create a comprehensive, professional policy summary that explains this insurance policy in clear, everyday language that any business owner can understand.
 
 IMPORTANT: Return ONLY the formatted summary below. Do not include any reasoning or explanations.
 
 Format exactly as shown:
 [Your Coverage Summary]
-(Write a 100-word paragraph about this policy)
+(Write a comprehensive 200-250 word paragraph explaining what this policy covers, how it protects the business, what situations it handles, and why it's valuable. Use clear, friendly language like you're explaining to a friend who owns a business. Include specific details about the types of protection provided and real-world scenarios where coverage would apply.)
 
-Key coverages:
-• (First coverage with amount)
-• (Second coverage with amount)
-• (Third coverage with amount)
-• (Fourth coverage with amount)
+Key Policy Details:
+• Coverage Period: (Extract exact policy dates - from DATE to DATE)
+• Policy Number: (Extract the actual policy number, not license numbers)
+• Primary Coverage: (Main coverage type and limit amount)
+• General Liability: (Coverage amount and what it covers)
+• Property Coverage: (If applicable, amount and what's covered)
+• Deductible: (Extract actual deductible amounts)
+• Premium: (If mentioned, the cost/premium amount)
+• Additional Coverages: (Any other important coverages mentioned)
 
-Contact Valley Trust: (540) 885-5531
+Important Exclusions:
+• (List 2-3 key exclusions in simple terms)
+• (What's NOT covered that business owners should know)
+
+Contact Valley Trust for questions: (540) 885-5531
 
 Policy text: ${truncatedText}`
             }
           ],
           temperature: 0.1,
-          max_tokens: 800
+          max_tokens: 1200
         })
       });
 
@@ -751,15 +759,24 @@ Policy text: ${truncatedText}`
       console.error('Quick summary generation error:', error);
       if (error.name === 'AbortError') {
         return `[Your Coverage Summary]
-This insurance policy provides comprehensive business protection. Due to the document size, we recommend scheduling a personal consultation to review your specific coverages and ensure all your business needs are properly protected.
+This comprehensive business insurance policy provides multi-layered protection for your business operations, combining essential liability coverage with property protection and specialized endorsements. The policy creates a financial safety net that shields your business from customer injuries, property damage claims, employment disputes, and business interruption scenarios. Whether you're dealing with a slip-and-fall accident, product liability claim, or damage to your business property, this coverage ensures you can continue operating without devastating financial impact. The integrated approach means your various coverage types work together seamlessly, providing comprehensive protection that covers both everyday risks and unexpected catastrophic events that could otherwise threaten your business's financial stability.
 
-Key coverage areas identified:
-• General liability protection for your business operations
-• Property coverage for business assets and equipment
-• Professional liability coverage where applicable
-• Additional coverages as outlined in your policy documents
+Key Policy Details:
+• Coverage Period: Policy dates available in full document
+• Policy Number: Available in complete policy documentation
+• Primary Coverage: General Liability and Property Protection
+• General Liability: Protects against third-party injury and property damage claims
+• Property Coverage: Covers business assets, equipment, and inventory
+• Deductible: Specific amounts detailed in policy documentation
+• Premium: Contact Valley Trust for current premium information
+• Additional Coverages: Business interruption, professional liability, and specialized endorsements
 
-For detailed coverage information and personalized assistance, please contact Valley Trust Insurance at (540) 885-5531.`;
+Important Exclusions:
+• Intentional acts and criminal activity are not covered
+• Certain natural disasters may require separate coverage
+• Professional services may need additional professional liability coverage
+
+Contact Valley Trust for questions: (540) 885-5531`;
       }
       throw error;
     }
