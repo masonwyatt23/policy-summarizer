@@ -1,0 +1,44 @@
+🚀 Starting document processing for ID: 142
+📋 Processing options passed to async function: { summaryLength: 'short' }
+📋 Summary length in options: short
+📄 Starting document processing for: 20250401121014.pdf
+Starting PDF text extraction...
+Trying extraction strategy 1...
+10:59:53 PM [express] POST /api/documents/upload 200 in 204ms :: {"documentId":142,"message":"Documen…
+Strategy 1 produced insufficient text (0 chars)
+Trying extraction strategy 2...
+Strategy 2 produced insufficient text (0 chars)
+Trying extraction strategy 3...
+Lenient extraction processed 0/8 pages
+Strategy 3 produced insufficient text (0 chars)
+Trying extraction strategy 4...
+Attempting OCR extraction for image-based PDF...
+Converting PDF to images...
+Processing 8 pages with OCR...
+OCR processing page: page-1752620394800-1.png
+OCR processing page: page-1752620394800-2.png
+11:00:06 PM [express] GET /api/documents/142/status 200 in 2395ms :: {"id":142,"originalName":"202504…
+OCR processing page: page-1752620394800-3.png
+OCR processing page: page-1752620394800-4.png
+OCR processing page: page-1752620394800-5.png
+OCR processing page: page-1752620394800-6.png
+OCR processing page: page-1752620394800-7.png
+11:00:13 PM [express] GET /api/documents/142/status 304 in 153ms :: {"id":142,"originalName":"2025040…
+OCR processing page: page-1752620394800-8.png
+OCR extraction successful: 10534 characters from 7 pages
+Strategy 4 succeeded, extracted 10534 characters
+⚡ Processing document with ultra-fast summary generation...
+xAI response received in 4829ms
+✅ Summary generated successfully in 4829ms
+✅ Document processing completed in 27729ms
+📊 Document 142 processing completed successfully
+11:00:23 PM [express] GET /api/documents/142/status 200 in 152ms :: {"id":142,"originalName":"2025040…
+11:00:33 PM [express] GET /api/documents/142/status 304 in 153ms :: {"id":142,"originalName":"2025040…
+11:00:43 PM [express] GET /api/documents/142/status 304 in 150ms :: {"id":142,"originalName":"2025040…
+11:00:53 PM [express] GET /api/documents/142/status 304 in 149ms :: {"id":142,"originalName":"2025040…
+11:01:04 PM [express] GET /api/documents/142/status 304 in 151ms :: {"id":142,"originalName":"2025040…
+11:01:13 PM [express] GET /api/documents/142/status 304 in 149ms :: {"id":142,"originalName":"2025040…
+11:01:23 PM [express] GET /api/documents/142/status 304 in 149ms :: {"id":142,"originalName":"2025040…
+11:01:33 PM [express] GET /api/documents/142/status 304 in 149ms :: {"id":142,"originalName":"2025040…
+11:01:43 PM [express] GET /api/documents/142/status 304 in 148ms :: {"id":142,"originalName":"2025040…
+11:01:53 PM [express] GET /api/documents/142/status 304 in 148ms :: {"id":142,"originalName":"2025040…

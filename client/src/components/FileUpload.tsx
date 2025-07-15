@@ -129,7 +129,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
             : f
         ));
         
-        if (status.processingStatus === 'completed') {
+        if (status.processed && status.hasSummary) {
           clearInterval(pollInterval);
           setUploadingFiles(prev => prev.map(f => 
             f.file === file 
@@ -146,9 +146,9 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
             title: 'Success',
             description: 'Document processed successfully!',
           });
-        } else if (status.processingStatus === 'failed' || attempts >= maxAttempts) {
+        } else if (status.processingError || attempts >= maxAttempts) {
           clearInterval(pollInterval);
-          const errorMessage = status.error || (attempts >= maxAttempts ? 'Processing timeout' : 'Processing failed');
+          const errorMessage = status.processingError || (attempts >= maxAttempts ? 'Processing timeout' : 'Processing failed');
           
           setUploadingFiles(prev => prev.map(f => 
             f.file === file 
