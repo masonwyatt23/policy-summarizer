@@ -13,13 +13,10 @@ export function useAuth() {
     queryKey: ['/api/auth/me'],
     queryFn: async () => {
       try {
-        console.log('Fetching auth status from /api/auth/me');
         const response = await apiRequest("GET", "/api/auth/me");
         const data = await response.json() as Agent;
-        console.log('Auth check successful, agent:', data);
         return data;
       } catch (error) {
-        console.log('Auth check failed:', error);
         // If authentication fails, return null (not authenticated)
         return null;
       }

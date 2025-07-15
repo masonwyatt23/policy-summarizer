@@ -309,13 +309,10 @@ function AuthenticatedApp({ isSidebarCollapsed, setIsSidebarCollapsed }: {
 
 function AppContent() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const { isAuthenticated, isLoading, agent } = useAuth();
-
-  console.log('AppContent - isAuthenticated:', isAuthenticated, 'isLoading:', isLoading, 'agent:', agent);
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Show loading state while checking authentication
   if (isLoading) {
-    console.log('AppContent - Showing loading state');
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <div className="text-center">
@@ -328,7 +325,6 @@ function AppContent() {
 
   // Show appropriate content based on authentication status
   if (isAuthenticated) {
-    console.log('AppContent - Showing authenticated app');
     return (
       <AuthenticatedApp 
         isSidebarCollapsed={isSidebarCollapsed}
@@ -336,7 +332,6 @@ function AppContent() {
       />
     );
   } else {
-    console.log('AppContent - Showing auth page');
     return <AuthPage />;
   }
 }

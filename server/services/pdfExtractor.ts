@@ -6,8 +6,7 @@ import path from 'path';
 
 export class PDFExtractor {
   async extractText(buffer: Buffer): Promise<string> {
-    const isDeployed = !!process.env.REPL_ID;
-    console.log(`Starting PDF text extraction in ${isDeployed ? 'DEPLOYED' : 'PREVIEW'} environment...`);
+    console.log('Starting PDF text extraction...');
     
     // Try multiple extraction strategies
     const strategies = [

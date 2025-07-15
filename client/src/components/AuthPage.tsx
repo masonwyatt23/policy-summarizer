@@ -21,39 +21,14 @@ export function AuthPage() {
     mutationFn: async (credentials: { username: string; password: string }) => {
       return await apiRequest("POST", "/api/auth/login", credentials);
     },
-    onSuccess: async (response) => {
-      try {
-        // Parse the response to get the agent data
-        const data = await response.json();
-        console.log('Login success response:', data);
-        
-        // Directly set the auth query data to immediately update authentication state
-        queryClient.setQueryData(['/api/auth/me'], data.agent);
-        console.log('Set query data to:', data.agent);
-        
-        // Also invalidate to ensure fresh data
-        queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-        console.log('Invalidated auth queries');
-        
-        toast({
-          title: "Success",
-          description: "Logged in successfully!",
-        });
-        
-        // Small delay to ensure state is updated before redirect
-        setTimeout(() => {
-          console.log('Redirecting to home page');
-          // Force page reload to ensure authentication state is properly loaded
-          window.location.href = "/";
-        }, 100);
-      } catch (error) {
-        console.error('Login success handler error:', error);
-        toast({
-          title: "Error",
-          description: "Login response parsing failed",
-          variant: "destructive",
-        });
-      }
+    onSuccess: () => {
+      // Invalidate auth query to refetch user data
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+      });
+      setLocation("/");
     },
     onError: (error: any) => {
       toast({
@@ -68,26 +43,14 @@ export function AuthPage() {
     mutationFn: async (credentials: { username: string; password: string; fullName: string; email: string }) => {
       return await apiRequest("POST", "/api/auth/register", credentials);
     },
-    onSuccess: async (response) => {
-      // Parse the response to get the agent data
-      const data = await response.json();
-      
-      // Directly set the auth query data to immediately update authentication state
-      queryClient.setQueryData(['/api/auth/me'], data.agent);
-      
-      // Also invalidate to ensure fresh data
+    onSuccess: () => {
+      // Invalidate auth query to refetch user data
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      
       toast({
         title: "Success",
         description: "Account created successfully!",
       });
-      
-      // Small delay to ensure state is updated before redirect
-      setTimeout(() => {
-        // Force page reload to ensure authentication state is properly loaded
-        window.location.href = "/";
-      }, 100);
+      setLocation("/");
     },
     onError: (error: any) => {
       toast({
