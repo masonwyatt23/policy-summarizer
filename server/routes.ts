@@ -221,7 +221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Parse processing options from form data
-      let processingOptions = {};
+      let processingOptions = { summaryLength: 'short' }; // Default to short
       console.log("📋 Request body options:", req.body.options);
       if (req.body.options) {
         try {
@@ -232,8 +232,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log("Failed to parse processing options:", e);
         }
       } else {
-        console.log("📋 No processing options provided, using defaults");
+        console.log("📋 No processing options provided, using default: short");
       }
+      
+      // Force summaryLength to 'short' for all documents
+      processingOptions.summaryLength = 'short';
+      console.log("📋 Forcing summary length to 'short' for fast processing");
 
       // Create document record with agent association
       const documentData = {
@@ -679,6 +683,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 async function processDocumentAsync(documentId: number, buffer: Buffer, filename: string, options?: any) {
   const startTime = Date.now();
   console.log(`🚀 Starting document processing for ID: ${documentId}`);
+  console.log(`📋 Processing options passed to async function:`, options);
+  console.log(`📋 Summary length in options:`, options?.summaryLength || 'not specified');
   
   try {
     // Wrap document processing with timeout for deployment environments

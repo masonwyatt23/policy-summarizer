@@ -38,11 +38,14 @@ export class DocumentProcessor {
         console.warn(`⚠️ Large document detected (${Math.round(processedText.length/1000)}k characters) - using Grok 4 for optimal processing`);
       }
       
-      const summaryLength = options?.summaryLength || 'detailed';
+      const summaryLength = options?.summaryLength || 'short'; // Default to short
+      console.log(`📋 Document processor - Summary length: ${summaryLength}`);
+      console.log(`📋 Document processor - Options:`, options);
       
       // For brief summaries, use a simplified fast-path approach
       if (summaryLength === 'short') {
         console.log('⚡ Using fast-path for brief summary generation...');
+        console.log(`⚡ Text length: ${processedText.length} characters`);
         const quickSummary = await xaiService.generateQuickSummary(processedText);
         
         // Create minimal policyData for compatibility
