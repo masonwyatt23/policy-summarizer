@@ -215,7 +215,7 @@ export function AuthPage() {
           
           {/* Right Side - Enhanced Description */}
           <div className="space-y-8 text-center lg:text-right lg:pl-8">
-            <div className="space-y-6">
+            <div className="space-y-6 text-center">
               <div className="inline-flex items-center justify-center lg:justify-end">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
                   <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
