@@ -16,9 +16,10 @@ export class XAIService {
     console.log(`🤖 Model: grok-4-0709 (fastest, most advanced)`);
   }
 
-  async analyzePolicy(documentText: string): Promise<PolicyData> {
+  async analyzePolicy(documentText: string, summaryLength: string = 'detailed'): Promise<PolicyData> {
     console.log(`🚀 xAI Analysis: Processing ${documentText.length} characters with Grok 4`);
     console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📋 Summary length mode: ${summaryLength}`);
     const startTime = Date.now();
 
     try {
@@ -650,6 +651,96 @@ Create a transformative 5-paragraph business intelligence summary where the fina
     return `Your ${policyData.policyType} policy from ${policyData.insurer} delivers comprehensive business protection combining ${policyData.coverageDetails?.slice(0, 3).map(c => `${c.type} (${c.limit})`).join(', ') || 'essential coverage types'} to safeguard your operations against customer injuries, property damage, employment disputes, and business interruption. This integrated coverage approach means your general liability protection works seamlessly with specialized coverages including ${policyData.coverageDetails?.find(c => c.type.toLowerCase().includes('liquor'))?.type || 'liquor liability'} for alcohol-related incidents and employment practices coverage for workplace disputes, creating a unified shield for your business assets and income.
 
 The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0, 2).map(b => typeof b === 'string' ? b : b.benefit).join(' and ') || 'comprehensive business protection'}, with important coverage boundaries that help define your protection scope. ${policyData.whyItMatters || 'This comprehensive coverage provides financial protection and operational continuity for your business.'} For optimal protection and to clarify any coverage details, review your complete policy documentation with your Valley Trust Insurance agent at (540) 885-5531, ensuring all coverage limits align with your business needs and operational requirements.`;
+  }
+
+  async generateQuickSummary(documentText: string): Promise<string> {
+    console.log('⚡ xAI generating quick brief summary...');
+    const startTime = Date.now();
+
+    try {
+      const controller = new AbortController();
+      const timeout = 60000; // 1 minute timeout for brief summaries
+      const timeoutId = setTimeout(() => {
+        console.error(`⏱️ Quick summary timeout after ${Date.now() - startTime}ms`);
+        controller.abort();
+      }, timeout);
+
+      console.log(`📤 Sending quick summary request to xAI API at ${new Date().toISOString()}`);
+
+      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: 'grok-4-0709',
+          messages: [
+            {
+              role: 'system',
+              content: `You are an experienced insurance agent with 20+ years of experience, writing a brief summary for your client. You explain insurance policies in simple, everyday language that anyone can understand.
+
+WRITING STYLE:
+• Use simple, conversational language - like explaining to a friend
+• Avoid technical jargon and industry terms
+• Be warm and reassuring but professional
+• Focus on what matters most to the client
+• NEVER mention OCR errors, scanning issues, or document quality
+
+FORMAT REQUIREMENTS:
+• Start with [Your Coverage Summary] as the header
+• Write ONE single paragraph of 100-150 words total
+• Include the most important coverage amounts and benefits
+• End with Valley Trust contact: (540) 885-5531
+
+After the paragraph, add 4-5 bullet points with key coverage details:
+• Each bullet should be specific (include dollar amounts when available)
+• Focus on what the client gains from each coverage
+• Use everyday language to explain benefits`
+            },
+            {
+              role: 'user',
+              content: `Create a brief, client-friendly summary of this insurance policy. Focus on the key coverages and benefits that matter most. Remember: ONE paragraph (100-150 words) followed by 4-5 specific bullet points.
+
+DOCUMENT TEXT:
+${documentText.substring(0, 50000)}`
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 600
+        })
+      }).catch(error => {
+        clearTimeout(timeoutId);
+        console.error(`❌ Fetch error after ${Date.now() - startTime}ms:`, error);
+        throw error;
+      });
+
+      clearTimeout(timeoutId);
+      console.log(`📥 Received quick summary response after ${Date.now() - startTime}ms`);
+
+      if (!response.ok) {
+        console.error(`❌ xAI API error: ${response.status}`);
+        throw new Error(`xAI API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0]?.message?.content;
+      
+      if (!content) {
+        throw new Error('No summary content received from xAI');
+      }
+
+      console.log(`✅ Quick summary complete in ${Date.now() - startTime}ms`);
+      return content.trim();
+
+    } catch (error) {
+      console.error('Quick summary generation error:', error);
+      if (error.name === 'AbortError') {
+        throw new Error('Summary generation timeout - document may be too complex');
+      }
+      throw error;
+    }
   }
 }
 

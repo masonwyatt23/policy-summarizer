@@ -38,8 +38,40 @@ export class DocumentProcessor {
         console.warn(`⚠️ Large document detected (${Math.round(processedText.length/1000)}k characters) - using Grok 4 for optimal processing`);
       }
       
-      const policyData = await xaiService.analyzePolicy(processedText);
       const summaryLength = options?.summaryLength || 'detailed';
+      
+      // For brief summaries, use a simplified fast-path approach
+      if (summaryLength === 'short') {
+        console.log('⚡ Using fast-path for brief summary generation...');
+        const quickSummary = await xaiService.generateQuickSummary(processedText);
+        
+        // Create minimal policyData for compatibility
+        const policyData: PolicyData = {
+          policyType: 'Insurance Policy',
+          insurer: 'See document',
+          policyNumber: 'See document',
+          policyPeriod: 'See document',
+          insuredName: 'See document',
+          coverageDetails: [],
+          keyBenefits: [],
+          exclusions: [],
+          eligibilityRequirements: [],
+          claimsProcedure: 'See document',
+          importantContacts: [],
+          additionalNotes: '',
+          confidenceScore: 1.0,
+          extractionWarnings: []
+        };
+        
+        return {
+          extractedText,
+          policyData,
+          summary: quickSummary,
+        };
+      }
+      
+      // Full analysis for detailed summaries
+      const policyData = await xaiService.analyzePolicy(processedText, summaryLength);
       
       console.log(`📝 Generating ${summaryLength} summary...`);
       const summary = await xaiService.generateEnhancedSummary(policyData, '', summaryLength);
