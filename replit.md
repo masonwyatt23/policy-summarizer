@@ -622,6 +622,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Reduced max tokens from 600 to 400 to prevent AI response truncation
   - Added explicit restrictions against casual phrases like "let me break this down"
   - Enhanced bullet point formatting to prevent cutoff issues
+- January 16, 2025: Enhanced AI data extraction and progress visualization
+  - Fixed progress to show "Processing document..." immediately upon upload
+  - Enhanced AI prompts to extract ACTUAL data from documents (not generic placeholders)
+  - Added instructions to find real policy numbers, coverage amounts, business names, dates
+  - Increased max tokens to 500 for complete data extraction
+  - Improved prompt to identify and use specific dollar amounts and exclusions from document
 
 ## Changelog
 - July 01, 2025. Initial setup

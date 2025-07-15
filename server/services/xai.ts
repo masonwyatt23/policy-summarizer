@@ -686,28 +686,28 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `You are an insurance professional. Create a CONCISE policy summary. NEVER use casual greetings like "Hey there", "Hi", "Hello", or phrases like "as a fellow business owner", "let me break this down".
+              content: `You are an insurance professional analyzing a policy document. Extract ACTUAL data from the document - do not use generic placeholders.
 
-CRITICAL: Start directly with "This is a [policy type] policy...". Be professional and direct. Maximum 80 words for main paragraph.
+CRITICAL: Start directly with "This is a..." and extract real information from the document.
 
 Format exactly as shown:
 [Your Coverage Summary]
-This is a [policy type] policy provided by [insurance company] for [business name if mentioned]. It covers [main coverage with limit]. For example, if [brief scenario], this policy covers [protection]. Keep in mind, [key exclusion] are excluded. This policy protects your business operations.
+This is a [extract actual policy type] policy provided by [extract actual insurance company name], designed to protect [extract actual business name]. It covers [list actual coverages with specific dollar amounts from document]. For example, if [scenario based on actual coverage], this policy would cover [specific protection]. Keep in mind, [extract actual exclusions from document]. This policy ensures your business is protected by covering [summary of actual protections].
 
 Key Details:
-• Coverage Period: [Extract exact dates]
-• Policy Number: [Extract actual policy number]  
-• Primary Coverage: [Main coverage and limit]
-• Deductible: [Extract amount]
-• Key Exclusions: [1-2 main exclusions]
+• Coverage Period: [Extract exact dates from document - look for policy period]
+• Policy Number: [Extract actual policy number - not license numbers like DD2089]  
+• Primary Coverage: [Extract actual coverage type and dollar amount]
+• Deductible: [Extract actual deductible amount from document]
+• Key Exclusions: [Extract 1-2 actual exclusions from document]
 
 Contact Valley Trust: (540) 885-5531
 
-Policy text: ${truncatedText}`
+Policy text to analyze: ${truncatedText}`
             }
           ],
-          temperature: 0.1,
-          max_tokens: 400
+          temperature: 0.3,
+          max_tokens: 500
         })
       });
 

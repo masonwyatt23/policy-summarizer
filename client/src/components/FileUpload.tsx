@@ -53,7 +53,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
       
       setUploadingFiles(prev => prev.map(f => 
         f.file === fileData.file 
-          ? { ...f, progress: 100, status: 'processing', documentId: result.documentId, processingStage: 'Initializing AI analysis...' }
+          ? { ...f, progress: 100, status: 'processing', documentId: result.documentId, processingStage: 'Processing document...' }
           : f
       ));
       
