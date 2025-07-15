@@ -21,14 +21,25 @@ export function AuthPage() {
     mutationFn: async (credentials: { username: string; password: string }) => {
       return await apiRequest("POST", "/api/auth/login", credentials);
     },
-    onSuccess: () => {
-      // Invalidate auth query to refetch user data
+    onSuccess: async (response) => {
+      // Parse the response to get the agent data
+      const data = await response.json();
+      
+      // Directly set the auth query data to immediately update authentication state
+      queryClient.setQueryData(['/api/auth/me'], data.agent);
+      
+      // Also invalidate to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      
       toast({
         title: "Success",
         description: "Logged in successfully!",
       });
-      setLocation("/");
+      
+      // Small delay to ensure state is updated before redirect
+      setTimeout(() => {
+        setLocation("/");
+      }, 100);
     },
     onError: (error: any) => {
       toast({
@@ -43,14 +54,25 @@ export function AuthPage() {
     mutationFn: async (credentials: { username: string; password: string; fullName: string; email: string }) => {
       return await apiRequest("POST", "/api/auth/register", credentials);
     },
-    onSuccess: () => {
-      // Invalidate auth query to refetch user data
+    onSuccess: async (response) => {
+      // Parse the response to get the agent data
+      const data = await response.json();
+      
+      // Directly set the auth query data to immediately update authentication state
+      queryClient.setQueryData(['/api/auth/me'], data.agent);
+      
+      // Also invalidate to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      
       toast({
         title: "Success",
         description: "Account created successfully!",
       });
-      setLocation("/");
+      
+      // Small delay to ensure state is updated before redirect
+      setTimeout(() => {
+        setLocation("/");
+      }, 100);
     },
     onError: (error: any) => {
       toast({

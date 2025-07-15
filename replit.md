@@ -470,6 +470,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Improved responsive design with proper mobile and desktop layouts
   - Enhanced typography with large gradient text headings and professional card styling
   - Swapped layout positioning per user preference: login card on left, description on right
+- July 15, 2025: Fixed authentication redirect issue preventing access to main app after login
+  - Modified login and register mutations to directly set authentication state before redirecting
+  - Added proper response parsing to extract agent data and update query cache immediately
+  - Implemented small delay before redirect to ensure authentication state is properly updated
+  - Fixed issue where successful login would show success message but remain on login page
+  - Both login and register now properly redirect to main application after successful authentication
 
 ## Changelog
 - July 01, 2025. Initial setup
