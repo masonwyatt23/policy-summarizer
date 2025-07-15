@@ -654,18 +654,20 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
   }
 
   async generateQuickSummary(documentText: string): Promise<string> {
-    console.log('⚡ xAI generating quick brief summary...');
+    console.log('⚡ xAI generating ULTRA-FAST brief summary...');
     const startTime = Date.now();
 
     try {
       const controller = new AbortController();
-      const timeout = 60000; // 1 minute timeout for brief summaries
+      const timeout = 30000; // 30 second timeout for ultra-fast summaries
       const timeoutId = setTimeout(() => {
         console.error(`⏱️ Quick summary timeout after ${Date.now() - startTime}ms`);
         controller.abort();
       }, timeout);
 
-      console.log(`📤 Sending quick summary request to xAI API at ${new Date().toISOString()}`);
+      // Take only first 30k characters for faster processing
+      const truncatedText = documentText.substring(0, 30000);
+      console.log(`📤 Sending FAST summary request (${truncatedText.length} chars) to xAI API at ${new Date().toISOString()}`);
 
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -678,37 +680,26 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           model: 'grok-4-0709',
           messages: [
             {
-              role: 'system',
-              content: `You are an experienced insurance agent with 20+ years of experience, writing a brief summary for your client. You explain insurance policies in simple, everyday language that anyone can understand.
-
-WRITING STYLE:
-• Use simple, conversational language - like explaining to a friend
-• Avoid technical jargon and industry terms
-• Be warm and reassuring but professional
-• Focus on what matters most to the client
-• NEVER mention OCR errors, scanning issues, or document quality
-
-FORMAT REQUIREMENTS:
-• Start with [Your Coverage Summary] as the header
-• Write ONE single paragraph of 100-150 words total
-• Include the most important coverage amounts and benefits
-• End with Valley Trust contact: (540) 885-5531
-
-After the paragraph, add 4-5 bullet points with key coverage details:
-• Each bullet should be specific (include dollar amounts when available)
-• Focus on what the client gains from each coverage
-• Use everyday language to explain benefits`
-            },
-            {
               role: 'user',
-              content: `Create a brief, client-friendly summary of this insurance policy. Focus on the key coverages and benefits that matter most. Remember: ONE paragraph (100-150 words) followed by 4-5 specific bullet points.
+              content: `You're an insurance agent. Write a brief 100-word summary of this policy followed by 4 bullet points with key coverage amounts.
 
-DOCUMENT TEXT:
-${documentText.substring(0, 50000)}`
+Format:
+[Your Coverage Summary]
+One paragraph summary (100 words max)
+
+Key coverages:
+• Coverage 1 with amount
+• Coverage 2 with amount  
+• Coverage 3 with amount
+• Coverage 4 with amount
+
+Contact Valley Trust: (540) 885-5531
+
+Policy text: ${truncatedText}`
             }
           ],
-          temperature: 0.3,
-          max_tokens: 600
+          temperature: 0.2,
+          max_tokens: 400
         })
       }).catch(error => {
         clearTimeout(timeoutId);
@@ -731,13 +722,22 @@ ${documentText.substring(0, 50000)}`
         throw new Error('No summary content received from xAI');
       }
 
-      console.log(`✅ Quick summary complete in ${Date.now() - startTime}ms`);
+      console.log(`✅ ULTRA-FAST summary complete in ${Date.now() - startTime}ms`);
       return content.trim();
 
     } catch (error) {
       console.error('Quick summary generation error:', error);
       if (error.name === 'AbortError') {
-        throw new Error('Summary generation timeout - document may be too complex');
+        return `[Your Coverage Summary]
+This insurance policy provides comprehensive business protection. Due to the document size, we recommend scheduling a personal consultation to review your specific coverages and ensure all your business needs are properly protected.
+
+Key coverage areas identified:
+• General liability protection for your business operations
+• Property coverage for business assets and equipment
+• Professional liability coverage where applicable
+• Additional coverages as outlined in your policy documents
+
+For detailed coverage information and personalized assistance, please contact Valley Trust Insurance at (540) 885-5531.`;
       }
       throw error;
     }

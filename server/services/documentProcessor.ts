@@ -38,54 +38,38 @@ export class DocumentProcessor {
         console.warn(`⚠️ Large document detected (${Math.round(processedText.length/1000)}k characters) - using Grok 4 for optimal processing`);
       }
       
-      const summaryLength = options?.summaryLength || 'short'; // Default to short
-      console.log(`📋 Document processor - Summary length: ${summaryLength}`);
-      console.log(`📋 Document processor - Options:`, options);
+      // ALWAYS use fast-path for ALL summaries
+      console.log('⚡ Using FAST-PATH for brief summary generation...');
+      console.log(`⚡ Text length: ${processedText.length} characters`);
       
-      // For brief summaries, use a simplified fast-path approach
-      if (summaryLength === 'short') {
-        console.log('⚡ Using fast-path for brief summary generation...');
-        console.log(`⚡ Text length: ${processedText.length} characters`);
-        const quickSummary = await xaiService.generateQuickSummary(processedText);
-        
-        // Create minimal policyData for compatibility
-        const policyData: PolicyData = {
-          policyType: 'Insurance Policy',
-          insurer: 'See document',
-          policyNumber: 'See document',
-          policyPeriod: 'See document',
-          insuredName: 'See document',
-          coverageDetails: [],
-          keyBenefits: [],
-          exclusions: [],
-          eligibilityRequirements: [],
-          claimsProcedure: 'See document',
-          importantContacts: [],
-          additionalNotes: '',
-          confidenceScore: 1.0,
-          extractionWarnings: []
-        };
-        
-        return {
-          extractedText,
-          policyData,
-          summary: quickSummary,
-        };
-      }
+      // Generate quick summary directly - no analysis needed
+      const quickSummary = await xaiService.generateQuickSummary(processedText);
       
-      // Full analysis for detailed summaries
-      const policyData = await xaiService.analyzePolicy(processedText, summaryLength);
+      // Create minimal policyData for compatibility
+      const policyData: PolicyData = {
+        policyType: 'Insurance Policy',
+        insurer: 'See document',
+        policyNumber: 'See document',
+        policyPeriod: 'See document',
+        insuredName: 'See document',
+        coverageDetails: [],
+        keyBenefits: [],
+        exclusions: [],
+        eligibilityRequirements: [],
+        claimsProcedure: 'See document',
+        importantContacts: [],
+        additionalNotes: '',
+        confidenceScore: 1.0,
+        extractionWarnings: []
+      };
       
-      console.log(`📝 Generating ${summaryLength} summary...`);
-      const summary = await xaiService.generateEnhancedSummary(policyData, '', summaryLength);
-      
-      console.log('✅ xAI analysis completed with comprehensive results');
-      console.log(`📊 Summary format: ${summaryLength}, Length: ${summary.length} characters`);
+      console.log('✅ Fast summary completed');
+      console.log(`📊 Summary length: ${quickSummary.length} characters`);
 
       return {
         extractedText,
         policyData,
-        summary,
+        summary: quickSummary,
       };
     } catch (error) {
       console.error('Document processing error:', error);
