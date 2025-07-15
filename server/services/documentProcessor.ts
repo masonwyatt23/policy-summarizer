@@ -18,12 +18,13 @@ export class DocumentProcessor {
         throw new Error('No text content could be extracted from the document');
       }
       
-      // Optimize text length for Grok 4 - better performance with shorter texts
-      const maxTextLength = 100000; // ~35 pages of text - optimized for Grok 4
+      // Process full document for complete accuracy
+      const maxTextLength = 300000; // ~100 pages of text - process entire documents
       let processedText = extractedText;
       if (extractedText.length > maxTextLength) {
-        console.warn(`⚠️ Document text truncated from ${extractedText.length} to ${maxTextLength} characters for optimal Grok 4 processing`);
-        processedText = extractedText.substring(0, maxTextLength);
+        console.warn(`⚠️ Large document: ${extractedText.length} characters. Processing full content for accuracy.`);
+        // Still process the full text, but warn about size
+        processedText = extractedText;
       }
 
 

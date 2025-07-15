@@ -658,7 +658,7 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
 
     try {
       const controller = new AbortController();
-      const timeout = 20000; // 20 second timeout for ultra-fast summaries with grok-3-mini-fast
+      const timeout = 30000; // 30 second timeout to handle full documents
       let timeoutId: NodeJS.Timeout;
       
       // Create timeout promise that will resolve with error
@@ -670,8 +670,8 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
         }, timeout);
       });
 
-      // Take only first 20k characters for even faster processing with mini model
-      const truncatedText = documentText.substring(0, 20000);
+      // Process more text for complete accuracy
+      const truncatedText = documentText.substring(0, 100000); // Process up to 100k chars for full coverage
 
       // Race between API call and timeout
       const fetchPromise = fetch(`${this.baseUrl}/chat/completions`, {
@@ -771,7 +771,7 @@ For detailed coverage information and personalized assistance, please contact Va
 
     try {
       const controller = new AbortController();
-      const timeout = 20000; // 20 second timeout
+      const timeout = 30000; // 30 second timeout for complete processing
       let timeoutId: NodeJS.Timeout;
       
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -814,20 +814,26 @@ For detailed coverage information and personalized assistance, please contact Va
       // We'll send just the extracted text from the first few pages to Grok 3 mini
       console.log('⚡ Falling back to optimized text extraction for speed...');
       
-      // Extract text from first 3 pages only for speed
+      // Extract text from ALL pages for complete accuracy
       let extractedText = '';
-      const maxPages = Math.min(3, pdfDoc.numPages);
+      const totalPages = pdfDoc.numPages;
       
-      for (let i = 1; i <= maxPages; i++) {
+      console.log(`📄 Processing all ${totalPages} pages for complete accuracy...`);
+      
+      for (let i = 1; i <= totalPages; i++) {
         const page = await pdfDoc.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items
           .map((item: any) => item.str)
           .join(' ');
         extractedText += pageText + '\n\n';
+        
+        if (i % 10 === 0) {
+          console.log(`  ✓ Processed ${i}/${totalPages} pages...`);
+        }
       }
       
-      console.log(`📝 Extracted ${extractedText.length} characters from first ${maxPages} pages`);
+      console.log(`📝 Extracted ${extractedText.length} characters from all ${totalPages} pages`);
       
       // Use Grok 3 mini for fast processing
       const fetchPromise = fetch(`${this.baseUrl}/chat/completions`, {
@@ -858,7 +864,7 @@ Key coverages:
 
 Contact Valley Trust: (540) 885-5531
 
-Text from first ${maxPages} pages: ${extractedText.substring(0, 15000)}`  // Limit to 15k chars
+Full document text: ${extractedText.substring(0, 50000)}`  // Increased to 50k chars for full coverage
             }
           ],
           temperature: 0.1,

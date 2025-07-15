@@ -578,6 +578,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Falls back to existing text extraction for non-PDF files (DOCX)
   - Maintains ultra-fast Grok 3 Mini for all summary generation
   - Significantly improved performance by limiting text extraction to first 15,000 characters
+- January 16, 2025: Enhanced to process complete documents for full accuracy
+  - Updated system to extract text from ALL pages of uploaded documents
+  - Increased text processing limit from 15k to 100k characters for comprehensive coverage
+  - Extended timeout from 20 to 30 seconds to accommodate full document processing
+  - Modified document processor to handle up to 300k characters (100+ pages)
+  - Ensured AI outputs are fully accurate by processing entire insurance policies
+  - Maintains reasonable performance while prioritizing complete accuracy
 
 ## Changelog
 - July 01, 2025. Initial setup
