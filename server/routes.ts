@@ -36,12 +36,8 @@ const upload = multer({
 
 // Authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
-  console.log(`🔍 Auth check - Session ID: ${req.sessionID}, Agent ID: ${req.session.agentId}`);
-  
   // Check if session exists and has agent ID
   if (!req.session || !req.session.agentId) {
-    console.log(`❌ No agent ID in session`);
-    
     // Clear any invalid session
     if (req.session) {
       req.session.destroy(() => {});
@@ -50,7 +46,6 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
     return res.status(401).json({ error: "Authentication required" });
   }
   
-  console.log(`✅ Auth check passed for agent ${req.session.agentId}`);
   next();
 }
 
@@ -149,17 +144,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.agentId = agent.id;
       req.session.agentUsername = agent.username;
 
-      console.log(`✅ Login successful for agent ${agent.id} (${agent.username})`);
-      console.log(`🔑 Session ID: ${req.sessionID}`);
-      
       // Ensure session is saved before sending response
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);
           return res.status(500).json({ error: "Failed to save session" });
         }
-        
-        console.log(`📝 Session saved for agent ${agent.id}`);
         
         res.json({ 
           success: true, 
@@ -220,24 +210,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "No file uploaded" });
       }
 
-      // Parse processing options from form data
-      let processingOptions = { summaryLength: 'short' }; // Default to short
-      console.log("📋 Request body options:", req.body.options);
-      if (req.body.options) {
-        try {
-          processingOptions = JSON.parse(req.body.options);
-          console.log("📋 Processing options received:", processingOptions);
-          console.log("📋 Summary length:", processingOptions.summaryLength || 'not specified');
-        } catch (e) {
-          console.log("Failed to parse processing options:", e);
-        }
-      } else {
-        console.log("📋 No processing options provided, using default: short");
-      }
-      
-      // Force summaryLength to 'short' for all documents
-      processingOptions.summaryLength = 'short';
-      console.log("📋 Forcing summary length to 'short' for fast processing");
+      // Always use short summary for ultra-fast processing
+      const processingOptions = { summaryLength: 'short' };
 
       // Create document record with agent association
       const documentData = {

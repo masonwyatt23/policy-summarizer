@@ -104,7 +104,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
   };
 
   const pollProcessingStatus = async (documentId: number, file: File) => {
-    const maxAttempts = 60; // 5 minutes with 5-second intervals
+    const maxAttempts = 30; // 5 minutes with 10-second intervals
     let attempts = 0;
     const processingStages = [
       'Reading document content...',
@@ -170,7 +170,7 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
             : f
         ));
       }
-    }, 5000);
+    }, 10000); // Check every 10 seconds instead of 5
   };
 
   const removeFile = (fileToRemove: File) => {

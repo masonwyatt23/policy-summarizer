@@ -654,7 +654,6 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
   }
 
   async generateQuickSummary(documentText: string): Promise<string> {
-    console.log('⚡ xAI generating ULTRA-FAST brief summary...');
     const startTime = Date.now();
 
     try {
@@ -667,7 +666,6 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
 
       // Take only first 30k characters for faster processing
       const truncatedText = documentText.substring(0, 30000);
-      console.log(`📤 Sending FAST summary request (${truncatedText.length} chars) to xAI API at ${new Date().toISOString()}`);
 
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -708,10 +706,8 @@ Policy text: ${truncatedText}`
       });
 
       clearTimeout(timeoutId);
-      console.log(`📥 Received quick summary response after ${Date.now() - startTime}ms`);
 
       if (!response.ok) {
-        console.error(`❌ xAI API error: ${response.status}`);
         throw new Error(`xAI API error: ${response.status}`);
       }
 
@@ -722,7 +718,6 @@ Policy text: ${truncatedText}`
         throw new Error('No summary content received from xAI');
       }
 
-      console.log(`✅ ULTRA-FAST summary complete in ${Date.now() - startTime}ms`);
       return content.trim();
 
     } catch (error) {

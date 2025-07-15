@@ -28,19 +28,8 @@ export class DocumentProcessor {
 
 
 
-      // Use xAI exclusively for superior policy analysis and summaries
-      console.log('🚀 Using xAI (Grok 4) for comprehensive policy analysis...');
-      console.log(`📄 Processing ${processedText.length} characters of document text`);
-      console.log(`📋 Summary length requested: ${options?.summaryLength || 'detailed'}`);
-      
-      // Add text length warning for large documents
-      if (processedText.length > 75000) {
-        console.warn(`⚠️ Large document detected (${Math.round(processedText.length/1000)}k characters) - using Grok 4 for optimal processing`);
-      }
-      
       // ALWAYS use fast-path for ALL summaries
-      console.log('⚡ Using FAST-PATH for brief summary generation...');
-      console.log(`⚡ Text length: ${processedText.length} characters`);
+      console.log('⚡ Processing document with ultra-fast summary generation...');
       
       // Generate quick summary directly - no analysis needed
       const quickSummary = await xaiService.generateQuickSummary(processedText);
@@ -63,11 +52,8 @@ export class DocumentProcessor {
         extractionWarnings: []
       };
       
-      console.log('✅ Fast summary completed');
-      console.log(`📊 Summary length: ${quickSummary.length} characters`);
-
       return {
-        extractedText,
+        extractedText: processedText.substring(0, 1000), // Only keep first 1k chars for reference
         policyData,
         summary: quickSummary,
       };
