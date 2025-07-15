@@ -68,6 +68,7 @@ export const api = {
     const response = await fetch('/api/documents/upload', {
       method: 'POST',
       body: formData,
+      credentials: 'include', // Include session cookies
     });
     
     if (!response.ok) {
@@ -95,6 +96,7 @@ export const api = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(options),
+      credentials: 'include', // Include session cookies
     });
     
     if (!response.ok) {

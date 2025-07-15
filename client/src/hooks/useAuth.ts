@@ -42,8 +42,8 @@ export function useAuth() {
       }
     },
     retry: false,
-    staleTime: 1000 * 30, // 30 seconds
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 5, // 5 minutes - longer for deployment stability
+    refetchOnWindowFocus: false, // Prevent unnecessary refetches in deployment
   });
 
   const logoutMutation = useMutation({

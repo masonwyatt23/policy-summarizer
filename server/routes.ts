@@ -37,10 +37,19 @@ const upload = multer({
 // Authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   console.log(`🔍 Auth check - Session ID: ${req.sessionID}, Agent ID: ${req.session.agentId}`);
-  if (!req.session.agentId) {
+  
+  // Check if session exists and has agent ID
+  if (!req.session || !req.session.agentId) {
     console.log(`❌ No agent ID in session`);
+    
+    // Clear any invalid session
+    if (req.session) {
+      req.session.destroy(() => {});
+    }
+    
     return res.status(401).json({ error: "Authentication required" });
   }
+  
   console.log(`✅ Auth check passed for agent ${req.session.agentId}`);
   next();
 }
@@ -89,15 +98,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`✅ Registration successful for agent ${agent.id} (${agent.username})`);
       console.log(`🔑 Session ID: ${req.sessionID}`);
-
-      res.status(201).json({ 
-        success: true, 
-        agent: { 
-          id: agent.id, 
-          username: agent.username, 
-          fullName: agent.fullName,
-          email: agent.email 
-        } 
+      
+      // Ensure session is saved before sending response
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+        }
+        
+        res.status(201).json({ 
+          success: true, 
+          agent: { 
+            id: agent.id, 
+            username: agent.username, 
+            fullName: agent.fullName,
+            email: agent.email 
+          } 
+        });
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -132,15 +148,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`✅ Login successful for agent ${agent.id} (${agent.username})`);
       console.log(`🔑 Session ID: ${req.sessionID}`);
-
-      res.json({ 
-        success: true, 
-        agent: { 
-          id: agent.id, 
-          username: agent.username, 
-          fullName: agent.fullName,
-          email: agent.email 
-        } 
+      
+      // Ensure session is saved before sending response
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+        }
+        
+        res.json({ 
+          success: true, 
+          agent: { 
+            id: agent.id, 
+            username: agent.username, 
+            fullName: agent.fullName,
+            email: agent.email 
+          } 
+        });
       });
     } catch (error) {
       console.error("Login error:", error);

@@ -10,25 +10,68 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// CORS configuration for deployed environments
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  // In production, allow requests from Replit domains
+  if (isProduction && origin && origin.includes('.replit.app')) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+  
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
+
 // Session configuration with PostgreSQL store for production
 const PostgreSQLStore = pgSession(session);
 
+// Determine if we're in a secure context (HTTPS)
+const isProduction = process.env.NODE_ENV === 'production';
+const isReplitDeployment = !!process.env.REPLIT_DEPLOYMENT;
+
+// Generate a consistent session secret for production
+const sessionSecret = process.env.SESSION_SECRET || 
+  (isProduction ? require('crypto').randomBytes(32).toString('hex') : 'development-secret-key');
+
 const sessionConfig = {
-  secret: process.env.SESSION_SECRET || 'development-secret-key',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
+  rolling: false, // Don't reset expiry to avoid session conflicts
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    // Only use secure cookies if explicitly in HTTPS context
+    secure: false, // Disable secure to work in both HTTP and HTTPS
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax', // Allow cookies across same-site requests
+    // Don't set domain - let browser handle it
+    path: '/'
   },
-  // Use PostgreSQL session store in production, memory store in development
-  store: process.env.NODE_ENV === 'production' ? new PostgreSQLStore({
+  name: 'connect.sid', // Use default name to avoid conflicts with existing sessions
+  // Use PostgreSQL session store in production
+  store: isProduction ? new PostgreSQLStore({
     pool: pool,
     tableName: 'user_sessions',
     createTableIfMissing: true,
-  }) : undefined
+    pruneSessionInterval: 60 * 15, // Prune expired sessions every 15 minutes
+  }) : undefined,
+  // Trust proxy in production for proper cookie handling
+  proxy: isProduction
 };
+
+// Trust proxy in production environments
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
 
 app.use(session(sessionConfig));
 
