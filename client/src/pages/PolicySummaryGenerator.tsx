@@ -35,7 +35,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const [clientName, setClientName] = useState<string>('');
   const [clientLogo, setClientLogo] = useState<string>('');
   const [logoPreview, setLogoPreview] = useState<string>('');
-  const [summaryLength, setSummaryLength] = useState<'short' | 'detailed'>('detailed');
+  const [summaryLength, setSummaryLength] = useState<'short' | 'detailed'>('short');
   const { toast } = useToast();
   const { agent, logout, isLoggingOut } = useAuth();
   const queryClient = useQueryClient();

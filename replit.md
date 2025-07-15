@@ -454,6 +454,9 @@ This is a full-stack policy document processing application built for Valley Tru
 - Constrained PDF layout to single page with `height: 100vh` and `max-height: 100vh`
 - Reduced content margins and padding to maximize space utilization within single page bounds
 - Added overflow handling to content area to ensure footer stays at bottom of first page
+- July 15, 2025: Changed default summary length selection from 'detailed' to 'short' (1 paragraph)
+  - Updated PolicySummaryGenerator to default to concise format instead of 5-paragraph format
+  - Reflects user preference for digestible, brief summaries as the primary option
 
 ## Changelog
 - July 01, 2025. Initial setup
