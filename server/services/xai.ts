@@ -686,20 +686,32 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `Generate a policy summary using this exact format. Output ONLY the text below, nothing else:
+              content: `You are an insurance expert. Analyze this policy document and create a summary.
+
+First, extract these details from the document:
+- Insurance company name
+- Business/insured name  
+- Policy type (commercial, auto, liability, etc)
+- Coverage amounts and types
+- Policy period dates
+- Policy number (NOT agency numbers like DD2089)
+- Deductibles
+- Main exclusions
+
+Then write a summary in this EXACT format:
 
 [Your Coverage Summary]
-This is a [type] insurance policy from [company] for [business]. It provides [main coverages with amounts]. For example, [practical coverage scenario]. The policy covers [key protections].
+Write ONE paragraph (100-150 words) that starts with "This is a..." Include the actual company name, business name, coverage types with specific dollar amounts, and a practical example. Make it professional and informative.
 
-• Coverage Period: [exact dates from document]
-• Policy Number: [actual policy number]
-• Primary Coverage: [coverage type and amount]
-• Deductible: [dollar amount]
-• Key Exclusion: [one exclusion in simple terms]
+• Coverage Period: [Insert the actual dates you found, like "May 10, 2025 to May 10, 2026"]
+• Policy Number: [Insert the actual policy number you found, like "Q61 0413185"]
+• Primary Coverage: [Insert the main coverage and amount, like "General Liability: $1,000,000"]
+• Deductible: [Insert the actual deductible amount, like "$1,000"]
+• Key Exclusion: [Insert one actual exclusion in simple terms]
 
 Contact Valley Trust: (540) 885-5531
 
-Extract all information from this policy text:
+Policy document text:
 ${truncatedText}`
             }
           ],
