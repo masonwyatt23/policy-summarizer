@@ -35,7 +35,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
   const [clientName, setClientName] = useState<string>('');
   const [clientLogo, setClientLogo] = useState<string>('');
   const [logoPreview, setLogoPreview] = useState<string>('');
-  const [summaryLength, setSummaryLength] = useState<'short' | 'detailed'>('short');
+  const summaryLength: 'short' = 'short'; // Always use brief summaries
   const { toast } = useToast();
   const { agent, logout, isLoggingOut } = useAuth();
   const queryClient = useQueryClient();
@@ -252,47 +252,17 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Summary Length Selection - Before Upload */}
+        {/* Brief Summary Information */}
         <div className="mb-6">
           <Card className="bg-card border border-border shadow-sm">
             <div className="p-4">
-              <div className="flex items-center space-x-2 mb-3">
+              <div className="flex items-center space-x-2">
                 <FileText className="w-5 h-5 text-valley-primary" />
-                <h3 className="text-xl font-semibold text-foreground">Summary Format</h3>
-                <span className="text-base text-muted-foreground">- Choose your preferred summary length</span>
+                <h3 className="text-xl font-semibold text-foreground">Professional Brief Summaries</h3>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="summaryLength" className="text-base font-medium">
-                    Select Summary Length
-                  </Label>
-                  <Select value={summaryLength} onValueChange={(value: 'short' | 'detailed') => setSummaryLength(value)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select summary length" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="short">Concise (1 paragraph, 100-150 words)</SelectItem>
-                      <SelectItem value="detailed">Detailed (5 paragraphs, 400-600 words)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-base font-medium text-muted-foreground">
-                    Selected Format
-                  </Label>
-                  <div className="p-3 bg-muted rounded-lg">
-                    <div className="text-base font-medium text-foreground">
-                      {summaryLength === 'short' ? 'Concise Summary' : 'Detailed Summary'}
-                    </div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {summaryLength === 'short' 
-                        ? 'Single paragraph format ideal for quick reviews and executive briefings'
-                        : 'Comprehensive 5-paragraph format with detailed analysis and recommendations'
-                      }
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <p className="text-base text-muted-foreground mt-2">
+                Upload your insurance policy to receive a concise, client-ready summary with key coverage highlights in under a minute.
+              </p>
             </div>
           </Card>
         </div>
@@ -305,39 +275,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
           />
         </div>
 
-        {/* Regeneration Notice */}
-        {needsRegeneration && (
-          <div className="mb-6">
-            <Card className="bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
-              <div className="p-4">
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0">
-                    <RefreshCw className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                      Summary Format Mismatch
-                    </h4>
-                    <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                      This document was processed with a {documentSummaryLength === 'short' ? 'concise' : 'detailed'} summary, 
-                      but you've selected {summaryLength === 'short' ? 'concise' : 'detailed'} format. 
-                      Would you like to regenerate the summary?
-                    </p>
-                    <Button
-                      size="sm"
-                      onClick={() => regenerateSummaryMutation.mutate()}
-                      disabled={regenerateSummaryMutation.isPending}
-                      className="mt-3"
-                    >
-                      <RefreshCw className={`w-4 h-4 mr-2 ${regenerateSummaryMutation.isPending ? 'animate-spin' : ''}`} />
-                      {regenerateSummaryMutation.isPending ? 'Regenerating...' : 'Regenerate Summary'}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
+
 
         {/* Summary Tabs Section */}
         <div className="w-full">

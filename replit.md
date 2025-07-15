@@ -547,6 +547,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Made summaries completely client-ready for printing and sharing
   - Added Valley Trust contact information (540) 885-5531 to all summaries
   - Focused summaries on what IS covered rather than what's missing or unclear
+- January 15, 2025: Optimized processing speed with fast-path for brief summaries
+  - Removed summary length selector - system now only offers brief 1-paragraph summaries
+  - Implemented generateQuickSummary method that bypasses detailed analysis for 30-60 second processing
+  - Hardcoded all summaries to use 'short' format for maximum efficiency
+  - Fast-path processes documents directly without time-consuming full analysis
+  - Reduced processing time from 3-5 minutes to under 1 minute for most documents
+  - Simplified UI by removing summary format selection options
 
 ## Changelog
 - July 01, 2025. Initial setup

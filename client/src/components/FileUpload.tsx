@@ -17,7 +17,7 @@ import { api } from '../lib/api';
 
 interface FileUploadProps {
   onUploadSuccess: (documentId: number) => void;
-  summaryLength?: 'short' | 'detailed';
+  summaryLength?: 'short'; // Always brief summaries
 }
 
 interface UploadingFile {
@@ -30,7 +30,7 @@ interface UploadingFile {
   processingStage?: string;
 }
 
-export function FileUpload({ onUploadSuccess, summaryLength = 'detailed' }: FileUploadProps) {
+export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUploadProps) {
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
