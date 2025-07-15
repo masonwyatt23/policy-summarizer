@@ -1,7 +1,7 @@
 import mammoth from 'mammoth';
 import { PolicyData, PolicyDataSchema, ProcessingOptions } from '@shared/schema';
 import { extractPolicyData } from './openai-simplified';
-import { xaiService } from './xai-optimized';
+import { xaiService } from './xai';
 import { pdfExtractor } from './pdfExtractor';
 import { getDeploymentConfig } from './deploymentConfig';
 

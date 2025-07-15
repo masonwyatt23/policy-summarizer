@@ -526,6 +526,14 @@ This is a full-stack policy document processing application built for Valley Tru
   - Configured deployment-specific timeouts (90 seconds vs 60 seconds for preview)
   - Added delay between chunk processing to prevent API rate limiting
   - Implemented smart result merging to combine chunks into coherent policy data
+- July 15, 2025: Reverted to original XAI service with simple deployment timeout fix
+  - User preferred original prompts over optimized versions
+  - Complex chunked processing still causing timeouts in deployment
+  - Completely rewrote xai.ts service to be clean and simple
+  - Kept original accurate prompts that user preferred for analysis quality
+  - Added only essential deployment fix: 40k character truncation and 2-minute timeout for deployed environments
+  - Removed all complex chunking, retry mechanisms, and simplified prompts
+  - Focused on making deployed version work "just as effectively as preview version"
 
 ## Changelog
 - July 01, 2025. Initial setup
