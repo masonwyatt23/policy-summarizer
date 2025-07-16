@@ -149,7 +149,7 @@ export class PDFGenerator {
         }
         
         .client-name {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             color: #000000;
             margin: 0;
@@ -157,7 +157,7 @@ export class PDFGenerator {
         }
         
         .analysis-date {
-            font-size: 11px;
+            font-size: 13px;
             color: #666666;
             margin: 2px 0 0 0;
             font-style: italic;
@@ -170,7 +170,7 @@ export class PDFGenerator {
         }
         
         .header-text h1 {
-            font-size: 16px;
+            font-size: 18px;
             color: #000000;
             margin-bottom: 3px;
             font-weight: 700;
@@ -180,7 +180,7 @@ export class PDFGenerator {
         
         .header-text p {
             color: #333333;
-            font-size: 12px;
+            font-size: 14px;
             font-style: italic;
             font-weight: 500;
         }
@@ -435,7 +435,7 @@ export class PDFGenerator {
         
         .agent-signature h3 {
             color: #000000;
-            font-size: 15px;
+            font-size: 17px;
             margin-bottom: 8px;
             font-weight: 700;
             text-transform: uppercase;
@@ -443,7 +443,7 @@ export class PDFGenerator {
         
         .agent-signature .signature-content {
             white-space: pre-line;
-            font-size: 13px;
+            font-size: 15px;
             color: #000000;
             line-height: 1.5;
             margin-bottom: 8px;
@@ -458,7 +458,7 @@ export class PDFGenerator {
         
         .agent-signature .agent-details p {
             margin: 4px 0;
-            font-size: 12px;
+            font-size: 14px;
             color: #000000;
             font-weight: 500;
         }

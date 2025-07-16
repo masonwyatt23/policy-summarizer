@@ -11,7 +11,7 @@ import { FileUpload } from '@/components/FileUpload';
 import { CleanSummaryPreview } from '@/components/CleanSummaryPreview';
 import { SummaryEditor } from '@/components/SummaryEditor';
 import { SummaryHistoryDialog } from '@/components/SummaryHistoryDialog';
-import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download, Image, X, Upload, LogOut, RefreshCw } from 'lucide-react';
+import { Clock, FileText, CheckCircle, User, Eye, Edit3, Download, Image, X, Upload, LogOut } from 'lucide-react';
 import { api, type ProcessedDocument, type DocumentListItem } from '@/lib/api';
 
 import { useToast } from '@/hooks/use-toast';
@@ -294,23 +294,9 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
             <TabsContent value="preview" className="mt-4">
               <Card className="shadow-sm border border-border bg-card">
                 <div className="border-b border-border p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <FileText className="w-5 h-5 text-valley-primary" />
-                      <h2 className="text-lg font-semibold text-foreground">Policy Summary Preview</h2>
-                    </div>
-                    {document?.processed && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => regenerateSummaryMutation.mutate()}
-                        disabled={regenerateSummaryMutation.isPending}
-                        className="flex items-center space-x-2"
-                      >
-                        <RefreshCw className={`w-4 h-4 ${regenerateSummaryMutation.isPending ? 'animate-spin' : ''}`} />
-                        <span>{regenerateSummaryMutation.isPending ? 'Regenerating...' : 'Regenerate Summary'}</span>
-                      </Button>
-                    )}
+                  <div className="flex items-center space-x-2">
+                    <FileText className="w-5 h-5 text-valley-primary" />
+                    <h2 className="text-lg font-semibold text-foreground">Policy Summary Preview</h2>
                   </div>
                 </div>
                 <div className="p-0">
