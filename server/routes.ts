@@ -385,6 +385,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email?: string; 
         license?: string; 
         signature?: string; 
+        agentImage?: string; 
         firmName?: string; 
         firmAddress?: string; 
         firmPhone?: string; 
@@ -406,6 +407,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email: agentProfile.email || '',
           license: agentProfile.license || '',
           signature: agentProfile.signature || '',
+          agentImage: agentProfile.agentImage || '',
           firmName: agentProfile.firmName || '',
           firmAddress: agentProfile.firmAddress || '',
           firmPhone: agentProfile.firmPhone || '',
@@ -416,6 +418,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const policyData = document.extractedData as any;
       // Use custom summary if provided, otherwise use document summary
       const summary = req.body.customSummary || document.summary || '';
+
+      // Debug log for agent image
+      if (options.agentProfile?.agentImage) {
+        console.log('[PDF Export] Agent image found, length:', options.agentProfile.agentImage.length);
+      } else {
+        console.log('[PDF Export] No agent image found');
+      }
 
       const pdfBuffer = await pdfGenerator.generatePolicyPDF(policyData, summary, options);
 
