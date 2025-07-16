@@ -652,6 +652,7 @@ This is a full-stack policy document processing application built for Valley Tru
   - Reduced signature section vertical spacing to be more compact and use less page space
   - Added Enter key support to authentication forms - users can now press Enter to submit login/register forms
   - Wrapped both login and register forms in proper form elements with onSubmit handlers for better UX
+  - Updated PDF footer to show website instead of firm name and moved signature content lower on left side
 
 ## Changelog
 - July 01, 2025. Initial setup

@@ -463,7 +463,9 @@ export class PDFGenerator {
             font-size: 15px;
             color: #000000;
             line-height: 1.5;
+            margin-top: 10px;
             margin-bottom: 0;
+            margin-top: 10px;
             font-style: italic;
         }
         
@@ -584,7 +586,7 @@ export class PDFGenerator {
                         <p><strong>Agent:</strong> ${options.agentProfile.name}, ${options.agentProfile.title}</p>
                         <p><strong>License:</strong> ${options.agentProfile.license}</p>
                         <p><strong>Direct Contact:</strong> ${options.agentProfile.phone} | ${options.agentProfile.email}</p>
-                        <p><strong>Firm:</strong> ${options.agentProfile.firmName}</p>
+                        <p><strong>Website:</strong> ${options.agentProfile.firmWebsite}</p>
                     </div>
                 </div>
             </div>
