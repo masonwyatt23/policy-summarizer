@@ -82,7 +82,7 @@ export class DocumentProcessor {
       console.error('PDF extraction error:', error);
       
       // For image-based PDFs, provide a helpful fallback
-      if (error.message.includes('image-based') || error.message.includes('insufficient readable text')) {
+      if (error.message.includes('image-based') || error.message.includes('insufficient readable text') || error.message.includes('OCR processing is not available')) {
         return this.generateFallbackContent();
       }
       
@@ -91,26 +91,24 @@ export class DocumentProcessor {
   }
 
   private generateFallbackContent(): string {
-    return `DOCUMENT PROCESSING NOTICE:
+    return `[Unable to Process Document]
 
-This appears to be an image-based or scanned PDF document. While we cannot extract the text directly, we can provide a general analysis framework for insurance policy documents.
+This appears to be an image-based or scanned PDF document that cannot be processed automatically. These documents require OCR (Optical Character Recognition) processing, which is not available in the deployment environment due to resource constraints.
 
-TYPICAL INSURANCE POLICY STRUCTURE:
-- Policy Declaration Page: Contains policy number, coverage limits, deductibles, and premium information
-- Coverage Sections: Details what is covered, including property, liability, and additional coverages
-- Exclusions: Lists what is NOT covered by the policy
-- Conditions: Outlines policyholder duties, claim procedures, and policy terms
-- Endorsements: Additional coverage or modifications to the standard policy
+TYPICAL INSURANCE POLICY COMPONENTS:
+Your policy likely contains these essential sections:
+- Policy declarations with coverage limits and deductibles
+- Coverage details explaining what is protected
+- Exclusions outlining what is not covered
+- Conditions and claim procedures
+- Contact information for claims and questions
 
-RECOMMENDED MANUAL REVIEW AREAS:
-1. Policy Limits and Deductibles
-2. Coverage Territory and Period
-3. Named Insured and Additional Insureds
-4. Premium and Payment Terms
-5. Claims Reporting Requirements
-6. Key Exclusions and Limitations
+NEXT STEPS:
+1. Convert your document to a text-based PDF using Adobe Acrobat or similar software
+2. Use an OCR service to extract text from the scanned document
+3. Re-upload the document once it contains readable text
 
-Please provide a text-based version of this document or use OCR software to convert it to readable text for complete automated analysis.`;
+For immediate assistance with your policy details, please contact Valley Trust Insurance at (540) 885-5531. Our agents can review your policy manually and provide a detailed explanation of your coverage.`;
   }
 
 

@@ -180,6 +180,14 @@ export class PDFExtractor {
   private async extractWithOCR(buffer: Buffer): Promise<string> {
     console.log('Attempting OCR extraction for image-based PDF...');
     
+    // Check if we're in a deployment environment
+    const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT;
+    
+    if (isDeployed) {
+      console.log('🚫 OCR processing disabled in deployment environment to prevent timeouts');
+      throw new Error('OCR processing is not available in the deployment environment due to resource constraints. Please provide a text-based PDF or convert the document to text format.');
+    }
+    
     try {
       // Create temporary directory for processing
       const tempDir = '/tmp/pdf-ocr';
@@ -194,10 +202,10 @@ export class PDFExtractor {
       // Write PDF buffer to temporary file
       fs.writeFileSync(pdfPath, buffer);
       
-      // Convert PDF pages to images using poppler-utils
-      console.log('Converting PDF to images...');
-      execSync(`pdftoppm -png -r 300 "${pdfPath}" "${outputPattern}"`, { 
-        timeout: 30000 
+      // Convert PDF pages to images using poppler-utils - limit to first 3 pages for faster processing
+      console.log('Converting PDF to images (first 3 pages only)...');
+      execSync(`pdftoppm -png -r 200 -f 1 -l 3 "${pdfPath}" "${outputPattern}"`, { 
+        timeout: 60000 
       });
       
       // Find generated image files
@@ -220,17 +228,25 @@ export class PDFExtractor {
         try {
           console.log(`OCR processing page: ${imageFile}`);
           
-          const text = await tesseract.recognize(imagePath, {
+          // Create a timeout wrapper for OCR
+          const ocrPromise = tesseract.recognize(imagePath, {
             lang: 'eng',
             oem: 1,
             psm: 6
           });
+          
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error(`OCR timeout for ${imageFile}`)), 45000);
+          });
+          
+          const text = await Promise.race([ocrPromise, timeoutPromise]);
           
           if (text && text.trim().length > 10) {
             extractedTexts.push(text.trim());
           }
         } catch (pageError) {
           console.warn(`OCR failed for page ${imageFile}:`, pageError instanceof Error ? pageError.message : String(pageError));
+          // Continue processing other pages even if one fails
         }
       }
       
@@ -252,7 +268,7 @@ export class PDFExtractor {
       
     } catch (error) {
       console.warn('OCR extraction failed:', error instanceof Error ? error.message : String(error));
-      return '';
+      throw new Error(`OCR processing failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please provide a text-based PDF document for processing.`);
     }
   }
 

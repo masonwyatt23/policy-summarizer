@@ -653,6 +653,10 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added Enter key support to authentication forms - users can now press Enter to submit login/register forms
   - Wrapped both login and register forms in proper form elements with onSubmit handlers for better UX
   - Updated PDF footer to show website instead of firm name and moved signature content lower on left side
+  - Fixed OCR timeout issues in deployment by disabling OCR processing in production environments
+  - Added deployment environment detection to prevent resource-intensive OCR operations
+  - Enhanced fallback content for image-based PDFs with clear user guidance for document conversion
+  - Optimized OCR processing for local environments with reduced page limits and better timeout handling
 
 ## Changelog
 - July 01, 2025. Initial setup
