@@ -686,29 +686,32 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `You are analyzing an insurance policy document. Extract the actual information and create a summary.
+              content: `Analyze this insurance document and write a professional summary.
 
-INSTRUCTIONS:
-1. Read the policy text below carefully
-2. Extract real data: company name, insured name, coverage amounts, dates, policy numbers
-3. Write a summary using ONLY information found in the document
-4. Format your output EXACTLY as shown in the template
+From the document text below, find:
+- Insurance company name
+- Business/insured name
+- Policy type and coverages with amounts
+- Policy dates
+- Policy number (NOT agency numbers)
+- Deductibles
+- Exclusions
 
-TEMPLATE FORMAT:
+Then write your response in this EXACT format:
+
 [Your Coverage Summary]
-This is a [policy type] insurance policy from [actual insurance company] for [actual insured/business name]. It provides [describe main coverages with actual dollar amounts from document]. For example, [create a practical scenario based on the coverage]. [Add one more sentence about additional coverages if found].
+This is a commercial auto insurance policy from Erie Insurance Exchange for Mor Jen Heath Inc DBA Depot Grille. It provides hired and non-owned auto liability coverage with limits of $1,000,000 combined single limit. For example, if an employee causes an accident while driving their personal vehicle for business errands, this policy covers damages up to the policy limits. The coverage includes both bodily injury and property damage protection.
 
-• Coverage Period: [actual start date] to [actual end date]
-• Policy Number: [actual policy number - not agency numbers]
-• Primary Coverage: [main coverage type] - $[actual amount]
-• Deductible: $[actual deductible amount]
-• Key Exclusion: [one actual exclusion in simple terms]
+• Coverage Period: May 10, 2025 to May 10, 2026
+• Policy Number: Q61 2343323
+• Primary Coverage: Hired & Non-Owned Auto Liability - $1,000,000
+• Deductible: $0
+• Key Exclusion: Vehicles owned by the business
 
 Contact Valley Trust: (540) 885-5531
 
-CRITICAL: Output ONLY the formatted summary. No explanations or reasoning.
+IMPORTANT: Replace ALL the example details above with the ACTUAL information from this document:
 
-POLICY DOCUMENT TO ANALYZE:
 ${truncatedText}`
             }
           ],
