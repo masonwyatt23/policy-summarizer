@@ -541,20 +541,48 @@ export class PDFGenerator {
   }
 
   private parseAndFormatSummary(summary: string): string {
-    const paragraphs = summary.split('\n\n');
+    // First split by double newlines to get main sections
+    const sections = summary.split('\n\n');
     let formattedHtml = '<div class="summary-wrapper">';
     
-    for (let i = 0; i < paragraphs.length; i++) {
-      const paragraph = paragraphs[i].trim();
+    for (let i = 0; i < sections.length; i++) {
+      const section = sections[i].trim();
       
-      // Skip empty paragraphs
-      if (paragraph === '') {
+      // Skip empty sections
+      if (section === '') {
         formattedHtml += '<div class="paragraph-break"></div>';
         continue;
       }
       
+      // Check if this section contains bullet points
+      if (section.includes('•')) {
+        // Split by single newlines to handle individual bullet points
+        const lines = section.split('\n');
+        
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          
+          if (trimmedLine === '') continue;
+          
+          // Handle bullet points
+          if (trimmedLine.startsWith('•')) {
+            const bulletContent = trimmedLine.substring(1).trim();
+            formattedHtml += `
+              <div class="bullet-point">
+                <span class="bullet-icon">•</span>
+                <div class="bullet-content">${bulletContent}</div>
+              </div>
+            `;
+          } else {
+            // Handle regular text mixed with bullet points
+            formattedHtml += `<p class="regular-paragraph">${trimmedLine}</p>`;
+          }
+        }
+        continue;
+      }
+      
       // Handle subheaders in brackets [like this] or **[like this]**
-      const subheaderMatch = paragraph.match(/^(?:\*\*)?\[([^\]]+)\](?:\*\*)?\s*([\s\S]*)/);
+      const subheaderMatch = section.match(/^(?:\*\*)?\[([^\]]+)\](?:\*\*)?\s*([\s\S]*)/);
       if (subheaderMatch) {
         const [, subheader, content] = subheaderMatch;
         formattedHtml += `
@@ -569,8 +597,8 @@ export class PDFGenerator {
       }
       
       // Handle bold headings (**text**)
-      if (paragraph.includes('**')) {
-        const parts = paragraph.split('**');
+      if (section.includes('**')) {
+        const parts = section.split('**');
         let processedLine = '';
         
         for (let j = 0; j < parts.length; j++) {
@@ -586,21 +614,9 @@ export class PDFGenerator {
         continue;
       }
       
-      // Handle bullet points
-      if (paragraph.startsWith('•')) {
-        const bulletContent = paragraph.substring(1).trim();
-        formattedHtml += `
-          <div class="bullet-point">
-            <span class="bullet-icon">•</span>
-            <div class="bullet-content">${bulletContent}</div>
-          </div>
-        `;
-        continue;
-      }
-      
       // Handle regular paragraphs
-      if (paragraph.length > 0) {
-        formattedHtml += `<p class="regular-paragraph">${paragraph}</p>`;
+      if (section.length > 0) {
+        formattedHtml += `<p class="regular-paragraph">${section}</p>`;
       }
     }
     
