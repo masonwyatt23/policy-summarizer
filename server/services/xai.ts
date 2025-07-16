@@ -758,8 +758,23 @@ ${truncatedText}`
       console.log(content);
       console.log('END RAW RESPONSE');
       
-      // Extract only the actual summary paragraph
-      const cleanedContent = content.trim();
+      // Check if the response contains bullet points with dashes, convert them to bullet points
+      let processedContent = content.trim();
+      
+      // Convert dashes to bullet points for proper formatting
+      processedContent = processedContent.replace(/^- /gm, '• ');
+      
+      // If the response contains both paragraph and bullet points, return the full response
+      if (processedContent.includes('• ')) {
+        console.log('Found complete response with bullet points');
+        return `[Your Coverage Summary]
+${processedContent}
+
+Contact Valley Trust: (540) 885-5531`;
+      }
+      
+      // If no bullet points found, fall back to old extraction logic
+      const cleanedContent = processedContent;
       
       // Look for the actual summary paragraph after various draft markers
       const draftMarkers = [
