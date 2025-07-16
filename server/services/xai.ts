@@ -658,7 +658,7 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
 
     try {
       const controller = new AbortController();
-      const timeout = 30000; // 30 second timeout to handle full documents
+      const timeout = 45000; // 45 second timeout to handle full documents in deployment
       let timeoutId: NodeJS.Timeout;
       
       // Create timeout promise that will resolve with error
@@ -721,7 +721,7 @@ ${truncatedText}`
             }
           ],
           temperature: 0.2,
-          max_tokens: 1500
+          max_tokens: 2000
         })
       });
 
@@ -803,6 +803,15 @@ ${truncatedText}`
         
         // Join with proper spacing
         const formattedContent = formattedLines.join('\n');
+        
+        // Validate the response has all 5 bullet points
+        const bulletCount = (formattedContent.match(/^•/gm) || []).length;
+        console.log(`Summary contains ${bulletCount} bullet points`);
+        
+        if (bulletCount < 5) {
+          console.warn(`⚠️ WARNING: Summary incomplete - only ${bulletCount}/5 bullet points found`);
+          console.log('Full formatted content:', formattedContent);
+        }
         
         return `[Your Coverage Summary]
 ${formattedContent}

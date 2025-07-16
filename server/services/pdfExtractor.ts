@@ -240,7 +240,7 @@ export class PDFExtractor {
             return result;
           });
           
-          const ocrTimeout = isDeployed ? 120000 : 45000; // 2 minutes per page in deployment
+          const ocrTimeout = isDeployed ? 180000 : 45000; // 3 minutes per page in deployment
           const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => reject(new Error(`OCR timeout for ${imageFile}`)), ocrTimeout);
           });

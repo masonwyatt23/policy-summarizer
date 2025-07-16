@@ -676,6 +676,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Changed from center-aligned to side-by-side layout for efficient horizontal space usage
   - Agent photo maintains natural aspect ratio with object-fit: contain
   - Footer uses margin-top: auto to stay at bottom of first page
+- January 16, 2025: Fixed deployment summary truncation and OCR timeout issues
+  - Increased max_tokens from 1500 to 2000 in generateQuickSummary to ensure complete responses
+  - Extended quick summary timeout from 30 to 45 seconds for deployment environments
+  - Added validation logging to track incomplete summaries (less than 5 bullet points)
+  - Increased OCR timeout from 2 minutes to 3 minutes per page in deployment for slower processing
+  - Enhanced debugging to identify when AI responses are being cut off in production
 
 ## Changelog
 - July 01, 2025. Initial setup
