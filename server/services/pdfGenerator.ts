@@ -116,10 +116,52 @@ export class PDFGenerator {
         .header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 12px 16px;
             border-bottom: 1px solid #000000;
             margin-bottom: 12px;
             background: #ffffff;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .client-logo-header {
+            height: 32px;
+            max-width: 80px;
+            object-fit: contain;
+            border: 1px solid #dee2e6;
+            border-radius: 2px;
+            padding: 4px;
+            background: white;
+        }
+        
+        .client-info-header {
+            text-align: right;
+        }
+        
+        .client-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #000000;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .analysis-date {
+            font-size: 11px;
+            color: #666666;
+            margin: 2px 0 0 0;
+            font-style: italic;
+            line-height: 1.2;
         }
         
         .logo {
@@ -455,41 +497,34 @@ export class PDFGenerator {
     <div class="page">
         ${options.includeBranding ? `
         <div class="header">
-            <img src="data:image/png;base64,${logoBase64}" alt="Valley Trust Insurance" class="logo">
-            <div class="header-text">
-                <h1>Valley Trust Insurance</h1>
-                <p>Professional Policy Analysis & Summary</p>
-            </div>
-        </div>
-        ` : ''}
-        
-        <div class="policy-header${options.clientLogo ? ' with-client-logo' : ''}">
-            ${options.clientLogo ? `
-            <div class="policy-header-with-logo">
-                <div class="client-logo-section">
-                    <img src="${options.clientLogo}" alt="Client Logo" style="max-height: 50px; max-width: 120px; object-fit: contain; border: 1px solid #dee2e6; border-radius: 2px; padding: 6px; background: white;">
-                </div>
-                <div class="policy-main-section">
-                    <h1>${policyData.policyType} Policy</h1>
-                    <p>Comprehensive Coverage Analysis</p>
+            <div class="header-left">
+                <img src="data:image/png;base64,${logoBase64}" alt="Valley Trust Insurance" class="logo">
+                <div class="header-text">
+                    <h1>Valley Trust Insurance</h1>
+                    <p>Professional Policy Analysis & Summary</p>
                 </div>
             </div>
-            ` : `
-            <h1>${policyData.policyType} Policy</h1>
-            <p>Comprehensive Coverage Analysis</p>
-            `}
-            ${options.clientName || options.policyReference ? `
-            <div class="policy-client-details">
-                ${options.clientName ? `<div><strong>Prepared for:</strong> ${options.clientName}</div>` : ''}
-                ${options.policyReference ? `<div><strong>Policy Reference:</strong> ${options.policyReference}</div>` : ''}
-                <div><strong>Analysis Date:</strong> ${new Date().toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                })}</div>
+            ${options.clientName || options.clientLogo ? `
+            <div class="header-right">
+                ${options.clientLogo ? `
+                <img src="${options.clientLogo}" alt="Client Logo" class="client-logo-header">
+                ` : ''}
+                ${options.clientName ? `
+                <div class="client-info-header">
+                    <p class="client-name">${options.clientName}</p>
+                    <p class="analysis-date">${new Date().toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })}</p>
+                </div>
+                ` : ''}
             </div>
             ` : ''}
         </div>
+        ` : ''}
+        
+
 
         ${options.includeTechnicalDetails ? `
         <div class="coverage-highlights">
@@ -594,6 +629,23 @@ export class PDFGenerator {
           </div>
         `;
         continue;
+      }
+      
+      // Handle standalone bracket headers at the start of a section
+      if (section.startsWith('[') && section.includes(']')) {
+        const bracketMatch = section.match(/^\[([^\]]+)\]\s*([\s\S]*)/);
+        if (bracketMatch) {
+          const [, header, content] = bracketMatch;
+          formattedHtml += `
+            <div class="section-block">
+              <div class="section-header">
+                <h3 class="subheader">${header}</h3>
+              </div>
+              ${content.trim() ? `<div class="section-content"><p class="section-paragraph">${content.trim()}</p></div>` : ''}
+            </div>
+          `;
+          continue;
+        }
       }
       
       // Handle bold headings (**text**)
