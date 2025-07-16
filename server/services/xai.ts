@@ -692,12 +692,12 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
               role: 'user',
               content: `Write a summary of this insurance policy in this EXACT format:
 
-STEP 1: Write ONE paragraph (100-150 words) explaining the policy in simple terms
+STEP 1: Write ONE detailed paragraph (100-150 words) explaining the policy comprehensively
 STEP 2: Add a blank line
-STEP 3: Add 3-5 bullet points with key details
+STEP 3: Add 4-5 bullet points with key details (each on its own line)
 
 MANDATORY OUTPUT FORMAT:
-[Company] provides this [type] insurance policy for [business name]. [Describe coverage and amounts in simple terms]. [Add practical example or key benefit].
+[Company] provides this [type] insurance policy for [business name]. [Describe coverage and amounts in comprehensive detail]. [Include practical examples and key benefits]. [Add information about total premium and key features].
 
 • Coverage Period: [actual dates from document]
 • Policy Number: [actual number from document]  
@@ -706,10 +706,10 @@ MANDATORY OUTPUT FORMAT:
 • Key Protection: [important detail]
 
 CRITICAL REQUIREMENTS:
-- You MUST output both the paragraph AND the bullet points
+- Write a comprehensive, detailed paragraph with ALL key information
+- Include total premium amount, coverage limits, and key benefits
+- Put each bullet point on its own separate line
 - Extract real data from the document - no placeholders
-- Keep the paragraph style exactly as you normally write it
-- Add bullet points with actual policy details
 - DO NOT STOP after the paragraph - continue to bullet points
 - Output ONLY this format, no explanations
 
@@ -764,11 +764,29 @@ ${truncatedText}`
       // Convert dashes to bullet points for proper formatting
       processedContent = processedContent.replace(/^- /gm, '• ');
       
-      // If the response contains both paragraph and bullet points, return the full response
+      // If the response contains both paragraph and bullet points, format them properly
       if (processedContent.includes('• ')) {
         console.log('Found complete response with bullet points');
+        
+        // Split into lines and properly format bullet points
+        const lines = processedContent.split('\n');
+        const formattedLines = [];
+        
+        for (const line of lines) {
+          if (line.trim().startsWith('• ')) {
+            // This is a bullet point line
+            formattedLines.push(line.trim());
+          } else if (line.trim() && !line.trim().startsWith('• ')) {
+            // This is regular text (paragraph)
+            formattedLines.push(line.trim());
+          }
+        }
+        
+        // Join with proper spacing
+        const formattedContent = formattedLines.join('\n');
+        
         return `[Your Coverage Summary]
-${processedContent}
+${formattedContent}
 
 Contact Valley Trust: (540) 885-5531`;
       }
