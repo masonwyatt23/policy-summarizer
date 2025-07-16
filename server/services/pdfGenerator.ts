@@ -114,13 +114,10 @@ export class PDFGenerator {
             max-width: 210mm;
             margin: 0 auto;
             padding: 0;
-            height: 100vh;
-            max-height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
             position: relative;
-            padding-bottom: 300px;
         }
         
         .header {
@@ -263,12 +260,6 @@ export class PDFGenerator {
             padding: 10px 0;
             background: white;
             margin: 10px 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            overflow-y: auto;
-            min-height: 0;
         }
         
         .summary-wrapper {
@@ -435,10 +426,7 @@ export class PDFGenerator {
 
         
         .agent-signature {
-            position: absolute;
-            bottom: -80px;
-            left: 0;
-            right: 0;
+            margin-top: 20px;
             padding: 15px 20px;
             background: #ffffff;
             border-top: 1px solid #000000;
@@ -447,11 +435,10 @@ export class PDFGenerator {
         
         .agent-signature-content {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: space-between;
-            margin-top: 0px;
+            margin-top: 10px;
             position: relative;
-            min-height: 100px;
         }
         
         .agent-signature-left {

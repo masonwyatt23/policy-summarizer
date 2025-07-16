@@ -406,7 +406,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         includeExplanations: req.body.includeExplanations !== false,
         includeTechnicalDetails: req.body.includeTechnicalDetails === true,
         includeBranding: req.body.includeBranding !== false,
-        includeAgentSignature: exportPrefs?.includeAgentSignature !== false,
+        includeAgentSignature: true,
         agentProfile: agentProfile && agentProfile.name ? {
           name: agentProfile.name || '',
           title: agentProfile.title || '',
