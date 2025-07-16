@@ -686,20 +686,29 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `IMPORTANT: Output ONLY the formatted summary below. Do not include any analysis, reasoning, or preliminary text.
+              content: `You are analyzing an insurance policy document. Extract the actual information and create a summary.
 
+INSTRUCTIONS:
+1. Read the policy text below carefully
+2. Extract real data: company name, insured name, coverage amounts, dates, policy numbers
+3. Write a summary using ONLY information found in the document
+4. Format your output EXACTLY as shown in the template
+
+TEMPLATE FORMAT:
 [Your Coverage Summary]
-This is a commercial general liability and property insurance policy from Erie Insurance Company for MOR JEN HEATH, INC DBA DEPOT GRILLE. It provides comprehensive business protection including $1,000,000 per occurrence for bodily injury and property damage, $2,000,000 general aggregate, plus property coverage up to $341,500. For example, if a customer slips and falls at the restaurant, the policy covers medical expenses and legal costs up to the coverage limits. Additional protections include liquor liability, cyber coverage, and employment practices liability.
+This is a [policy type] insurance policy from [actual insurance company] for [actual insured/business name]. It provides [describe main coverages with actual dollar amounts from document]. For example, [create a practical scenario based on the coverage]. [Add one more sentence about additional coverages if found].
 
-• Coverage Period: May 10, 2025 to May 10, 2026
-• Policy Number: Q61 0413185  
-• Primary Coverage: General Liability - $1,000,000 per occurrence
-• Deductible: $1,000
-• Key Exclusion: Abuse or molestation claims
+• Coverage Period: [actual start date] to [actual end date]
+• Policy Number: [actual policy number - not agency numbers]
+• Primary Coverage: [main coverage type] - $[actual amount]
+• Deductible: $[actual deductible amount]
+• Key Exclusion: [one actual exclusion in simple terms]
 
 Contact Valley Trust: (540) 885-5531
 
-Now analyze this policy and create a similar summary with the ACTUAL details:
+CRITICAL: Output ONLY the formatted summary. No explanations or reasoning.
+
+POLICY DOCUMENT TO ANALYZE:
 ${truncatedText}`
             }
           ],
