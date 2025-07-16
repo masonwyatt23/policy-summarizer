@@ -451,7 +451,7 @@ export class PDFGenerator {
             justify-content: space-between;
             margin-top: 0px;
             position: relative;
-            min-height: 160px;
+            min-height: 100px;
         }
         
         .agent-signature-left {
@@ -459,7 +459,7 @@ export class PDFGenerator {
             min-width: 0;
             display: flex;
             align-items: flex-end;
-            padding-bottom: 20px;
+            padding-bottom: 10px;
         }
         
         .agent-signature-right {
@@ -467,7 +467,7 @@ export class PDFGenerator {
             min-width: 0;
             display: flex;
             align-items: flex-end;
-            padding-bottom: 20px;
+            padding-bottom: 10px;
         }
         
         .agent-signature h3 {
@@ -509,12 +509,13 @@ export class PDFGenerator {
         
         .agent-image {
             display: flex;
-            align-items: flex-end;
+            align-items: flex-start;
             justify-content: center;
             margin: 0 30px;
             padding: 0;
             position: relative;
             flex-shrink: 0;
+            margin-top: -80px;
         }
         
         .agent-photo {
