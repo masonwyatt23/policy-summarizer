@@ -690,29 +690,25 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
             },
             {
               role: 'user',
-              content: `Write a summary of this insurance policy in this exact format:
+              content: `Write a summary of this insurance policy in this EXACT format:
 
-1. One paragraph (100-150 words) explaining the policy in simple terms
-2. Then 3-5 bullet points with key details
+ONE PARAGRAPH (100-150 words) explaining the policy in simple terms, followed by 3-5 bullet points with key details.
 
-Use simple everyday language. Include: insurance company, who it's for, what it covers, coverage amounts, and key details. 
-
-Format your response exactly like this:
-
+REQUIRED FORMAT:
 [Company] provides this [type] insurance policy for [business name]. [Describe coverage and amounts in simple terms]. [Add practical example or key benefit].
 
-• Coverage Period: [dates]
-• Policy Number: [number]  
-• Primary Coverage: [coverage and amount]
-• Deductible: [amount]
+• Coverage Period: [actual dates from document]
+• Policy Number: [actual number from document]
+• Primary Coverage: [coverage type and amount]
+• Deductible: [actual amount]
 • Key Protection: [important detail]
 
-Output ONLY this format, no explanations or reasoning.
+CRITICAL: You MUST include both the paragraph AND the bullet points. Extract real data from the document - do not use placeholders. Output ONLY this format, no explanations or reasoning.
 
 ${truncatedText}`
             }
           ],
-          temperature: 0.3,
+          temperature: 0.2,
           max_tokens: 800
         })
       });
