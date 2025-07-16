@@ -119,6 +119,8 @@ export class PDFGenerator {
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
+            padding-bottom: 200px;
         }
         
         .header {
@@ -433,31 +435,39 @@ export class PDFGenerator {
 
         
         .agent-signature {
-            margin-top: auto;
-            padding: 20px 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 20px;
             background: #ffffff;
-            text-align: left;
             border-top: 1px solid #000000;
             flex-shrink: 0;
-            margin-bottom: 30px;
         }
         
         .agent-signature-content {
             display: flex;
-            gap: 20px;
-            align-items: flex-start;
+            align-items: flex-end;
+            justify-content: space-between;
             margin-top: 0px;
             position: relative;
+            min-height: 160px;
         }
         
         .agent-signature-left {
             flex: 1;
             min-width: 0;
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 20px;
         }
         
         .agent-signature-right {
             flex: 1;
             min-width: 0;
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 20px;
         }
         
         .agent-signature h3 {
@@ -499,12 +509,12 @@ export class PDFGenerator {
         
         .agent-image {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
-            margin: 0 40px;
-            padding: 20px 0;
+            margin: 0 30px;
+            padding: 0;
             position: relative;
-            min-height: 160px;
+            flex-shrink: 0;
         }
         
         .agent-photo {
