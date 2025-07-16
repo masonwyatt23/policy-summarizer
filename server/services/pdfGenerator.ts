@@ -434,11 +434,12 @@ export class PDFGenerator {
         
         .agent-signature {
             margin-top: auto;
-            padding: 4px 0;
+            padding: 20px 0;
             background: #ffffff;
             text-align: left;
             border-top: 1px solid #000000;
             flex-shrink: 0;
+            margin-bottom: 30px;
         }
         
         .agent-signature-content {
@@ -446,6 +447,7 @@ export class PDFGenerator {
             gap: 20px;
             align-items: flex-start;
             margin-top: 0px;
+            position: relative;
         }
         
         .agent-signature-left {
@@ -497,13 +499,12 @@ export class PDFGenerator {
         
         .agent-image {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
             margin: 0 40px;
-            padding-top: 50px;
-            padding-bottom: 30px;
-            margin-bottom: -35px;
-            min-height: 200px;
+            padding: 20px 0;
+            position: relative;
+            min-height: 160px;
         }
         
         .agent-photo {
@@ -512,7 +513,7 @@ export class PDFGenerator {
             border-radius: 12px;
             object-fit: cover;
             border: 3px solid #ddd;
-            margin-top: 40px;
+            margin: 0;
         }
         
         @media print {
