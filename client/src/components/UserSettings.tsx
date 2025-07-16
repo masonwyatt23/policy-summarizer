@@ -325,9 +325,9 @@ export function UserSettings() {
                   
                   {/* Agent Photo Upload */}
                   <div className="space-y-2">
-                    <Label>Agent Photo</Label>
+                    <Label>Agent Photo (Optional)</Label>
                     <p className="text-sm text-muted-foreground">
-                      Upload a professional photo to appear in PDF exports (max 2MB)
+                      Upload a professional photo to appear in PDF exports (optional, max 2MB)
                     </p>
                     <div className="flex items-center space-x-4">
                       <Input

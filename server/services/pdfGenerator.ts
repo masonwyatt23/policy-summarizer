@@ -436,7 +436,7 @@ export class PDFGenerator {
         
         .agent-signature {
             position: absolute;
-            bottom: 0;
+            bottom: -20px;
             left: 0;
             right: 0;
             padding: 15px 20px;
@@ -511,19 +511,19 @@ export class PDFGenerator {
             display: flex;
             align-items: flex-start;
             justify-content: center;
-            margin: 0 30px;
+            margin: 0 20px;
             padding: 0;
             position: relative;
             flex-shrink: 0;
-            margin-top: -80px;
+            margin-top: -40px;
         }
         
         .agent-photo {
-            width: 160px;
-            height: 160px;
-            border-radius: 12px;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
             object-fit: cover;
-            border: 3px solid #ddd;
+            border: 2px solid #ddd;
             margin: 0;
         }
         
