@@ -703,7 +703,16 @@ REQUIRED FORMAT:
 • Deductible: [actual amount]
 • Key Protection: [important detail]
 
-CRITICAL: You MUST include both the paragraph AND the bullet points. Extract real data from the document - do not use placeholders. Output ONLY this format, no explanations or reasoning.
+EXAMPLE OUTPUT:
+Erie Insurance provides this Business Auto insurance policy for Depot Grille. This policy offers protection for business vehicles, including liability coverage up to $1,000,000 for hired and non-owned autos, as well as physical damage for owned vehicles like the 2025 GMC Yukon XL.
+
+• Coverage Period: July 11, 2025 to July 11, 2026
+• Policy Number: Q61 0413185
+• Primary Coverage: Business Auto Liability $1,000,000
+• Deductible: $500 Comprehensive/Collision
+• Key Protection: Hired/Non-Owned Auto Coverage
+
+CRITICAL: You MUST include both the paragraph AND the bullet points using the • character. Extract real data from the document - do not use placeholders. Output ONLY this format, no explanations or reasoning.
 
 ${truncatedText}`
             }
@@ -787,13 +796,13 @@ ${truncatedText}`
         }
       }
       
-      // If still not found, look for paragraphs starting with insurance company names
+      // If still not found, look for complete responses (paragraph + bullet points)
       if (!summaryParagraph) {
         const patterns = [
-          // Match complete paragraphs starting with insurance company names
-          /(?:^|\n\n)((?:Erie Insurance|State Farm|Geico|Progressive|Allstate)[^\n]+(?:\n(?!\n)[^\n]+)*)/,
-          // Match complete paragraphs starting with "This is a" or similar
-          /(?:^|\n\n)(This (?:is a|policy|insurance)[^\n]+(?:\n(?!\n)[^\n]+)*)/,
+          // Match complete responses starting with insurance company names (paragraph + bullet points)
+          /(?:^|\n\n)((?:Erie Insurance|State Farm|Geico|Progressive|Allstate)[^\n]+(?:\n(?!\n)[^\n]+)*(?:\n\n•[^\n]+(?:\n•[^\n]+)*)?)/,
+          // Match complete responses starting with "This is a" or similar
+          /(?:^|\n\n)(This (?:is a|policy|insurance)[^\n]+(?:\n(?!\n)[^\n]+)*(?:\n\n•[^\n]+(?:\n•[^\n]+)*)?)/,
         ];
         
         for (const pattern of patterns) {
@@ -803,6 +812,15 @@ ${truncatedText}`
             console.log('Found summary by insurance company pattern');
             break;
           }
+        }
+      }
+      
+      // If still not found, try to capture everything before "Contact Valley Trust"
+      if (!summaryParagraph) {
+        const beforeContact = cleanedContent.split(/Contact Valley Trust/i)[0].trim();
+        if (beforeContact.length > 100) {
+          summaryParagraph = beforeContact;
+          console.log('Found summary before Contact Valley Trust');
         }
       }
       
