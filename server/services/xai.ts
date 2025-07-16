@@ -735,39 +735,74 @@ ${truncatedText}`
       // Extract only the actual summary paragraph
       const cleanedContent = content.trim();
       
-      // Look for the actual summary paragraph that describes the policy
-      // It usually starts with the insurance company name
-      const patterns = [
-        // Match paragraph starting with insurance company name
-        /(?:^|\n\n)(Erie Insurance[^.]+\.(?:[^.]+\.)*[^.]+\.)/,
-        // Match paragraph starting with "This is a"
-        /(?:^|\n\n)(This is a[^.]+\.(?:[^.]+\.)*[^.]+\.)/,
-        // Match any paragraph that mentions coverage and amounts
-        /(?:^|\n\n)([^.]*(?:policy|coverage|insurance)[^.]+\$[\d,]+[^.]+\.(?:[^.]+\.)*[^.]+\.)/i
+      // Look for the actual summary paragraph after "Draft a paragraph:" or similar markers
+      const draftMarkers = [
+        /Draft a paragraph:\s*"([^"]+)"/s,
+        /Draft a paragraph:\s*\n\s*"([^"]+)"/s,
+        /Summary paragraph:\s*"([^"]+)"/s,
+        /Final paragraph:\s*"([^"]+)"/s
       ];
       
       let summaryParagraph = null;
       
-      for (const pattern of patterns) {
+      // First try to find content after draft markers
+      for (const pattern of draftMarkers) {
         const match = cleanedContent.match(pattern);
         if (match) {
           summaryParagraph = match[1].trim();
+          console.log('Found summary after draft marker');
           break;
         }
       }
       
-      // If no pattern matches, try to find the last substantial paragraph
+      // If not found in quotes, look for paragraph after "Draft a paragraph:"
       if (!summaryParagraph) {
-        const paragraphs = cleanedContent.split('\n\n').filter(p => p.trim().length > 100);
-        if (paragraphs.length > 0) {
-          summaryParagraph = paragraphs[paragraphs.length - 1].trim();
+        const draftMatch = cleanedContent.match(/Draft a paragraph:\s*\n\s*([^\n]+(?:\n(?!\n)[^\n]+)*)/);
+        if (draftMatch) {
+          summaryParagraph = draftMatch[1].trim();
+          console.log('Found summary after draft marker (unquoted)');
         }
       }
       
-      // Final fallback
+      // If still not found, look for paragraphs starting with insurance company names
       if (!summaryParagraph) {
+        const patterns = [
+          /(?:^|\n\n)((?:Erie Insurance|State Farm|Geico|Progressive|Allstate)[^.]+\.(?:[^.]+\.)*[^.]+\.)/,
+          /(?:^|\n\n)(This (?:is a|policy|insurance)[^.]+\.(?:[^.]+\.)*[^.]+\.)/,
+        ];
+        
+        for (const pattern of patterns) {
+          const match = cleanedContent.match(pattern);
+          if (match) {
+            summaryParagraph = match[1].trim();
+            console.log('Found summary by insurance company pattern');
+            break;
+          }
+        }
+      }
+      
+      // Last resort: find the last paragraph that's 100+ chars and contains dollar amounts
+      if (!summaryParagraph) {
+        const paragraphs = cleanedContent.split('\n\n');
+        for (let i = paragraphs.length - 1; i >= 0; i--) {
+          const para = paragraphs[i].trim();
+          if (para.length > 100 && para.includes('$')) {
+            summaryParagraph = para;
+            console.log('Found summary as last paragraph with dollar amounts');
+            break;
+          }
+        }
+      }
+      
+      // Clean up the summary paragraph
+      if (summaryParagraph) {
+        // Remove trailing quotes if present
+        summaryParagraph = summaryParagraph.replace(/^"|"$/g, '');
+        // Remove any "Contact Valley Trust" if it's already in the paragraph
+        summaryParagraph = summaryParagraph.replace(/Contact Valley Trust:.*$/i, '').trim();
+      } else {
         console.error('Could not extract summary paragraph from AI response');
-        summaryParagraph = cleanedContent;
+        summaryParagraph = 'Unable to generate summary. Please try again.';
       }
       
       return `[Your Coverage Summary]
