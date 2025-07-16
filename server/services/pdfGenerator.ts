@@ -433,6 +433,22 @@ export class PDFGenerator {
             flex-shrink: 0;
         }
         
+        .agent-signature-content {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        
+        .agent-signature-left {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .agent-signature-right {
+            flex: 1;
+            min-width: 0;
+        }
+        
         .agent-signature h3 {
             color: #000000;
             font-size: 17px;
@@ -446,14 +462,14 @@ export class PDFGenerator {
             font-size: 15px;
             color: #000000;
             line-height: 1.5;
-            margin-bottom: 8px;
+            margin-bottom: 0;
             font-style: italic;
         }
         
         .agent-signature .agent-details {
-            padding-top: 8px;
-            margin-top: 8px;
-            border-top: 1px solid #000000;
+            padding-top: 0;
+            margin-top: 0;
+            border-top: none;
         }
         
         .agent-signature .agent-details p {
@@ -558,12 +574,18 @@ export class PDFGenerator {
         ${options.includeAgentSignature && options.agentProfile ? `
         <div class="agent-signature">
             <h3>Your Insurance Agent</h3>
-            <div class="signature-content">${options.agentProfile.signature}</div>
-            <div class="agent-details">
-                <p><strong>Agent:</strong> ${options.agentProfile.name}, ${options.agentProfile.title}</p>
-                <p><strong>License:</strong> ${options.agentProfile.license}</p>
-                <p><strong>Direct Contact:</strong> ${options.agentProfile.phone} | ${options.agentProfile.email}</p>
-                <p><strong>Firm:</strong> ${options.agentProfile.firmName}</p>
+            <div class="agent-signature-content">
+                <div class="agent-signature-left">
+                    <div class="signature-content">${options.agentProfile.signature}</div>
+                </div>
+                <div class="agent-signature-right">
+                    <div class="agent-details">
+                        <p><strong>Agent:</strong> ${options.agentProfile.name}, ${options.agentProfile.title}</p>
+                        <p><strong>License:</strong> ${options.agentProfile.license}</p>
+                        <p><strong>Direct Contact:</strong> ${options.agentProfile.phone} | ${options.agentProfile.email}</p>
+                        <p><strong>Firm:</strong> ${options.agentProfile.firmName}</p>
+                    </div>
+                </div>
             </div>
         </div>
         ` : ''}
