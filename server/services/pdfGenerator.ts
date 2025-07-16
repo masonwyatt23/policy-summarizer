@@ -576,17 +576,52 @@ export class PDFGenerator {
   }
 
   private parseAndFormatSummary(summary: string): string {
+    console.log('PDF Generator: Parsing summary content:');
+    console.log('Raw summary:', summary);
+    
     // First split by double newlines to get main sections
     const sections = summary.split('\n\n');
     let formattedHtml = '<div class="summary-wrapper">';
     
+    console.log('PDF Generator: Found', sections.length, 'sections');
+    
     for (let i = 0; i < sections.length; i++) {
       const section = sections[i].trim();
+      
+      console.log(`PDF Generator: Processing section ${i}:`, section);
       
       // Skip empty sections
       if (section === '') {
         formattedHtml += '<div class="paragraph-break"></div>';
         continue;
+      }
+      
+      // Handle bracket headers at the start of the section (like [Your Coverage Summary])
+      if (section.startsWith('[') && section.includes(']')) {
+        const lines = section.split('\n');
+        const firstLine = lines[0].trim();
+        
+        console.log('PDF Generator: Found bracket section, first line:', firstLine);
+        
+        // Check if first line is a bracket header
+        const bracketHeaderMatch = firstLine.match(/^\[([^\]]+)\]$/);
+        if (bracketHeaderMatch) {
+          const headerText = bracketHeaderMatch[1];
+          const remainingContent = lines.slice(1).join('\n').trim();
+          
+          console.log('PDF Generator: Parsed bracket header:', headerText);
+          console.log('PDF Generator: Remaining content:', remainingContent);
+          
+          formattedHtml += `
+            <div class="section-block">
+              <div class="section-header">
+                <h3 class="subheader">${headerText}</h3>
+              </div>
+              ${remainingContent ? `<div class="section-content"><p class="section-paragraph">${remainingContent}</p></div>` : ''}
+            </div>
+          `;
+          continue;
+        }
       }
       
       // Check if this section contains bullet points
