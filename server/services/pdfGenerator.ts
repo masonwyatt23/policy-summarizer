@@ -32,6 +32,13 @@ export class PDFGenerator {
     summary: string,
     options: PDFOptions
   ): Promise<Buffer> {
+    console.log('[PDF Generator] Agent profile present:', !!options.agentProfile);
+    if (options.agentProfile) {
+      console.log('[PDF Generator] Agent image present:', !!options.agentProfile.agentImage);
+      if (options.agentProfile.agentImage) {
+        console.log('[PDF Generator] Agent image length:', options.agentProfile.agentImage.length);
+      }
+    }
     const browser = await puppeteer.launch({
       executablePath: '/nix/store/zi4f80l169xlmivz8vja8wlphq74qqk0-chromium-125.0.6422.141/bin/chromium',
       args: [
@@ -490,17 +497,20 @@ export class PDFGenerator {
         
         .agent-image {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
-            margin: 0 10px;
+            margin: 0 15px;
+            padding-top: 25px;
+            margin-bottom: -10px;
         }
         
         .agent-photo {
-            width: 50px;
-            height: 50px;
-            border-radius: 4px;
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
             object-fit: cover;
             border: 1px solid #ddd;
+            margin-top: 10px;
         }
         
         @media print {
