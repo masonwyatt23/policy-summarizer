@@ -617,9 +617,42 @@ export class PDFGenerator {
               <div class="section-header">
                 <h3 class="subheader">${headerText}</h3>
               </div>
-              ${remainingContent ? `<div class="section-content"><p class="section-paragraph">${remainingContent}</p></div>` : ''}
-            </div>
           `;
+          
+          // Parse the remaining content to separate paragraph from bullet points
+          if (remainingContent) {
+            const contentLines = remainingContent.split('\n');
+            let paragraphLines = [];
+            let bulletPoints = [];
+            
+            for (const line of contentLines) {
+              const trimmedLine = line.trim();
+              if (trimmedLine.startsWith('• ')) {
+                bulletPoints.push(trimmedLine);
+              } else if (trimmedLine) {
+                paragraphLines.push(trimmedLine);
+              }
+            }
+            
+            // Add paragraph content
+            if (paragraphLines.length > 0) {
+              const paragraphText = paragraphLines.join(' ');
+              formattedHtml += `<div class="section-content"><p class="section-paragraph">${paragraphText}</p></div>`;
+            }
+            
+            // Add bullet points
+            for (const bullet of bulletPoints) {
+              const bulletContent = bullet.substring(1).trim();
+              formattedHtml += `
+                <div class="bullet-point">
+                  <span class="bullet-icon">•</span>
+                  <div class="bullet-content">${bulletContent}</div>
+                </div>
+              `;
+            }
+          }
+          
+          formattedHtml += `</div>`;
           continue;
         }
       }
