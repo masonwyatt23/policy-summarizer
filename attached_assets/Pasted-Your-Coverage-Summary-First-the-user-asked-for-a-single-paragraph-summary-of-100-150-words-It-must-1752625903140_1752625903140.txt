@@ -1,0 +1,61 @@
+Your Coverage Summary
+First, the user asked for a single paragraph summary of 100-150 words. It must include: insurance company, who it's for, what it covers, coverage amounts, and key details. Use simple everyday language. Output ONLY the summary paragraph, no explanations.
+
+Key elements from the policy:
+
+-
+
+Insurance Company:
+Erie Insurance.
+
+-
+
+Who it's for:
+Mor Jen Heath, Inc. DBA Depot Grille, a restaurant in Staunton, VA. So, it's for a business, specifically a restaurant.
+
+-
+
+What it covers:
+This is a Business Auto Insurance policy. It includes coverages like hired auto liability, non-owned auto liability, and for a specific vehicle (2025 GMC Yukon XL), it covers combined single limit, medical expenses, uninsured/underinsured motorists, comprehensive, and collision.
+
+-
+
+Coverage Amounts:
+From the details:
+
+- Combined single limit: $1,000,000 for liability.
+
+- Medical expense: $5,000.
+
+- Uninsured/underinsured motorists: $1,000,000 combined single limit.
+
+- Comprehensive deductible: $500.
+
+- Collision deductible: $500.
+
+- Total premium: $1,782.00.
+
+- There's also an Enhancement Endorsement that adds various coverages like blanket additional insured, business interruption, etc.
+
+-
+
+Key Details:
+Effective dates: July 11, 2025, to July 11, 2026. It's a quote, not a policy yet. Various installment payment options. The policy is for business auto and includes enhancements.
+
+Structure the paragraph:
+
+- Start with the company and who it's for.
+
+- Describe what it covers.
+
+- Mention coverage amounts.
+
+- End with key details like effective dates and total premium.
+
+Keep it to 100-150 words. Use simple language.
+
+Draft a paragraph:
+
+"Erie Insurance offers this business auto policy for Depot Grille, a restaurant in Staunton, Virginia. It covers liability for hired and non-owned autos, as well as comprehensive and collision coverage for a 2025 GMC Yukon XL. Key coverage amounts include a $1,000,000 combined single limit for liability, $5,000 for medical expenses, and $1,000,000 for uninsured/underinsured motorists, with $500 deductibles for comprehensive and collision. The policy also includes an enhancement endorsement for additional protections like business interruption and towing. The total premium is $1,782 for the period from July 11, 2025,
+
+Contact Valley Trust: (540) 885-5531

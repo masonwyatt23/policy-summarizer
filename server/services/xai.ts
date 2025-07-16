@@ -732,11 +732,46 @@ ${truncatedText}`
 
       console.log(`✅ Summary generated successfully in ${Date.now() - startTime}ms`);
       
-      // For simple summaries, just add the header and contact info
+      // Extract only the actual summary paragraph
       const cleanedContent = content.trim();
       
+      // Look for the actual summary paragraph that describes the policy
+      // It usually starts with the insurance company name
+      const patterns = [
+        // Match paragraph starting with insurance company name
+        /(?:^|\n\n)(Erie Insurance[^.]+\.(?:[^.]+\.)*[^.]+\.)/,
+        // Match paragraph starting with "This is a"
+        /(?:^|\n\n)(This is a[^.]+\.(?:[^.]+\.)*[^.]+\.)/,
+        // Match any paragraph that mentions coverage and amounts
+        /(?:^|\n\n)([^.]*(?:policy|coverage|insurance)[^.]+\$[\d,]+[^.]+\.(?:[^.]+\.)*[^.]+\.)/i
+      ];
+      
+      let summaryParagraph = null;
+      
+      for (const pattern of patterns) {
+        const match = cleanedContent.match(pattern);
+        if (match) {
+          summaryParagraph = match[1].trim();
+          break;
+        }
+      }
+      
+      // If no pattern matches, try to find the last substantial paragraph
+      if (!summaryParagraph) {
+        const paragraphs = cleanedContent.split('\n\n').filter(p => p.trim().length > 100);
+        if (paragraphs.length > 0) {
+          summaryParagraph = paragraphs[paragraphs.length - 1].trim();
+        }
+      }
+      
+      // Final fallback
+      if (!summaryParagraph) {
+        console.error('Could not extract summary paragraph from AI response');
+        summaryParagraph = cleanedContent;
+      }
+      
       return `[Your Coverage Summary]
-${cleanedContent}
+${summaryParagraph}
 
 Contact Valley Trust: (540) 885-5531`;
 
