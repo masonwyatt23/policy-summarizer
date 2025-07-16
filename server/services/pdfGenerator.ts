@@ -120,7 +120,7 @@ export class PDFGenerator {
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            padding-bottom: 250px;
+            padding-bottom: 300px;
         }
         
         .header {
@@ -436,7 +436,7 @@ export class PDFGenerator {
         
         .agent-signature {
             position: absolute;
-            bottom: -50px;
+            bottom: -80px;
             left: 0;
             right: 0;
             padding: 15px 20px;
@@ -511,17 +511,19 @@ export class PDFGenerator {
             display: flex;
             align-items: flex-start;
             justify-content: center;
-            margin: 0 15px;
+            margin: 0 10px;
             padding: 0;
             position: relative;
             flex-shrink: 0;
-            margin-top: -20px;
+            margin-top: -10px;
         }
         
         .agent-photo {
-            max-width: 50px;
-            max-height: 50px;
-            border-radius: 4px;
+            max-width: 30px;
+            max-height: 30px;
+            width: auto;
+            height: auto;
+            border-radius: 3px;
             object-fit: contain;
             border: 1px solid #ddd;
             margin: 0;
