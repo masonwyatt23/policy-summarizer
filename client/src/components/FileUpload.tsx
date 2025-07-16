@@ -218,24 +218,34 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
         {/* Upload Area */}
         <div
           {...getRootProps()}
-          className={`p-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+          className={`p-12 border-3 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
             isDragActive 
-              ? 'border-valley-primary bg-valley-primary/5' 
-              : 'border-border hover:border-valley-primary'
-          }`}
+              ? 'border-valley-primary bg-valley-primary/10 shadow-lg scale-105' 
+              : 'border-valley-primary/50 hover:border-valley-primary hover:bg-valley-primary/5 hover:shadow-md'
+          } bg-gray-50 dark:bg-gray-900/50`}
         >
           <input {...getInputProps()} />
-          <div className="flex items-center justify-center space-x-3">
-            <div className="w-8 h-8 bg-valley-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-              <FileText className="w-4 h-4 text-valley-primary" />
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="w-16 h-16 bg-valley-primary/15 rounded-full flex items-center justify-center flex-shrink-0">
+              <FileText className="w-8 h-8 text-valley-primary" />
             </div>
-            <div className="flex-1">
-              <p className="text-base font-medium text-foreground">
-                {isDragActive ? 'Drop files here' : 'Drop files here or click to browse'}
+            <div className="space-y-2">
+              <p className="text-lg font-semibold text-foreground">
+                {isDragActive ? 'Drop your files here!' : 'Click here to upload or drag & drop files'}
               </p>
-              <p className="text-sm text-muted-foreground">
-                PDF and DOCX files up to 10MB
+              <p className="text-base text-muted-foreground">
+                Upload PDF or DOCX insurance policies (up to 10MB)
               </p>
+            </div>
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-1">
+                <FileText className="w-4 h-4" />
+                <span>PDF</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <FileText className="w-4 h-4" />
+                <span>DOCX</span>
+              </div>
             </div>
           </div>
         </div>

@@ -261,7 +261,7 @@ export default function PolicySummaryGenerator({ documentId }: PolicySummaryGene
                 <h3 className="text-xl font-semibold text-foreground">Professional Brief Summaries</h3>
               </div>
               <p className="text-base text-muted-foreground mt-2">
-                Upload your insurance policy to receive a concise, client-ready summary with key coverage highlights in under a minute.
+                Upload your insurance policy to receive a concise, client-ready summary with key coverage highlights. Processing may take multiple minutes for complex documents.
               </p>
             </div>
           </Card>
