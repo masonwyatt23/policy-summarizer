@@ -686,21 +686,12 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'system',
-              content: 'You are an insurance expert. Output ONLY the formatted summary as requested - no reasoning, no thinking, no explanations.'
+              content: 'You are a helpful assistant that provides concise insurance policy summaries. Output ONLY the requested summary paragraph, with no explanations, reasoning, or preliminary text.'
             },
             {
               role: 'user',
-              content: `Create a summary with this EXACT format:
+              content: `Write ONLY a single paragraph summary (100-150 words) of this insurance policy. Use simple everyday language. Include: insurance company, who it's for, what it covers, coverage amounts, and key details. Do not include any reasoning, thinking, or explanation - just the final summary paragraph.
 
-[One paragraph, 100-150 words describing the policy in simple language]
-
-• [Key point 1]
-• [Key point 2]
-• [Key point 3]
-• [Key point 4]
-• [Key point 5 if applicable]
-
-Policy text:
 ${truncatedText}`
             }
           ],
