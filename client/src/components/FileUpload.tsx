@@ -218,34 +218,24 @@ export function FileUpload({ onUploadSuccess, summaryLength = 'short' }: FileUpl
         {/* Upload Area */}
         <div
           {...getRootProps()}
-          className={`p-12 border-3 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
+          className={`p-6 border-2 border-solid rounded-lg cursor-pointer transition-all duration-200 ${
             isDragActive 
-              ? 'border-valley-primary bg-valley-primary/10 shadow-lg scale-105' 
-              : 'border-valley-primary/50 hover:border-valley-primary hover:bg-valley-primary/5 hover:shadow-md'
-          } bg-gray-50 dark:bg-gray-900/50`}
+              ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 shadow-lg scale-102' 
+              : 'border-blue-400 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:shadow-md'
+          } bg-blue-25 dark:bg-blue-950/10`}
         >
           <input {...getInputProps()} />
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="w-16 h-16 bg-valley-primary/15 rounded-full flex items-center justify-center flex-shrink-0">
-              <FileText className="w-8 h-8 text-valley-primary" />
+          <div className="flex items-center justify-center space-x-4 text-center">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+              <FileText className="w-6 h-6 text-blue-600" />
             </div>
-            <div className="space-y-2">
-              <p className="text-lg font-semibold text-foreground">
-                {isDragActive ? 'Drop your files here!' : 'Click here to upload or drag & drop files'}
+            <div className="space-y-1">
+              <p className="text-lg font-semibold text-blue-700 dark:text-blue-400">
+                {isDragActive ? 'Drop your files here!' : 'Click here to upload files'}
               </p>
-              <p className="text-base text-muted-foreground">
-                Upload PDF or DOCX insurance policies (up to 10MB)
+              <p className="text-sm text-blue-600 dark:text-blue-500">
+                PDF or DOCX insurance policies (up to 10MB)
               </p>
-            </div>
-            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-              <div className="flex items-center space-x-1">
-                <FileText className="w-4 h-4" />
-                <span>PDF</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <FileText className="w-4 h-4" />
-                <span>DOCX</span>
-              </div>
             </div>
           </div>
         </div>
