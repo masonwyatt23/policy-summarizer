@@ -380,38 +380,7 @@ export class PDFGenerator {
             font-weight: 700;
         }
         
-        .footer {
-            margin-top: auto;
-            padding: 12px 0 8px 0;
-            text-align: center;
-            background: #ffffff;
-            border-top: 1px solid #000000;
-            page-break-inside: avoid;
-            flex-shrink: 0;
-        }
-        
-        .footer p {
-            color: #000000;
-            font-size: 12px;
-            margin: 4px 0;
-            line-height: 1.4;
-            font-weight: 500;
-        }
-        
-        .footer .signature {
-            margin-top: 8px;
-            padding-top: 6px;
-            border-top: 1px solid #000000;
-        }
-        
-        .footer .signature p {
-            font-style: italic;
-            color: #000000;
-            font-weight: 600;
-            font-size: 11px;
-            margin: 2px 0;
-            line-height: 1.3;
-        }
+
         
         .agent-signature {
             margin-top: auto;
@@ -564,17 +533,7 @@ export class PDFGenerator {
         </div>
         ` : ''}
 
-        ${options.includeBranding ? `
-        <div class="footer">
-            <p><strong>${options.agentProfile?.firmName || 'Valley Trust Insurance Group'}</strong></p>
-            <p>${options.agentProfile?.firmAddress || '829 Greenville Ave, Staunton, VA 24401'} | ${options.agentProfile?.firmPhone || '(540) 885-5531'}</p>
-            <p>${options.agentProfile?.firmWebsite || 'https://valleytrustinsurance.com'}</p>
-            <div class="signature">
-                <p>Anchoring You Through Life's Tough Storms</p>
-                <p>There is no insurance solution we cannot solve, and no customer we cannot help.</p>
-            </div>
-        </div>
-        ` : ''}
+
     </div>
 </body>
 </html>
