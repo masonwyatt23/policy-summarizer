@@ -685,8 +685,12 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           model: 'grok-3-mini-fast',
           messages: [
             {
+              role: 'system',
+              content: 'You are a helpful assistant that provides concise insurance policy summaries. Output ONLY the requested summary paragraph, with no explanations, reasoning, or preliminary text.'
+            },
+            {
               role: 'user',
-              content: `Summarize this insurance policy in one paragraph (100-150 words) using simple, everyday language. Include the insurance company, who it's for, what it covers, coverage amounts, and any important details. Write as if explaining to someone who knows nothing about insurance.
+              content: `Write ONLY a single paragraph summary (100-150 words) of this insurance policy. Use simple everyday language. Include: insurance company, who it's for, what it covers, coverage amounts, and key details. Do not include any reasoning, thinking, or explanation - just the final summary paragraph.
 
 ${truncatedText}`
             }
