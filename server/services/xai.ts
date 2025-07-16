@@ -709,17 +709,19 @@ CRITICAL REQUIREMENTS:
 - Write a comprehensive, detailed paragraph with ALL key information
 - Include total premium amount, coverage limits, and key benefits
 - You MUST include EXACTLY 5 bullet points after the paragraph
-- Put each bullet point on its own separate line
+- Each bullet point should be on its own line with proper spacing
 - Extract real data from the document - no placeholders
 - DO NOT STOP after the paragraph - continue to bullet points
-- Complete your response with all 5 bullet points
+- Complete your response with all 5 bullet points including Policy Cost
+- If you cannot find deductible information, write "Deductible: Contact agent for details"
+- If you cannot find exact premium, write "Policy Cost: Contact agent for details"
 - Output ONLY this format, no explanations
 
 ${truncatedText}`
             }
           ],
           temperature: 0.2,
-          max_tokens: 1200
+          max_tokens: 1500
         })
       });
 
@@ -773,15 +775,30 @@ ${truncatedText}`
         // Split into lines and properly format bullet points
         const lines = processedContent.split('\n');
         const formattedLines = [];
+        let currentBulletPoint = '';
         
         for (const line of lines) {
-          if (line.trim().startsWith('• ')) {
-            // This is a bullet point line
-            formattedLines.push(line.trim());
-          } else if (line.trim() && !line.trim().startsWith('• ')) {
+          const trimmedLine = line.trim();
+          
+          if (trimmedLine.startsWith('• ')) {
+            // If we have a previous bullet point, add it to formattedLines
+            if (currentBulletPoint) {
+              formattedLines.push(currentBulletPoint);
+            }
+            // Start new bullet point
+            currentBulletPoint = trimmedLine;
+          } else if (trimmedLine && currentBulletPoint && !trimmedLine.startsWith('• ')) {
+            // This is continuation of current bullet point
+            currentBulletPoint += ' ' + trimmedLine;
+          } else if (trimmedLine && !currentBulletPoint) {
             // This is regular text (paragraph)
-            formattedLines.push(line.trim());
+            formattedLines.push(trimmedLine);
           }
+        }
+        
+        // Don't forget the last bullet point
+        if (currentBulletPoint) {
+          formattedLines.push(currentBulletPoint);
         }
         
         // Join with proper spacing
