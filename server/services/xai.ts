@@ -753,6 +753,11 @@ ${truncatedText}`
 
       console.log(`✅ Summary generated successfully in ${Date.now() - startTime}ms`);
       
+      // Debug: Log the raw AI response
+      console.log('RAW AI RESPONSE:');
+      console.log(content);
+      console.log('END RAW RESPONSE');
+      
       // Extract only the actual summary paragraph
       const cleanedContent = content.trim();
       
