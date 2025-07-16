@@ -166,100 +166,104 @@ export function AuthPage() {
                   </TabsList>
                   
                   <TabsContent value="login" className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="login-username" className="text-base">Username</Label>
-                      <Input
-                        id="login-username"
-                        type="text"
-                        value={loginData.username}
-                        className="text-base h-12"
-                        onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
-                        placeholder="Enter your username"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password" className="text-base">Password</Label>
-                      <Input
-                        id="login-password"
-                        type="password"
-                        value={loginData.password}
-                        className="text-base h-12"
-                        onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                        placeholder="Enter your password"
-                      />
-                    </div>
-                    <Button 
-                      onClick={handleLogin} 
-                      className="w-full h-12 text-base"
-                      disabled={loginMutation.isPending}
-                    >
-                      {loginMutation.isPending ? "Logging in..." : "Login"}
-                    </Button>
+                    <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="login-username" className="text-base">Username</Label>
+                        <Input
+                          id="login-username"
+                          type="text"
+                          value={loginData.username}
+                          className="text-base h-12"
+                          onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
+                          placeholder="Enter your username"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="login-password" className="text-base">Password</Label>
+                        <Input
+                          id="login-password"
+                          type="password"
+                          value={loginData.password}
+                          className="text-base h-12"
+                          onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                          placeholder="Enter your password"
+                        />
+                      </div>
+                      <Button 
+                        type="submit"
+                        className="w-full h-12 text-base"
+                        disabled={loginMutation.isPending}
+                      >
+                        {loginMutation.isPending ? "Logging in..." : "Login"}
+                      </Button>
+                    </form>
                   </TabsContent>
                   
                   <TabsContent value="register" className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="register-fullname" className="text-base">Full Name</Label>
-                      <Input
-                        id="register-fullname"
-                        type="text"
-                        value={registerData.fullName}
-                        className="text-base h-12"
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, fullName: e.target.value }))}
-                        placeholder="Enter your full name"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email" className="text-base">Email</Label>
-                      <Input
-                        id="register-email"
-                        type="email"
-                        value={registerData.email}
-                        className="text-base h-12"
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
-                        placeholder="Enter your email address"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-username" className="text-base">Username</Label>
-                      <Input
-                        id="register-username"
-                        type="text"
-                        value={registerData.username}
-                        className="text-base h-12"
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, username: e.target.value }))}
-                        placeholder="Choose a username"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password" className="text-base">Password</Label>
-                      <Input
-                        id="register-password"
-                        type="password"
-                        value={registerData.password}
-                        className="text-base h-12"
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
-                        placeholder="Choose a password"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-confirm" className="text-base">Confirm Password</Label>
-                      <Input
-                        id="register-confirm"
-                        type="password"
-                        value={registerData.confirmPassword}
-                        className="text-base h-12"
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                        placeholder="Confirm your password"
-                      />
-                    </div>
-                    <Button 
-                      onClick={handleRegister} 
-                      className="w-full h-12 text-base"
-                      disabled={registerMutation.isPending}
-                    >
-                      {registerMutation.isPending ? "Creating Account..." : "Create Account"}
-                    </Button>
+                    <form onSubmit={(e) => { e.preventDefault(); handleRegister(); }} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="register-fullname" className="text-base">Full Name</Label>
+                        <Input
+                          id="register-fullname"
+                          type="text"
+                          value={registerData.fullName}
+                          className="text-base h-12"
+                          onChange={(e) => setRegisterData(prev => ({ ...prev, fullName: e.target.value }))}
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="register-email" className="text-base">Email</Label>
+                        <Input
+                          id="register-email"
+                          type="email"
+                          value={registerData.email}
+                          className="text-base h-12"
+                          onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
+                          placeholder="Enter your email address"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="register-username" className="text-base">Username</Label>
+                        <Input
+                          id="register-username"
+                          type="text"
+                          value={registerData.username}
+                          className="text-base h-12"
+                          onChange={(e) => setRegisterData(prev => ({ ...prev, username: e.target.value }))}
+                          placeholder="Choose a username"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="register-password" className="text-base">Password</Label>
+                        <Input
+                          id="register-password"
+                          type="password"
+                          value={registerData.password}
+                          className="text-base h-12"
+                          onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
+                          placeholder="Choose a password"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="register-confirm" className="text-base">Confirm Password</Label>
+                        <Input
+                          id="register-confirm"
+                          type="password"
+                          value={registerData.confirmPassword}
+                          className="text-base h-12"
+                          onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                          placeholder="Confirm your password"
+                        />
+                      </div>
+                      <Button 
+                        type="submit"
+                        className="w-full h-12 text-base"
+                        disabled={registerMutation.isPending}
+                      >
+                        {registerMutation.isPending ? "Creating Account..." : "Create Account"}
+                      </Button>
+                    </form>
                   </TabsContent>
                 </Tabs>
               </CardContent>

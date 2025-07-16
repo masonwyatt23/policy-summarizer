@@ -650,6 +650,8 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced bullet point separation in PDF exports - each bullet point appears on separate line
   - Redesigned signature section with side-by-side layout: signature on left, agent info on right
   - Reduced signature section vertical spacing to be more compact and use less page space
+  - Added Enter key support to authentication forms - users can now press Enter to submit login/register forms
+  - Wrapped both login and register forms in proper form elements with onSubmit handlers for better UX
 
 ## Changelog
 - July 01, 2025. Initial setup
