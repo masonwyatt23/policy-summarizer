@@ -427,69 +427,61 @@ export class PDFGenerator {
         
         .agent-signature {
             margin-top: auto;
-            padding: 10px 15px;
+            padding: 8px 15px;
             background: #ffffff;
             border-top: 1px solid #000000;
             flex-shrink: 0;
         }
         
-        .agent-signature-content {
+        .agent-signature h3 {
+            color: #000000;
+            font-size: 15px;
+            margin: 0 0 5px 0;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .agent-signature-wrapper {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 5px;
-            position: relative;
+            align-items: flex-start;
+            justify-content: space-between;
             gap: 20px;
         }
         
         .agent-signature-left {
-            flex: 1;
+            flex: 0 0 40%;
             min-width: 0;
-            display: flex;
-            align-items: center;
-            padding: 0;
-        }
-        
-        .agent-signature-right {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            align-items: center;
-            padding: 0;
-        }
-        
-        .agent-signature h3 {
-            color: #000000;
-            font-size: 16px;
-            margin-bottom: 5px;
-            font-weight: 700;
-            text-transform: uppercase;
-            text-align: center;
         }
         
         .agent-signature .signature-content {
             white-space: pre-line;
-            font-size: 14px;
+            font-size: 13px;
             color: #000000;
             line-height: 1.3;
-            margin-top: 0;
-            margin-bottom: 10px;
+            margin: 0;
             font-style: italic;
-            text-align: center;
+        }
+        
+        .agent-signature-right {
+            flex: 0 0 58%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
         .agent-signature .agent-details {
-            padding-top: 0;
-            margin-top: 0;
-            border-top: none;
-            text-align: left;
+            flex: 1;
+            padding: 0;
+            margin: 0;
+            border: none;
         }
         
         .agent-signature .agent-details p {
-            margin: 1px 0;
-            font-size: 13px;
+            margin: 0 0 2px 0;
+            font-size: 12px;
             color: #000000;
             font-weight: 500;
+            line-height: 1.3;
         }
         
         .agent-signature .agent-details strong {
@@ -498,24 +490,21 @@ export class PDFGenerator {
         }
         
         .agent-image {
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 15px;
-            padding: 0;
-            position: relative;
-            flex-shrink: 0;
         }
         
         .agent-photo {
-            max-width: 60px;
-            max-height: 60px;
+            max-width: 80px;
+            max-height: 80px;
             width: auto;
             height: auto;
             border-radius: 4px;
             object-fit: contain;
             border: 2px solid #ddd;
-            margin: 0;
+            display: block;
         }
         
         @media print {
@@ -608,18 +597,22 @@ export class PDFGenerator {
         ${options.includeAgentSignature && options.agentProfile ? `
         <div class="agent-signature">
             <h3>Your Insurance Agent</h3>
-            <div class="signature-content">${options.agentProfile.signature}</div>
-            <div class="agent-signature-content">
-                ${options.agentProfile.agentImage ? `
-                <div class="agent-image">
-                    <img src="${options.agentProfile.agentImage}" alt="Agent Photo" class="agent-photo">
+            <div class="agent-signature-wrapper">
+                <div class="agent-signature-left">
+                    <div class="signature-content">${options.agentProfile.signature}</div>
                 </div>
-                ` : ''}
-                <div class="agent-details">
-                    <p><strong>Agent:</strong> ${options.agentProfile.name}, ${options.agentProfile.title}</p>
-                    <p><strong>License:</strong> ${options.agentProfile.license}</p>
-                    <p><strong>Direct Contact:</strong> ${options.agentProfile.phone} | ${options.agentProfile.email}</p>
-                    <p><strong>Website:</strong> ${options.agentProfile.firmWebsite}</p>
+                <div class="agent-signature-right">
+                    ${options.agentProfile.agentImage ? `
+                    <div class="agent-image">
+                        <img src="${options.agentProfile.agentImage}" alt="Agent Photo" class="agent-photo">
+                    </div>
+                    ` : ''}
+                    <div class="agent-details">
+                        <p><strong>${options.agentProfile.name}</strong>, ${options.agentProfile.title}</p>
+                        <p>License: ${options.agentProfile.license}</p>
+                        <p>${options.agentProfile.phone} | ${options.agentProfile.email}</p>
+                        <p>${options.agentProfile.firmWebsite}</p>
+                    </div>
                 </div>
             </div>
         </div>

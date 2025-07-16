@@ -668,6 +668,14 @@ This is a full-stack policy document processing application built for Valley Tru
     - Enhanced buffer size to 50MB for large image processing
     - Improved error handling to preserve partial OCR results in deployment
     - Better environment detection (only checks NODE_ENV=production or REPLIT_DEPLOYMENT=1)
+- January 16, 2025: Optimized PDF footer layout for better space utilization
+  - Redesigned footer with horizontal layout: signature on left (40%), agent info and photo on right (58%)
+  - Increased agent photo size from 60px to 80px for better visibility
+  - Reduced footer padding from 10px to 8px for more compact design
+  - Streamlined agent details with smaller font size (12px) and tighter line spacing
+  - Changed from center-aligned to side-by-side layout for efficient horizontal space usage
+  - Agent photo maintains natural aspect ratio with object-fit: contain
+  - Footer uses margin-top: auto to stay at bottom of first page
 
 ## Changelog
 - July 01, 2025. Initial setup
