@@ -5,8 +5,9 @@ import { setupVite, serveStatic, log } from "./vite";
 import "./deployment-check";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Increase body size limit to 10MB for image uploads (agent photos can be up to 2MB)
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // CORS configuration for deployed environments
 app.use((req, res, next) => {

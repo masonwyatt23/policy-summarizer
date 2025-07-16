@@ -682,6 +682,10 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added validation logging to track incomplete summaries (less than 5 bullet points)
   - Increased OCR timeout from 2 minutes to 3 minutes per page in deployment for slower processing
   - Enhanced debugging to identify when AI responses are being cut off in production
+- January 16, 2025: Fixed "Request entity too large" error for agent photo uploads in deployment
+  - Increased Express body parser limit from default 100kb to 10MB for JSON and URL-encoded data
+  - Multer already had 10MB limit configured, but express.json() was blocking large base64 images
+  - Agent photos (up to 2MB) now upload successfully in both development and deployment environments
 
 ## Changelog
 - July 01, 2025. Initial setup
