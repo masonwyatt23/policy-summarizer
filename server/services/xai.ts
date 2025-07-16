@@ -703,16 +703,7 @@ REQUIRED FORMAT:
 • Deductible: [actual amount]
 • Key Protection: [important detail]
 
-EXAMPLE OUTPUT:
-Erie Insurance provides this Business Auto insurance policy for Depot Grille. This policy offers protection for business vehicles, including liability coverage up to $1,000,000 for hired and non-owned autos, as well as physical damage for owned vehicles like the 2025 GMC Yukon XL.
-
-• Coverage Period: July 11, 2025 to July 11, 2026
-• Policy Number: Q61 0413185
-• Primary Coverage: Business Auto Liability $1,000,000
-• Deductible: $500 Comprehensive/Collision
-• Key Protection: Hired/Non-Owned Auto Coverage
-
-CRITICAL: You MUST include both the paragraph AND the bullet points using the • character. Extract real data from the document - do not use placeholders. Output ONLY this format, no explanations or reasoning.
+CRITICAL: You MUST include both the paragraph AND the bullet points. Extract real data from the document - do not use placeholders. Output ONLY this format, no explanations or reasoning.
 
 ${truncatedText}`
             }
@@ -753,12 +744,6 @@ ${truncatedText}`
       }
 
       console.log(`✅ Summary generated successfully in ${Date.now() - startTime}ms`);
-      
-      // Debug: Log the full AI response to see what we're getting
-      console.log('Full AI response content:');
-      console.log('--- START AI RESPONSE ---');
-      console.log(content);
-      console.log('--- END AI RESPONSE ---');
       
       // Extract only the actual summary paragraph
       const cleanedContent = content.trim();
@@ -802,13 +787,13 @@ ${truncatedText}`
         }
       }
       
-      // If still not found, look for complete responses (paragraph + bullet points)
+      // If still not found, look for paragraphs starting with insurance company names
       if (!summaryParagraph) {
         const patterns = [
-          // Match complete responses starting with insurance company names (paragraph + bullet points)
-          /(?:^|\n\n)((?:Erie Insurance|State Farm|Geico|Progressive|Allstate)[^\n]+(?:\n(?!\n)[^\n]+)*(?:\n\n•[^\n]+(?:\n•[^\n]+)*)?)/,
-          // Match complete responses starting with "This is a" or similar
-          /(?:^|\n\n)(This (?:is a|policy|insurance)[^\n]+(?:\n(?!\n)[^\n]+)*(?:\n\n•[^\n]+(?:\n•[^\n]+)*)?)/,
+          // Match complete paragraphs starting with insurance company names
+          /(?:^|\n\n)((?:Erie Insurance|State Farm|Geico|Progressive|Allstate)[^\n]+(?:\n(?!\n)[^\n]+)*)/,
+          // Match complete paragraphs starting with "This is a" or similar
+          /(?:^|\n\n)(This (?:is a|policy|insurance)[^\n]+(?:\n(?!\n)[^\n]+)*)/,
         ];
         
         for (const pattern of patterns) {
@@ -819,21 +804,6 @@ ${truncatedText}`
             break;
           }
         }
-      }
-      
-      // If still not found, try to capture everything before "Contact Valley Trust"
-      if (!summaryParagraph) {
-        const beforeContact = cleanedContent.split(/Contact Valley Trust/i)[0].trim();
-        if (beforeContact.length > 100) {
-          summaryParagraph = beforeContact;
-          console.log('Found summary before Contact Valley Trust');
-        }
-      }
-      
-      // Final fallback: use the entire cleaned content if it looks like a summary
-      if (!summaryParagraph && cleanedContent.length > 100) {
-        summaryParagraph = cleanedContent;
-        console.log('Using entire cleaned content as summary');
       }
       
       // Last resort: find the last paragraph that's 100+ chars and contains dollar amounts
