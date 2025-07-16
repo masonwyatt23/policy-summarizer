@@ -692,11 +692,11 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
               role: 'user',
               content: `Write a summary of this insurance policy in this EXACT format:
 
-Step 1: Write ONE paragraph (100-150 words) explaining the policy in simple terms
-Step 2: Add a blank line
-Step 3: Add 3-5 bullet points with key details
+STEP 1: Write ONE paragraph (100-150 words) explaining the policy in simple terms
+STEP 2: Add a blank line
+STEP 3: Add 3-5 bullet points with key details
 
-REQUIRED OUTPUT:
+MANDATORY OUTPUT FORMAT:
 [Company] provides this [type] insurance policy for [business name]. [Describe coverage and amounts in simple terms]. [Add practical example or key benefit].
 
 • Coverage Period: [actual dates from document]
@@ -710,13 +710,14 @@ CRITICAL REQUIREMENTS:
 - Extract real data from the document - no placeholders
 - Keep the paragraph style exactly as you normally write it
 - Add bullet points with actual policy details
+- DO NOT STOP after the paragraph - continue to bullet points
 - Output ONLY this format, no explanations
 
 ${truncatedText}`
             }
           ],
           temperature: 0.2,
-          max_tokens: 800
+          max_tokens: 1000
         })
       });
 
@@ -980,7 +981,7 @@ Full document text: ${extractedText.substring(0, 50000)}`  // Increased to 50k c
             }
           ],
           temperature: 0.1,
-          max_tokens: 800
+          max_tokens: 1000
         })
       });
 

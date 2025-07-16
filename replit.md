@@ -636,6 +636,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Added examples in prompt to guide AI toward extracting real data like "Q61 0413185" policy numbers
   - Simplified output format to match user's example with clear bullet points for key details
   - Enhanced fallback summary to include specific coverage amounts and practical examples
+- January 16, 2025: Fixed AI truncation issues and ensured consistent bullet point generation
+  - Increased max_tokens from 800 to 1000 to prevent response truncation
+  - Added "MANDATORY OUTPUT FORMAT" and "DO NOT STOP after the paragraph" instructions
+  - Enhanced prompt with step-by-step requirements for paragraph + bullet points
+  - Fixed issue where AI would only generate paragraph without bullet points
+  - Ensured complete summaries with both narrative and key policy details
 
 ## Changelog
 - July 01, 2025. Initial setup
