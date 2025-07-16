@@ -686,31 +686,7 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
           messages: [
             {
               role: 'user',
-              content: `Analyze this insurance document and write a professional summary.
-
-From the document text below, find:
-- Insurance company name
-- Business/insured name
-- Policy type and coverages with amounts
-- Policy dates
-- Policy number (NOT agency numbers)
-- Deductibles
-- Exclusions
-
-Then write your response in this EXACT format:
-
-[Your Coverage Summary]
-This is a commercial auto insurance policy from Erie Insurance Exchange for Mor Jen Heath Inc DBA Depot Grille. It provides hired and non-owned auto liability coverage with limits of $1,000,000 combined single limit. For example, if an employee causes an accident while driving their personal vehicle for business errands, this policy covers damages up to the policy limits. The coverage includes both bodily injury and property damage protection.
-
-• Coverage Period: May 10, 2025 to May 10, 2026
-• Policy Number: Q61 2343323
-• Primary Coverage: Hired & Non-Owned Auto Liability - $1,000,000
-• Deductible: $0
-• Key Exclusion: Vehicles owned by the business
-
-Contact Valley Trust: (540) 885-5531
-
-IMPORTANT: Replace ALL the example details above with the ACTUAL information from this document:
+              content: `Summarize this insurance policy in one paragraph (100-150 words) using simple, everyday language. Include the insurance company, who it's for, what it covers, coverage amounts, and any important details. Write as if explaining to someone who knows nothing about insurance.
 
 ${truncatedText}`
             }
@@ -752,49 +728,11 @@ ${truncatedText}`
 
       console.log(`✅ Summary generated successfully in ${Date.now() - startTime}ms`);
       
-      // Extract only the formatted summary part, removing any reasoning
-      // First try to find the exact formatted section
-      const summaryMatch = content.match(/\[Your Coverage Summary\][\s\S]*?Contact Valley Trust: \(540\) 885-5531/);
-      if (summaryMatch) {
-        console.log('Found formatted summary, extracting...');
-        return summaryMatch[0].trim();
-      }
+      // For simple summaries, just add the header and contact info
+      const cleanedContent = content.trim();
       
-      // If the AI included "Your Coverage Summary" without brackets
-      const noBracketsMatch = content.match(/Your Coverage Summary[\s\S]*?Contact Valley Trust: \(540\) 885-5531/);
-      if (noBracketsMatch) {
-        console.log('Found summary without brackets, adding them...');
-        return `[${noBracketsMatch[0].trim()}`;
-      }
-      
-      // If we can find "This is a" followed by policy info
-      const thisIsMatch = content.match(/This is a[\s\S]*?Contact Valley Trust: \(540\) 885-5531/);
-      if (thisIsMatch) {
-        console.log('Found "This is a" pattern, formatting...');
-        return `[Your Coverage Summary]\n${thisIsMatch[0].trim()}`;
-      }
-      
-      // Last resort: look for bullet points pattern
-      const bulletMatch = content.match(/•\s*Coverage Period:[\s\S]*?Contact Valley Trust: \(540\) 885-5531/);
-      if (bulletMatch) {
-        console.log('Found bullet points, constructing summary...');
-        // Try to find a paragraph before the bullets
-        const beforeBullets = content.lastIndexOf('•');
-        const possibleParagraph = content.substring(Math.max(0, beforeBullets - 500), beforeBullets).trim();
-        const lastParagraph = possibleParagraph.split('\n\n').pop() || '';
-        return `[Your Coverage Summary]\n${lastParagraph}\n\n${bulletMatch[0].trim()}`;
-      }
-      
-      console.error('WARNING: Could not extract formatted summary from AI response');
-      // Absolute fallback - return a generic summary
       return `[Your Coverage Summary]
-This is a commercial insurance policy that provides comprehensive coverage for business operations. The policy includes general liability, property protection, and various specialized coverages designed to protect against common business risks.
-
-• Coverage Period: See policy documentation
-• Policy Number: See policy documentation
-• Primary Coverage: Commercial General Liability
-• Deductible: See policy documentation
-• Key Exclusion: Standard business exclusions apply
+${cleanedContent}
 
 Contact Valley Trust: (540) 885-5531`;
 
