@@ -18,6 +18,7 @@ export interface PDFOptions {
     email: string;
     license: string;
     signature: string;
+    agentImage: string; // Base64 encoded agent photo
     firmName: string;
     firmAddress: string;
     firmPhone: string;
@@ -487,6 +488,21 @@ export class PDFGenerator {
             font-weight: 700;
         }
         
+        .agent-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+        }
+        
+        .agent-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+        
         @media print {
             body { 
                 font-size: 11px; 
@@ -581,6 +597,11 @@ export class PDFGenerator {
                 <div class="agent-signature-left">
                     <div class="signature-content">${options.agentProfile.signature}</div>
                 </div>
+                ${options.agentProfile.agentImage ? `
+                <div class="agent-image">
+                    <img src="${options.agentProfile.agentImage}" alt="Agent Photo" class="agent-photo">
+                </div>
+                ` : ''}
                 <div class="agent-signature-right">
                     <div class="agent-details">
                         <p><strong>Agent:</strong> ${options.agentProfile.name}, ${options.agentProfile.title}</p>

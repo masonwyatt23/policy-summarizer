@@ -76,6 +76,7 @@ export const userSettings = pgTable("user_settings", {
     email: "",
     license: "",
     signature: "", // Base64 encoded image or text signature
+    agentImage: "", // Base64 encoded agent photo
     firmName: "Valley Trust Insurance",
     firmAddress: "",
     firmPhone: "",

@@ -319,6 +319,12 @@ This is a full-stack policy document processing application built for Valley Tru
   - Improved space utilization with proper flex containers instead of cramped right-aligned text
   - Added descriptive text "Professional Insurance Policy Analysis" for context
   - Better responsive layout that works well with or without client logo present
+- July 16, 2025: Added agent image upload functionality for PDF footer positioning
+  - Added agentImage field to schema and UserSettings form for agent photo upload
+  - Created image upload component with 2MB file size limit and preview functionality
+  - Updated PDF generator to display agent image between signature and agent information
+  - Agent image appears at 50px x 50px with rounded border in PDF footer
+  - Image only displays when uploaded, maintains compact footer spacing
 - July 05, 2025: Implemented complete account separation and authentication improvements
   - Fixed database schema by removing old user_id constraints and configuring proper agent_id relationships
   - Achieved complete account separation - documents and settings are now fully isolated per agent account

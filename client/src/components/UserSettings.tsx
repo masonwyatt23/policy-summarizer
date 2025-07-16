@@ -42,6 +42,7 @@ const AgentProfileSchema = z.object({
     email: z.string().email("Valid email is required"),
     license: z.string().min(1, "License number is required"),
     signature: z.string().optional(),
+    agentImage: z.string().optional(),
     firmName: z.string().min(1, "Firm name is required"),
     firmAddress: z.string().min(1, "Firm address is required"),
     firmPhone: z.string().min(1, "Firm phone is required"),
@@ -58,6 +59,7 @@ export function UserSettings() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [signatureText, setSignatureText] = useState("");
+  const [agentImagePreview, setAgentImagePreview] = useState<string>("");
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ["/api/settings"],
@@ -73,6 +75,7 @@ export function UserSettings() {
         email: "",
         license: "",
         signature: "",
+        agentImage: "",
         firmName: "Valley Trust Insurance",
         firmAddress: "",
         firmPhone: "",
@@ -88,11 +91,46 @@ export function UserSettings() {
   useEffect(() => {
     if (settings && typeof settings === 'object') {
       form.reset(settings as AgentProfileFormData);
-      if ('agentProfile' in settings && settings.agentProfile && typeof settings.agentProfile === 'object' && 'signature' in settings.agentProfile) {
-        setSignatureText(settings.agentProfile.signature as string || "");
+      if ('agentProfile' in settings && settings.agentProfile && typeof settings.agentProfile === 'object') {
+        if ('signature' in settings.agentProfile) {
+          setSignatureText(settings.agentProfile.signature as string || "");
+        }
+        if ('agentImage' in settings.agentProfile && settings.agentProfile.agentImage) {
+          setAgentImagePreview(settings.agentProfile.agentImage as string);
+        }
       }
     }
   }, [settings, form]);
+
+  // Handle agent image upload
+  const handleAgentImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file size (2MB limit)
+      if (file.size > 2 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select an image smaller than 2MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target?.result as string;
+        setAgentImagePreview(base64String);
+        form.setValue("agentProfile.agentImage", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Remove agent image
+  const removeAgentImage = () => {
+    setAgentImagePreview("");
+    form.setValue("agentProfile.agentImage", "");
+  };
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: AgentProfileFormData) => {
@@ -283,6 +321,41 @@ export function UserSettings() {
                         </FormItem>
                       )}
                     />
+                  </div>
+                  
+                  {/* Agent Photo Upload */}
+                  <div className="space-y-2">
+                    <Label>Agent Photo</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Upload a professional photo to appear in PDF exports (max 2MB)
+                    </p>
+                    <div className="flex items-center space-x-4">
+                      <Input
+                        id="agentImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAgentImageUpload}
+                        className="flex-1"
+                      />
+                      {agentImagePreview && (
+                        <div className="relative">
+                          <img
+                            src={agentImagePreview}
+                            alt="Agent preview"
+                            className="w-16 h-16 object-cover rounded-md border"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={removeAgentImage}
+                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-500 hover:bg-red-600 text-white p-0"
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
