@@ -180,13 +180,9 @@ export class PDFExtractor {
   private async extractWithOCR(buffer: Buffer): Promise<string> {
     console.log('Attempting OCR extraction for image-based PDF...');
     
-    // Check if we're in a deployment environment
-    const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT;
-    
-    if (isDeployed) {
-      console.log('🚫 OCR processing disabled in deployment environment to prevent timeouts');
-      throw new Error('OCR processing is not available in the deployment environment due to resource constraints. Please provide a text-based PDF or convert the document to text format.');
-    }
+    // Check if we're in a deployment environment and adjust timeouts
+    const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === '1';
+    console.log(`Environment: ${isDeployed ? 'DEPLOYED' : 'LOCAL'} (NODE_ENV=${process.env.NODE_ENV}, REPLIT_DEPLOYMENT=${process.env.REPLIT_DEPLOYMENT})`);
     
     try {
       // Create temporary directory for processing
@@ -202,10 +198,15 @@ export class PDFExtractor {
       // Write PDF buffer to temporary file
       fs.writeFileSync(pdfPath, buffer);
       
-      // Convert PDF pages to images using poppler-utils - limit to first 3 pages for faster processing
-      console.log('Converting PDF to images (first 3 pages only)...');
-      execSync(`pdftoppm -png -r 200 -f 1 -l 3 "${pdfPath}" "${outputPattern}"`, { 
-        timeout: 60000 
+      // Convert PDF pages to images using poppler-utils
+      const conversionTimeout = isDeployed ? 180000 : 60000; // 3 minutes for deployment, 1 minute local
+      const maxPages = isDeployed ? 2 : 3; // Process fewer pages in deployment for speed
+      const resolution = isDeployed ? 150 : 200; // Lower resolution in deployment
+      
+      console.log(`Converting PDF to images (first ${maxPages} pages, ${resolution} DPI)...`);
+      execSync(`pdftoppm -png -r ${resolution} -f 1 -l ${maxPages} "${pdfPath}" "${outputPattern}"`, { 
+        timeout: conversionTimeout,
+        maxBuffer: 1024 * 1024 * 50 // 50MB buffer
       });
       
       // Find generated image files
@@ -226,17 +227,22 @@ export class PDFExtractor {
         const imagePath = path.join(tempDir, imageFile);
         
         try {
-          console.log(`OCR processing page: ${imageFile}`);
+          console.log(`OCR processing page: ${imageFile} at ${imagePath}`);
+          const startTime = Date.now();
           
           // Create a timeout wrapper for OCR
           const ocrPromise = tesseract.recognize(imagePath, {
             lang: 'eng',
             oem: 1,
             psm: 6
+          }).then(result => {
+            console.log(`OCR completed for ${imageFile} in ${Date.now() - startTime}ms`);
+            return result;
           });
           
+          const ocrTimeout = isDeployed ? 120000 : 45000; // 2 minutes per page in deployment
           const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error(`OCR timeout for ${imageFile}`)), 45000);
+            setTimeout(() => reject(new Error(`OCR timeout for ${imageFile}`)), ocrTimeout);
           });
           
           const text = await Promise.race([ocrPromise, timeoutPromise]);
@@ -246,6 +252,11 @@ export class PDFExtractor {
           }
         } catch (pageError) {
           console.warn(`OCR failed for page ${imageFile}:`, pageError instanceof Error ? pageError.message : String(pageError));
+          // In deployment, if we get at least some text, continue
+          if (isDeployed && extractedTexts.length > 0) {
+            console.log('Deployment: Stopping OCR after error to preserve partial results');
+            break;
+          }
           // Continue processing other pages even if one fails
         }
       }
@@ -259,16 +270,23 @@ export class PDFExtractor {
       
       const fullText = extractedTexts.join('\n\n').trim();
       
-      if (fullText.length < 100) {
+      if (fullText.length < 50 && !isDeployed) {
         throw new Error(`OCR extracted insufficient text: ${fullText.length} characters`);
+      }
+      
+      // In deployment, accept whatever we got
+      if (isDeployed && fullText.length > 0) {
+        console.log(`OCR extraction (deployment): ${fullText.length} characters from ${extractedTexts.length} pages`);
+        return fullText;
       }
       
       console.log(`OCR extraction successful: ${fullText.length} characters from ${extractedTexts.length} pages`);
       return fullText;
       
     } catch (error) {
-      console.warn('OCR extraction failed:', error instanceof Error ? error.message : String(error));
-      throw new Error(`OCR processing failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please provide a text-based PDF document for processing.`);
+      console.error('OCR extraction failed:', error instanceof Error ? error.message : String(error));
+      console.error('OCR error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      throw new Error(`OCR processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

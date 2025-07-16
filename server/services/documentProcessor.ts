@@ -82,7 +82,7 @@ export class DocumentProcessor {
       console.error('PDF extraction error:', error);
       
       // For image-based PDFs, provide a helpful fallback
-      if (error.message.includes('image-based') || error.message.includes('insufficient readable text') || error.message.includes('OCR processing is not available')) {
+      if (error.message.includes('image-based') || error.message.includes('insufficient readable text')) {
         return this.generateFallbackContent();
       }
       
@@ -91,9 +91,9 @@ export class DocumentProcessor {
   }
 
   private generateFallbackContent(): string {
-    return `[Unable to Process Document]
+    return `[Document Processing Notice]
 
-This appears to be an image-based or scanned PDF document that cannot be processed automatically. These documents require OCR (Optical Character Recognition) processing, which is not available in the deployment environment due to resource constraints.
+This appears to be an image-based or scanned PDF document. Our system attempted to extract text using OCR (Optical Character Recognition), but was unable to retrieve sufficient content for analysis.
 
 TYPICAL INSURANCE POLICY COMPONENTS:
 Your policy likely contains these essential sections:
@@ -104,9 +104,9 @@ Your policy likely contains these essential sections:
 - Contact information for claims and questions
 
 NEXT STEPS:
-1. Convert your document to a text-based PDF using Adobe Acrobat or similar software
-2. Use an OCR service to extract text from the scanned document
-3. Re-upload the document once it contains readable text
+1. Try re-uploading the document - sometimes processing succeeds on a second attempt
+2. Convert your document to a text-based PDF using Adobe Acrobat or similar software
+3. Use an online OCR service to extract text before uploading
 
 For immediate assistance with your policy details, please contact Valley Trust Insurance at (540) 885-5531. Our agents can review your policy manually and provide a detailed explanation of your coverage.`;
   }

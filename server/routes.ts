@@ -659,6 +659,7 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
   console.log(`🚀 Starting document processing for ID: ${documentId}`);
   console.log(`📋 Processing options passed to async function:`, options);
   console.log(`📋 Summary length in options:`, options?.summaryLength || 'not specified');
+  console.log(`📋 Environment: NODE_ENV=${process.env.NODE_ENV}, REPLIT_DEPLOYMENT=${process.env.REPLIT_DEPLOYMENT}`);
   
   try {
     // Wrap document processing with timeout for deployment environments
@@ -666,8 +667,8 @@ async function processDocumentAsync(documentId: number, buffer: Buffer, filename
     
     // Optimized timeout for Grok 4 (faster overall processing)
     // Check both NODE_ENV and Replit deployment indicators
-    const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPL_ID || process.env.REPLIT_DEPLOYMENT === '1';
-    const timeoutMs = isDeployed ? 600000 : 420000; // 10 or 7 minutes with Grok 4
+    const isDeployed = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === '1';
+    const timeoutMs = isDeployed ? 600000 : 420000; // 10 or 7 minutes
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('Document processing timed out')), timeoutMs);
     });
