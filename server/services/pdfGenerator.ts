@@ -499,18 +499,20 @@ export class PDFGenerator {
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            margin: 0 20px;
-            padding-top: 35px;
-            margin-bottom: -15px;
+            margin: 0 30px;
+            padding-top: 45px;
+            padding-bottom: 20px;
+            margin-bottom: -25px;
+            min-height: 140px;
         }
         
         .agent-photo {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
+            width: 110px;
+            height: 110px;
+            border-radius: 10px;
             object-fit: cover;
             border: 2px solid #ddd;
-            margin-top: 20px;
+            margin-top: 30px;
         }
         
         @media print {
