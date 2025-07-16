@@ -426,7 +426,7 @@ export class PDFGenerator {
         
         .agent-signature {
             margin-top: auto;
-            padding: 12px 0;
+            padding: 8px 0;
             background: #ffffff;
             text-align: left;
             border-top: 1px solid #000000;
@@ -437,6 +437,7 @@ export class PDFGenerator {
             display: flex;
             gap: 30px;
             align-items: flex-start;
+            margin-top: 2px;
         }
         
         .agent-signature-left {
@@ -452,7 +453,7 @@ export class PDFGenerator {
         .agent-signature h3 {
             color: #000000;
             font-size: 17px;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-weight: 700;
             text-transform: uppercase;
         }

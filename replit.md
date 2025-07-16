@@ -648,6 +648,8 @@ This is a full-stack policy document processing application built for Valley Tru
   - Removed problematic "Regenerate Summary" button that was causing performance issues
   - Fixed bracket header parsing in PDF exports - [Your Coverage Summary] now displays as proper styled header
   - Enhanced bullet point separation in PDF exports - each bullet point appears on separate line
+  - Redesigned signature section with side-by-side layout: signature on left, agent info on right
+  - Reduced signature section vertical spacing to be more compact and use less page space
 
 ## Changelog
 - July 01, 2025. Initial setup
