@@ -694,7 +694,7 @@ The policy includes specific benefits such as ${policyData.keyBenefits?.slice(0,
 
 STEP 1: Write ONE detailed paragraph (100-150 words) explaining the policy comprehensively
 STEP 2: Add a blank line
-STEP 3: Add 4-5 bullet points with key details (each on its own line)
+STEP 3: Add EXACTLY 4 bullet points with key details (each on its own line)
 
 MANDATORY OUTPUT FORMAT:
 [Company] provides this [type] insurance policy for [business name]. [Describe coverage and amounts in comprehensive detail]. [Include practical examples and key benefits]. [Add information about total premium and key features].
@@ -703,21 +703,22 @@ MANDATORY OUTPUT FORMAT:
 • Policy Number: [actual number from document]  
 • Primary Coverage: [coverage type and amount]
 • Deductible: [actual amount]
-• Key Protection: [important detail]
 
 CRITICAL REQUIREMENTS:
 - Write a comprehensive, detailed paragraph with ALL key information
 - Include total premium amount, coverage limits, and key benefits
+- You MUST include EXACTLY 4 bullet points after the paragraph
 - Put each bullet point on its own separate line
 - Extract real data from the document - no placeholders
 - DO NOT STOP after the paragraph - continue to bullet points
+- Complete your response with all 4 bullet points
 - Output ONLY this format, no explanations
 
 ${truncatedText}`
             }
           ],
           temperature: 0.2,
-          max_tokens: 1000
+          max_tokens: 1200
         })
       });
 
