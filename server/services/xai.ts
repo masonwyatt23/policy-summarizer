@@ -696,7 +696,7 @@ ${truncatedText}`
             }
           ],
           temperature: 0.3,
-          max_tokens: 500
+          max_tokens: 600
         })
       });
 
@@ -735,32 +735,42 @@ ${truncatedText}`
       // Extract only the actual summary paragraph
       const cleanedContent = content.trim();
       
-      // Look for the actual summary paragraph after "Draft a paragraph:" or similar markers
+      // Look for the actual summary paragraph after various draft markers
       const draftMarkers = [
         /Draft a paragraph:\s*"([^"]+)"/s,
         /Draft a paragraph:\s*\n\s*"([^"]+)"/s,
+        /Draft in my mind:\s*"([^"]+)"/s,
         /Summary paragraph:\s*"([^"]+)"/s,
         /Final paragraph:\s*"([^"]+)"/s
       ];
       
       let summaryParagraph = null;
       
-      // First try to find content after draft markers
+      // First try to find content after draft markers in quotes
       for (const pattern of draftMarkers) {
         const match = cleanedContent.match(pattern);
         if (match) {
           summaryParagraph = match[1].trim();
-          console.log('Found summary after draft marker');
+          console.log('Found summary after draft marker in quotes');
           break;
         }
       }
       
-      // If not found in quotes, look for paragraph after "Draft a paragraph:"
+      // If not found in quotes, look for paragraph after draft markers without quotes
       if (!summaryParagraph) {
-        const draftMatch = cleanedContent.match(/Draft a paragraph:\s*\n\s*([^\n]+(?:\n(?!\n)[^\n]+)*)/);
-        if (draftMatch) {
-          summaryParagraph = draftMatch[1].trim();
-          console.log('Found summary after draft marker (unquoted)');
+        const unquotedMarkers = [
+          /Draft a paragraph:\s*\n\s*([^\n]+(?:\n(?!\n)[^\n]+)*)/,
+          /Draft in my mind:\s*([^\n]+(?:\n(?!\n)[^\n]+)*)/,
+          /Summary:\s*([^\n]+(?:\n(?!\n)[^\n]+)*)/
+        ];
+        
+        for (const pattern of unquotedMarkers) {
+          const match = cleanedContent.match(pattern);
+          if (match) {
+            summaryParagraph = match[1].trim();
+            console.log('Found summary after draft marker (unquoted)');
+            break;
+          }
         }
       }
       
@@ -798,8 +808,18 @@ ${truncatedText}`
       if (summaryParagraph) {
         // Remove trailing quotes if present
         summaryParagraph = summaryParagraph.replace(/^"|"$/g, '');
+        // Remove any draft markers that might have been captured
+        summaryParagraph = summaryParagraph.replace(/^Draft in my mind:\s*/i, '');
+        summaryParagraph = summaryParagraph.replace(/^Draft a paragraph:\s*/i, '');
+        summaryParagraph = summaryParagraph.replace(/^Summary:\s*/i, '');
         // Remove any "Contact Valley Trust" if it's already in the paragraph
         summaryParagraph = summaryParagraph.replace(/Contact Valley Trust:.*$/i, '').trim();
+        
+        // Check if summary appears to be truncated (doesn't end with proper punctuation)
+        if (summaryParagraph && !summaryParagraph.match(/[.!?]$/)) {
+          console.warn('Summary appears to be truncated');
+          summaryParagraph += '.'; // Add period to complete the sentence
+        }
       } else {
         console.error('Could not extract summary paragraph from AI response');
         summaryParagraph = 'Unable to generate summary. Please try again.';
