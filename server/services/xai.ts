@@ -754,6 +754,12 @@ ${truncatedText}`
 
       console.log(`✅ Summary generated successfully in ${Date.now() - startTime}ms`);
       
+      // Debug: Log the full AI response to see what we're getting
+      console.log('Full AI response content:');
+      console.log('--- START AI RESPONSE ---');
+      console.log(content);
+      console.log('--- END AI RESPONSE ---');
+      
       // Extract only the actual summary paragraph
       const cleanedContent = content.trim();
       
@@ -822,6 +828,12 @@ ${truncatedText}`
           summaryParagraph = beforeContact;
           console.log('Found summary before Contact Valley Trust');
         }
+      }
+      
+      // Final fallback: use the entire cleaned content if it looks like a summary
+      if (!summaryParagraph && cleanedContent.length > 100) {
+        summaryParagraph = cleanedContent;
+        console.log('Using entire cleaned content as summary');
       }
       
       // Last resort: find the last paragraph that's 100+ chars and contains dollar amounts
