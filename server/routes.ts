@@ -371,6 +371,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!settings) {
         settings = await storage.createDefaultSettings(agentId);
       }
+      
+      console.log('[PDF Export] Settings retrieved:', !!settings);
+      console.log('[PDF Export] Agent profile:', settings?.agentProfile ? 'found' : 'not found');
+      if (settings?.agentProfile) {
+        console.log('[PDF Export] Agent profile keys:', Object.keys(settings.agentProfile));
+        console.log('[PDF Export] Has agentImage:', !!(settings.agentProfile as any).agentImage);
+      }
 
       // Type-safe access to settings with proper casting
       const exportPrefs = settings.exportPreferences as { 
@@ -399,7 +406,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         includeExplanations: req.body.includeExplanations !== false,
         includeTechnicalDetails: req.body.includeTechnicalDetails === true,
         includeBranding: req.body.includeBranding !== false,
-        includeAgentSignature: exportPrefs?.includeAgentSignature || false,
+        includeAgentSignature: exportPrefs?.includeAgentSignature !== false,
         agentProfile: agentProfile && agentProfile.name ? {
           name: agentProfile.name || '',
           title: agentProfile.title || '',
