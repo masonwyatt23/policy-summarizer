@@ -777,8 +777,10 @@ ${truncatedText}`
       // If still not found, look for paragraphs starting with insurance company names
       if (!summaryParagraph) {
         const patterns = [
-          /(?:^|\n\n)((?:Erie Insurance|State Farm|Geico|Progressive|Allstate)[^.]+\.(?:[^.]+\.)*[^.]+\.)/,
-          /(?:^|\n\n)(This (?:is a|policy|insurance)[^.]+\.(?:[^.]+\.)*[^.]+\.)/,
+          // Match complete paragraphs starting with insurance company names
+          /(?:^|\n\n)((?:Erie Insurance|State Farm|Geico|Progressive|Allstate)[^\n]+(?:\n(?!\n)[^\n]+)*)/,
+          // Match complete paragraphs starting with "This is a" or similar
+          /(?:^|\n\n)(This (?:is a|policy|insurance)[^\n]+(?:\n(?!\n)[^\n]+)*)/,
         ];
         
         for (const pattern of patterns) {
