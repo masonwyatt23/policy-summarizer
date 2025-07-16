@@ -642,6 +642,13 @@ This is a full-stack policy document processing application built for Valley Tru
   - Enhanced prompt with step-by-step requirements for paragraph + bullet points
   - Fixed issue where AI would only generate paragraph without bullet points
   - Ensured complete summaries with both narrative and key policy details
+- January 16, 2025: Enhanced PDF text readability and added summary regeneration functionality
+  - Increased all PDF text sizes by 2px for better readability (14px → 16px for all text elements)
+  - Added "Regenerate Summary" button to Summary Preview tab header
+  - Button allows users to generate new summaries if issues occur (e.g., missing deductible information)
+  - Regenerate button shows spinning icon during processing and proper loading states
+  - Fixed bracket header parsing in PDF exports - [Your Coverage Summary] now displays as proper styled header
+  - Enhanced bullet point separation in PDF exports - each bullet point appears on separate line
 
 ## Changelog
 - July 01, 2025. Initial setup

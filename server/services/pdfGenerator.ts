@@ -149,7 +149,7 @@ export class PDFGenerator {
         }
         
         .client-name {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 700;
             color: #000000;
             margin: 0;
@@ -275,7 +275,7 @@ export class PDFGenerator {
         }
         
         .subheader {
-            font-size: 14px;
+            font-size: 16px;
             color: #000000;
             margin: 0 0 8px 0;
             padding: 6px 0;
@@ -291,7 +291,7 @@ export class PDFGenerator {
         }
         
         .section-paragraph {
-            font-size: 14px;
+            font-size: 16px;
             line-height: 1.7;
             color: #1e293b;
             margin: 0 0 8px 0;
@@ -312,7 +312,7 @@ export class PDFGenerator {
         }
         
         .regular-paragraph {
-            font-size: 14px;
+            font-size: 16px;
             line-height: 1.7;
             color: #1e293b;
             margin-bottom: 10px;
@@ -337,13 +337,13 @@ export class PDFGenerator {
             font-weight: bold;
             margin-right: 12px;
             margin-top: 2px;
-            font-size: 14px;
+            font-size: 16px;
             min-width: 16px;
         }
         
         .bullet-content {
             flex: 1;
-            font-size: 14px;
+            font-size: 16px;
             line-height: 1.6;
             color: #000000;
             text-align: justify;
